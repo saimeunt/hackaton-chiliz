@@ -1,0 +1,47 @@
+{
+  "scripts": {
+    "cspell": "cspell --gitignore **/*.{js,ts,md,sol}",
+    "docgen": "pnpm hardhat docgen",
+    "lint": "pnpm lint:solhint && pnpm lint:prettier:ts && pnpm lint:prettier:sol",
+    "lint:prettier:sol": "prettier --log-level warn --ignore-path .gitignore '{contracts,test}/**/*.sol' --check",
+    "lint:prettier:sol:fix": "prettier --log-level warn --ignore-path .gitignore '{contracts,test}/**/*.sol' --write",
+    "lint:prettier:ts": "prettier --log-level warn --ignore-path .gitignore '**/*.{js,ts}' --check",
+    "lint:prettier:ts:fix": "prettier --log-level warn --ignore-path .gitignore '**/*.{js,ts}' --write",
+    "lint:solhint": "solhint {contracts,test}/**/*.sol",
+    "prepare": "git config --local core.hooksPath .githooks",
+    "slither": "python3 -m slither .",
+    "start:node": "hardhat node",
+    "test": "pnpm test:hardhat && pnpm test:foundry",
+    "test:foundry": "forge test",
+    "test:hardhat": "pnpm hardhat test"
+  },
+  "dependencies": {
+    "hardhat": "^2.25.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.0.9",
+    "@nomicfoundation/hardhat-ethers": "^3.0.9",
+    "@nomicfoundation/hardhat-ignition": "^0.15.12",
+    "@nomicfoundation/hardhat-ignition-ethers": "^0.15.13",
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.13",
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.0.14",
+    "@typechain/ethers-v6": "^0.5.1",
+    "@typechain/hardhat": "^9.1.0",
+    "@types/chai": "^4.3.20",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^24.0.13",
+    "chai": "^4.5.0",
+    "cspell": "^8.19.4",
+    "ethers": "^6.15.0",
+    "hardhat-gas-reporter": "^1.0.10",
+    "prettier": "^3.6.2",
+    "prettier-plugin-solidity": "^1.4.3",
+    "solhint": "^5.2.0",
+    "solidity-coverage": "^0.8.16",
+    "solidity-docgen": "0.6.0-beta.36",
+    "ts-node": "^10.9.2",
+    "typechain": "^8.3.2",
+    "typescript": "^5.8.3"
+  }
+}
