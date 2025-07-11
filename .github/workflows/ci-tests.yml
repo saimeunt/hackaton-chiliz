@@ -113,7 +113,7 @@ jobs:
         uses: crytic/slither-action@v0.4.0
         with:
           target: "backend/"
-          solc-version: "0.8.24"
+          solc-version: "0.8.25"
           slither-config: "./backend/slither.config.json"
 
   codespell:
