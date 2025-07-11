@@ -22,6 +22,16 @@ const config: HardhatUserConfig = {
       },
       chainId: 31337,
     },
+    chiliz: {
+      url: 'https://rpc.ankr.com/chiliz',
+      chainId: 88888,
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
+    },
+    chilizTestnet: {
+      url: 'https://rpc.ankr.com/chiliz_testnet',
+      chainId: 88882,
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
+    }
   },
   solidity: '0.8.25',
 };
