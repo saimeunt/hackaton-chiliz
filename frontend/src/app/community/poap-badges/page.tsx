@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import {
   userPOAPBadges,
   getRarityColor,
@@ -12,6 +14,22 @@ import {
 } from '@/data/community';
 
 export default function POAPBadgesPage() {
+  const router = useRouter();
+  const [canGoBack, setCanGoBack] = useState(false);
+
+  useEffect(() => {
+    // Check if there's a previous page in the history
+    setCanGoBack(window.history.length > 1);
+  }, []);
+
+  const handleBackClick = () => {
+    if (canGoBack) {
+      router.back();
+    } else {
+      router.push('/');
+    }
+  };
+
   const totalMultiplier = calculateTotalMultiplier(userPOAPBadges);
   const multiplierPercentage = (
     (totalMultiplier - userPOAPBadges.length) *
@@ -22,12 +40,10 @@ export default function POAPBadgesPage() {
     <div className="space-y-6">
       {/* Header with back button */}
       <div className="flex items-center gap-4">
-        <Link href="/community">
-          <Button variant="outline" size="sm">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Community
-          </Button>
-        </Link>
+        <Button variant="outline" size="sm" onClick={handleBackClick}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back
+        </Button>
         <div>
           <h1 className="text-title font-rubik text-gray-900 dark:text-gray-100">
             My POAP Badges
