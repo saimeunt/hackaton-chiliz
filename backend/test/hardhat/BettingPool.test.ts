@@ -284,6 +284,7 @@ describe('BettingPool tests', () => {
         bettingPoolContract.connect(factory).adminClaim(),
       ).to.be.revertedWith('Too early for admin claim');
     });
+  });
 
   describe('globalClaim', () => {
     beforeEach(async () => {
@@ -411,8 +412,7 @@ describe('BettingPool tests', () => {
         bettingPoolContract
           .connect(user1)
           .placeBet(team1Token.address, betAmount),
-        ).to.be.revertedWith('Match already started');
-      });
+      ).to.be.revertedWith('Match already started');
     });
   });
 });
