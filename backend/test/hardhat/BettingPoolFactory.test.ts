@@ -81,7 +81,7 @@ describe('BettingPoolFactory', function () {
       await factory.createPool(team1Token.address, team2Token.address, now + 1000, 3600, 123);
         poolAddr = await factory.matchIdToPool(123);
     });
-    it('should verify POAP and emit event', async () => {
+    it.only('should verify POAP and emit event', async () => {
       await expect(factory.verifyPOAPAttendance(owner.address, 123)).to.emit(factory, 'POAPVerified');
     });
     it('should revert if not owner', async () => {

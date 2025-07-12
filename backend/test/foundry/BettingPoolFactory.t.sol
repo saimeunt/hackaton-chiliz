@@ -84,9 +84,9 @@ contract BettingPoolFactoryTest is Test {
         factory.transferOwnership(owner);
     }
 
-    // Pour les tests startMatch, endMatch, verifyPOAPAttendance, claimWinnings, adminClaim, globalClaim,
-    // il faudrait déployer un vrai BettingPool et mocker les appels, ou utiliser un mock contract.
-    // Ces tests sont à compléter selon la logique de BettingPool.
+    // For startMatch, endMatch, verifyPOAPAttendance, claimWinnings, adminClaim, globalClaim tests,
+    // we would need to deploy a real BettingPool and mock the calls, or use a mock contract.
+    // These tests need to be completed according to BettingPool logic.
 
     function testGetPoolsAndInfo() public {
         uint256 matchStart = block.timestamp + 10000; // Use larger timestamp

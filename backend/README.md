@@ -1,85 +1,85 @@
-# Système de Paris Sportifs avec Fan Tokens
+# Sports Betting System with Fan Tokens
 
-Ce projet implémente un système de paris sportifs décentralisé où les fans peuvent parier leurs fan tokens sur leurs équipes favorites. Le système inclut des fonctionnalités avancées comme les POAPs pour l'attendance aux matchs, des multiplicateurs de gains, et un système de swap automatique.
+This project implements a decentralized sports betting system where fans can bet their fan tokens on their favorite teams. The system includes advanced features such as POAPs for match attendance, winnings multipliers, and an automatic swap system.
 
-## Fonctionnalités Principales
+## Main Features
 
-### 🏆 Paris avec Fan Tokens
-- Les fans parient leurs fan tokens sur leurs équipes favorites
-- Mise minimum de 10 fan tokens pour éviter les paris de poussière
-- Blocage des retraits 1 heure avant le début du match
+### 🏆 Betting with Fan Tokens
+- Fans bet their fan tokens on their favorite teams
+- Minimum bet of 10 fan tokens to prevent dust bets
+- Withdrawal block 1 hour before match start
 
-### 🎫 Système POAP et Multiplicateurs
-- Vérification de l'attendance aux matchs via POAPs
-- Multiplicateur de gains basé sur l'historique d'attendance :
-  - Début : 0.8x (nouveaux utilisateurs)
-  - Après 5 matchs : 1.0x
-  - Maximum : 1.5x (après 100 matchs)
-  - Courbe logarithmique entre 5 et 100 matchs
+### 🎫 POAP System and Multipliers
+- Match attendance verification via POAPs
+- Winnings multiplier based on attendance history:
+  - Start: 0.8x (new users)
+  - After 5 matches: 1.0x
+  - Maximum: 1.5x (after 100 matches)
+  - Logarithmic curve between 5 and 100 matches
 
 ### 💰 Winner Takes All
-- Les gagnants récupèrent tous les tokens de la pool
-- Swap automatique des tokens de l'équipe perdante vers l'équipe gagnante
-- Distribution des gains au prorata des tokens investis (avec multiplicateur)
+- Winners receive all tokens from the pool
+- Automatic swap of losing team tokens to winning team tokens
+- Distribution of winnings proportional to invested tokens (with multiplier)
 
-### ⏰ Gestion des Claims
-- Claim immédiat après la fin du match
-- Claim admin après 1 an pour les tokens non réclamés
-- Claim global après 2 ans pour tous les tokens restants
+### ⏰ Claim Management
+- Immediate claim after match end
+- Admin claim after 1 year for unclaimed tokens
+- Global claim after 2 years for all remaining tokens
 
-## Architecture des Contrats
+## Contract Architecture
 
-### Contrats Principaux
+### Main Contracts
 
 #### `BettingPool.sol`
-Contrat principal qui gère un pool de paris pour un match spécifique.
+Main contract that manages a betting pool for a specific match.
 
-**Fonctionnalités :**
-- Placement de paris avec vérification des montants minimums
-- Calcul des multiplicateurs basés sur l'attendance POAP
-- Gestion des états du match (à venir, en cours, terminé)
-- Swap automatique des tokens perdants vers les tokens gagnants
-- Distribution des gains avec multiplicateurs
+**Features:**
+- Bet placement with minimum amount verification
+- Multiplier calculation based on POAP attendance
+- Match state management (upcoming, in progress, finished)
+- Automatic swap of losing tokens to winning tokens
+- Winnings distribution with multipliers
 
 #### `BettingPoolFactory.sol`
-Factory pour créer et gérer les pools de paris.
+Factory for creating and managing betting pools.
 
-**Fonctionnalités :**
-- Création de nouveaux pools de paris
-- Gestion du cycle de vie des matchs
-- Vérification des POAPs d'attendance
-- Claims admin et global
+**Features:**
+- Creation of new betting pools
+- Match lifecycle management
+- POAP attendance verification
+- Admin and global claims
 
-### Contrats de Support
+### Support Contracts
 
 #### `MockFanToken.sol`
-Token ERC20 mock pour les tests et démonstrations.
+ERC20 mock token for testing and demonstrations.
 
 #### `MockPOAP.sol`
-Contrat mock pour simuler les POAPs d'attendance aux matchs.
+Mock contract to simulate match attendance POAPs.
 
 #### `MockSwapRouter.sol`
-Router de swap mock pour simuler les échanges de tokens.
+Mock swap router to simulate token exchanges.
 
 ### Interfaces
 
 #### `IFanToken.sol`
-Interface pour les fan tokens ERC20.
+Interface for ERC20 fan tokens.
 
 #### `ISwapRouter.sol`
-Interface pour les routers de swap (compatible Uniswap V3).
+Interface for swap routers (Uniswap V3 compatible).
 
 #### `IPOAP.sol`
-Interface pour les contrats POAP.
+Interface for POAP contracts.
 
-## Workflow d'Utilisation
+## Usage Workflow
 
-### 1. Création d'un Match
+### 1. Creating a Match
 ```solidity
-// Créer un POAP pour le match
+// Create a POAP for the match
 poap.createMatch(matchId, "Team A vs Team B");
 
-// Créer le pool de paris
+// Create the betting pool
 factory.createPool(
     team1Token,
     team2Token,
@@ -89,68 +89,68 @@ factory.createPool(
 );
 ```
 
-### 2. Placement de Paris
+### 2. Placing Bets
 ```solidity
-// Approuver les tokens
+// Approve tokens
 fanToken.approve(poolAddress, amount);
 
-// Placer un pari
+// Place a bet
 pool.placeBet(teamToken, amount);
 ```
 
-### 3. Vérification POAP
+### 3. POAP Verification
 ```solidity
-// Attribuer un POAP à un utilisateur
+// Award a POAP to a user
 poap.awardPOAP(user, matchId);
 
-// Vérifier l'attendance
+// Verify attendance
 factory.verifyPOAPAttendance(user, matchId);
 ```
 
-### 4. Gestion du Match
+### 4. Match Management
 ```solidity
-// Démarrer le match
+// Start the match
 factory.startMatch(poolAddress);
 
-// Terminer le match avec le gagnant
+// End the match with the winner
 factory.endMatch(poolAddress, winningTeamToken);
 ```
 
-### 5. Récupération des Gains
+### 5. Claiming Winnings
 ```solidity
-// Claim des gains
+// Claim winnings
 factory.claimWinnings(poolAddress, user);
 ```
 
 ## Tests
 
-Le projet inclut une suite de tests complète avec Foundry :
+The project includes a comprehensive test suite with Foundry:
 
 ```bash
-# Lancer tous les tests
+# Run all tests
 forge test
 
-# Lancer un test spécifique
+# Run a specific test
 forge test --match-test test_PlaceBet
 
-# Lancer les tests avec verbosité
+# Run tests with verbosity
 forge test -vvv
 ```
 
-### Tests Inclus
-- Placement de paris et validation des montants minimums
-- Gestion des états du match
-- Calcul des multiplicateurs POAP
-- Claims et distribution des gains
-- Gestion des délais admin et global
-- Workflow complet de paris
+### Included Tests
+- Bet placement and minimum amount validation
+- Match state management
+- POAP multiplier calculation
+- Claims and winnings distribution
+- Admin and global delay management
+- Complete betting workflow
 
-## Déploiement
+## Deployment
 
-### Prérequis
-- Node.js et npm/pnpm
+### Prerequisites
+- Node.js and npm/pnpm
 - Foundry
-- Hardhat (optionnel)
+- Hardhat (optional)
 
 ### Installation
 ```bash
@@ -168,36 +168,36 @@ forge build
 forge test
 ```
 
-## Sécurité
+## Security
 
-### Mesures de Sécurité Implémentées
-- Vérification des montants minimums pour éviter les attaques par poussière
-- Blocage des retraits avant le match
-- Délais de sécurité pour les claims admin et global
-- Vérification des POAPs pour l'attendance
-- Contrôles d'accès pour les fonctions administratives
+### Implemented Security Measures
+- Minimum amount verification to prevent dust attacks
+- Withdrawal block before match
+- Security delays for admin and global claims
+- POAP verification for attendance
+- Access controls for administrative functions
 
-### Audits Recommandés
-- Audit de sécurité complet avant déploiement en production
-- Tests de pénétration du système de swap
-- Vérification des contrôles d'accès
-- Audit des calculs de multiplicateurs
+### Recommended Audits
+- Complete security audit before production deployment
+- Swap system penetration testing
+- Access control verification
+- Multiplier calculation audit
 
-## Améliorations Futures
+## Future Improvements
 
-### Fonctionnalités Proposées
-- Intégration avec des DEX réels (Uniswap V3, SushiSwap)
-- Système de liquidité pour les fan tokens
-- Interface utilisateur web3
-- Système de récompenses pour les parieurs réguliers
-- Intégration avec des oracles pour les résultats de matchs
+### Proposed Features
+- Integration with real DEXs (Uniswap V3, SushiSwap)
+- Fan token liquidity system
+- Web3 user interface
+- Regular bettor reward system
+- Oracle integration for match results
 
-### Optimisations Techniques
-- Optimisation du gas pour les calculs de multiplicateurs
-- Système de batch claims pour réduire les coûts
-- Mise en cache des données POAP
-- Optimisation des calculs de distribution des gains
+### Technical Optimizations
+- Gas optimization for multiplier calculations
+- Batch claims system to reduce costs
+- POAP data caching
+- Winnings distribution calculation optimization
 
-## Licence
+## License
 
-MIT License - voir le fichier LICENSE pour plus de détails.
+MIT License - see LICENSE file for details.

@@ -1,9 +1,9 @@
-# Documentation Technique - Système de Paris Sportifs
+# Technical Documentation - Sports Betting System
 
-## Architecture Technique
+## Technical Architecture
 
-### Vue d'ensemble
-Le système est composé de plusieurs contrats intelligents qui travaillent ensemble pour créer un écosystème de paris sportifs décentralisé. L'architecture suit le pattern Factory pour permettre la création de multiples pools de paris.
+### Overview
+The system consists of several smart contracts that work together to create a decentralized sports betting ecosystem. The architecture follows the Factory pattern to enable the creation of multiple betting pools.
 
 ```
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
@@ -19,80 +19,80 @@ Le système est composé de plusieurs contrats intelligents qui travaillent ense
 └─────────────────┘    └──────────────────┘    └─────────────────┘
 ```
 
-## Contrats Détaillés
+## Detailed Contracts
 
 ### 1. BettingPool.sol
 
-#### Structure des Données
+#### Data Structure
 ```solidity
 struct Bet {
-    uint256 amount;      // Montant parié
-    uint256 multiplier;  // Multiplicateur POAP (80-150)
-    bool claimed;        // Si les gains ont été réclamés
+    uint256 amount;      // Bet amount
+    uint256 multiplier;  // POAP multiplier (80-150)
+    bool claimed;        // Whether winnings have been claimed
 }
 
 struct TeamPool {
-    address token;           // Adresse du token de l'équipe
-    uint256 totalAmount;     // Montant total parié sur cette équipe
-    mapping(address => Bet) bets;  // Paris par utilisateur
-    address[] bettors;       // Liste des parieurs
+    address token;           // Team token address
+    uint256 totalAmount;     // Total amount bet on this team
+    mapping(address => Bet) bets;  // Bets by user
+    address[] bettors;       // List of bettors
 }
 ```
 
-#### États du Match
+#### Match States
 ```solidity
 enum MatchStatus {
-    UPCOMING,    // Match à venir
-    IN_PROGRESS, // Match en cours
-    STOPPED,     // Match arrêté
-    FINISHED     // Match terminé
+    UPCOMING,    // Upcoming match
+    IN_PROGRESS, // Match in progress
+    STOPPED,     // Match stopped
+    FINISHED     // Match finished
 }
 ```
 
-#### Fonctions Principales
+#### Main Functions
 
 ##### `placeBet(address teamToken, uint256 amount)`
-- **Objectif** : Permettre à un utilisateur de parier sur une équipe
-- **Vérifications** :
-  - Montant minimum de 10 tokens
-  - Match pas encore commencé
-  - Avant le blocage des retraits (1h avant)
-- **Actions** :
-  - Transfert des tokens vers le contrat
-  - Calcul du multiplicateur POAP
-  - Ajout du pari à la pool appropriée
+- **Objective**: Allow a user to bet on a team
+- **Validations**:
+  - Minimum amount of 10 tokens
+  - Match not yet started
+  - Before withdrawal block (1 hour before)
+- **Actions**:
+  - Transfer tokens to contract
+  - Calculate POAP multiplier
+  - Add bet to appropriate pool
 
 ##### `calculateMultiplier(address user)`
-- **Objectif** : Calculer le multiplicateur basé sur l'attendance POAP
-- **Formule** :
-  - 0 match : 0.8x (80)
-  - 5+ matchs : 1.0x (100)
-  - 100+ matchs : 1.5x (150)
-  - Entre 5-100 : courbe logarithmique
+- **Objective**: Calculate multiplier based on POAP attendance
+- **Formula**:
+  - 0 matches: 0.8x (80)
+  - 5+ matches: 1.0x (100)
+  - 100+ matches: 1.5x (150)
+  - Between 5-100: logarithmic curve
 
 ##### `claimWinnings(address user)`
-- **Objectif** : Permettre à un utilisateur de réclamer ses gains
-- **Processus** :
-  1. Vérification que le match est terminé
-  2. Calcul des gains pour chaque pool
-  3. Swap automatique des tokens perdants
-  4. Distribution des gains avec multiplicateur
+- **Objective**: Allow a user to claim their winnings
+- **Process**:
+  1. Verify match is finished
+  2. Calculate winnings for each pool
+  3. Automatic swap of losing tokens
+  4. Distribute winnings with multiplier
 
 ### 2. BettingPoolFactory.sol
 
-#### Fonctions de Gestion
-- `createPool()` : Création d'un nouveau pool de paris
-- `startMatch()` : Démarrage d'un match
-- `endMatch()` : Fin d'un match avec déclaration du gagnant
-- `verifyPOAPAttendance()` : Vérification de l'attendance POAP
+#### Management Functions
+- `createPool()` : Create a new betting pool
+- `startMatch()` : Start a match
+- `endMatch()` : End a match with winner declaration
+- `verifyPOAPAttendance()` : Verify POAP attendance
 
-#### Gestion des Claims
-- `adminClaim()` : Récupération des tokens non réclamés après 1 an
-- `globalClaim()` : Récupération de tous les tokens après 2 ans
+#### Claim Management
+- `adminClaim()` : Recover unclaimed tokens after 1 year
+- `globalClaim()` : Recover all tokens after 2 years
 
-## Algorithmes Clés
+## Key Algorithms
 
-### 1. Calcul des Multiplicateurs POAP
+### 1. POAP Multiplier Calculation
 
 ```solidity
 function calculateMultiplier(address user) public view returns (uint256) {
@@ -102,13 +102,13 @@ function calculateMultiplier(address user) public view returns (uint256) {
     if (matchCount >= 100) return 150;     // 1.5x
     if (matchCount >= 5) return 100;       // 1.0x
     
-    // Courbe logarithmique entre 0.8 et 1.0
+    // Logarithmic curve between 0.8 and 1.0
     uint256 multiplier = 80 + (20 * _log(matchCount + 1) / _log(6));
     return multiplier;
 }
 ```
 
-### 2. Distribution des Gains
+### 2. Winnings Distribution
 
 ```solidity
 function _calculateWinnings(TeamPool storage pool, address user) internal view returns (uint256) {
@@ -116,23 +116,23 @@ function _calculateWinnings(TeamPool storage pool, address user) internal view r
     if (bet.amount == 0 || bet.claimed) return 0;
 
     uint256 totalPoolAmount = team1Pool.totalAmount + team2Pool.totalAmount;
-    uint256 userShare = (bet.amount * bet.multiplier) / 100; // Appliquer multiplicateur
+    uint256 userShare = (bet.amount * bet.multiplier) / 100; // Apply multiplier
     uint256 winnings = (userShare * totalPoolAmount) / pool.totalAmount;
     
     return winnings;
 }
 ```
 
-### 3. Swap Automatique
+### 3. Automatic Swap
 
 ```solidity
 function _swapAndCalculateWinnings(TeamPool storage pool, address user) internal returns (uint256) {
     Bet storage bet = pool.bets[user];
     
-    // Approbation pour le swap
+    // Approve swap
     IFanToken(pool.token).approve(swapRouter, bet.amount);
     
-    // Paramètres du swap
+    // Swap parameters
     ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams({
         tokenIn: pool.token,
         tokenOut: winningTeamToken,
@@ -146,7 +146,7 @@ function _swapAndCalculateWinnings(TeamPool storage pool, address user) internal
     
     uint256 swappedAmount = ISwapRouter(swapRouter).exactInputSingle(params);
     
-    // Calcul des gains basé sur le montant swappé
+    // Calculate winnings based on swapped amount
     uint256 totalPoolAmount = team1Pool.totalAmount + team2Pool.totalAmount;
     uint256 userShare = (swappedAmount * bet.multiplier) / 100;
     uint256 winnings = (userShare * totalPoolAmount) / pool.totalAmount;
@@ -156,118 +156,95 @@ function _swapAndCalculateWinnings(TeamPool storage pool, address user) internal
 }
 ```
 
-## Sécurité
+## Security
 
-### Mesures de Protection
+### Protection Measures
 
-#### 1. Contrôles d'Accès
-- `onlyFactory` : Seule la factory peut appeler certaines fonctions
-- `onlyOwner` : Seul le propriétaire peut effectuer des actions administratives
-- `onlyBeforeMatch` : Actions limitées avant le début du match
+#### 1. Access Controls
+- `onlyFactory` : Only factory can call certain functions
+- `onlyOwner` : Only owner can perform administrative actions
+- `onlyBeforeMatch` : Actions limited before match start
 
-#### 2. Protection contre les Attaques
-- **Montant minimum** : 10 tokens pour éviter les attaques par poussière
-- **Blocage des retraits** : 1 heure avant le match
-- **Délais de sécurité** : 1 an pour admin claim, 2 ans pour global claim
+#### 2. Attack Protection
+- **Minimum amount** : 10 tokens to prevent dust attacks
+- **Withdrawal block** : 1 hour before match
+- **Security delays** : 1 year for admin claim, 2 years for global claim
 
-#### 3. Validation des Données
-- Vérification des adresses de tokens
-- Validation des montants
-- Contrôle des états du match
+#### 3. Data Validation
+- Token address verification
+- Amount validation
+- Match state control
 
-### Risques Identifiés
+### Identified Risks
 
-#### 1. Risques de Swap
-- **Slippage** : Pas de protection contre le slippage dans le mock
-- **Liquidité** : Dépendance à la liquidité des DEX
-- **Manipulation de prix** : Risque d'attaques MEV
+#### 1. Swap Risks
+- **Slippage** : No slippage protection in mock
+- **Liquidity** : Dependency on DEX liquidity
+- **Price manipulation** : MEV attack risk
 
-#### 2. Risques de POAP
-- **Falsification** : Possibilité de créer de faux POAPs
-- **Centralisation** : Dépendance à l'autorité qui attribue les POAPs
+#### 2. POAP Risks
+- **Falsification** : Possibility to create fake POAPs
+- **Centralization** : Dependency on authority that assigns POAPs
 
-#### 3. Risques de Gas
-- **Coût élevé** : Les swaps peuvent être coûteux
-- **Limites de gas** : Risque d'échec des transactions
+#### 3. Gas Risks
+- **High cost** : Swaps can be expensive
+- **Gas limits** : Risk of transaction failure
 
-## Optimisations
+## Optimizations
 
-### 1. Optimisations de Gas
-- Utilisation de `uint256` pour les multiplicateurs (éviter les décimaux)
-- Mapping optimisé pour les paris
-- Réduction des boucles dans les calculs
+### 1. Gas Optimizations
+- Use `uint256` for multipliers (avoid decimals)
+- Optimized mapping for bets
+- Reduce loops in calculations
 
-### 2. Optimisations de Stockage
-- Structs compactes
-- Réutilisation des variables
-- Minimisation des événements
+### 2. Storage Optimizations
+- Compact structs
+- Variable reuse
+- Minimize events
 
-### 3. Optimisations Futures
-- Batch claims pour réduire les coûts
-- Mise en cache des calculs de multiplicateurs
-- Optimisation des calculs de distribution
+### 3. Future Optimizations
+- Batch claims to reduce costs
+- Cache multiplier calculations
+- Optimize distribution calculations
 
 ## Tests
 
-### Couverture de Tests
-- Tests unitaires pour chaque fonction
-- Tests d'intégration pour les workflows complets
-- Tests de sécurité pour les cas limites
-- Tests de performance pour les calculs complexes
+### Test Coverage
+- Unit tests for each function
+- Integration tests for complete workflows
+- Security tests for edge cases
+- Performance tests for complex calculations
 
-### Scénarios de Test
-1. **Placement de paris** : Validation des montants et multiplicateurs
-2. **Gestion du match** : Transitions d'état et contrôles d'accès
-3. **Distribution des gains** : Calculs précis et swaps automatiques
-4. **Claims** : Délais et récupération des tokens
-5. **POAP** : Vérification et mise à jour des multiplicateurs
+### Test Scenarios
+1. **Bet placement** : Amount and multiplier validation
+2. **Match management** : State transitions and access controls
+3. **Winnings distribution** : Precise calculations and automatic swaps
+4. **Claims** : Delays and token recovery
+5. **POAP** : Verification and multiplier updates
 
-## Déploiement
+## Deployment
 
 ### Configuration
 - Solidity 0.8.25
 - EVM Cancun
 - OpenZeppelin 5.0.0
-- Foundry pour les tests
+- Foundry for testing
 
-### Adresses de Déploiement
-- Factory : Point d'entrée principal
-- POAP : Contrat de vérification d'attendance
-- Swap Router : Interface d'échange
-- Fan Tokens : Tokens des équipes
+### Deployment Addresses
+- Factory : Main entry point
+- POAP : Attendance verification contract
+- Swap Router : Exchange interface
+- Fan Tokens : Team tokens
 
 ### Migration
-1. Déploiement des contrats de support
-2. Déploiement de la factory
-3. Configuration des paramètres
-4. Tests de validation
-5. Ouverture aux utilisateurs
+1. Deploy support contracts
+2. Deploy factory
+3. Configure parameters
+4. Validation tests
+5. Open to users
 
 ## Monitoring
 
-### Métriques Clés
-- Nombre de pools créés
-- Volume total des paris
-- Distribution des multiplicateurs
-- Taux de claim des gains
-- Performance des swaps
-
-### Alertes
-- Échecs de swap
-- Claims non effectués
-- Anomalies dans les multiplicateurs
-- Activité suspecte
-
-## Support et Maintenance
-
-### Mises à Jour
-- Amélioration des algorithmes de calcul
-- Optimisation des contrats
-- Ajout de nouvelles fonctionnalités
-- Corrections de bugs
-
-### Support Utilisateur
-- Documentation détaillée
-- Guides d'utilisation
-- Support technique
-- Formation des utilisateurs 
+### Key Metrics
+- Number of pools created
+- Total betting volume 
