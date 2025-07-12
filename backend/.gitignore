@@ -16,6 +16,7 @@ lcov.info
 
 # Hardhat Ignition default folder for deployments against a local node
 ignition/deployments/chain-31337
+ignition/deployments/chain-88888
 
 # Foundry files
 /out
