@@ -144,9 +144,7 @@ describe('BettingPool tests', () => {
       expect(statusBefore).to.equal(1); // IN_PROGRESS
 
       // Move time to after match end
-      await ethers.provider.send('evm_mine', [
-        Number(matchEndTime) + 1000,
-      ]);
+      await ethers.provider.send('evm_mine', [Number(matchEndTime) + 1000]);
 
       await expect(
         bettingPoolContract.connect(factory).endMatch(team1Token.address),
@@ -355,10 +353,10 @@ describe('BettingPool tests', () => {
     it('should reject bet after match has started', async () => {
       // Move time to after match start time
       const matchStartTime = await bettingPoolContract.matchStartTime();
-      
+
       // Move time to just after match start
       const testTime = Number(matchStartTime) + 1;
-      
+
       await ethers.provider.send('evm_setNextBlockTimestamp', [testTime]);
       await ethers.provider.send('evm_mine', []);
 
