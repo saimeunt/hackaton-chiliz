@@ -33,6 +33,7 @@ contract PoolManager {
     mapping(address => bool) public isPool;
     mapping(uint256 => address) public matchIdToPool; // POAP match ID to pool address
 
+    uint256 public matchCount;
     // Reentrancy protection
     bool private _locked;
 
@@ -78,7 +79,6 @@ contract PoolManager {
      * @param team2Token Token of the second team
      * @param matchStartTime Start time of the match
      * @param matchDuration Duration of the match in seconds
-     * @param matchId POAP match ID for attendance verification
      * @return poolAddress Address of the created pool
      */
     function _createPool(
@@ -86,7 +86,7 @@ contract PoolManager {
         address team2Token,
         uint256 matchStartTime,
         uint256 matchDuration,
-        uint256 matchId
+        string memory matchName
     ) internal returns (address poolAddress) {
         require(team1Token != team2Token, "Teams must be different");
         require(
@@ -95,7 +95,7 @@ contract PoolManager {
         );
         require(matchDuration > 0, "Match duration must be positive");
         require(
-            matchIdToPool[matchId] == address(0),
+            matchIdToPool[matchCount] == address(0),
             "Match ID already exists"
         );
 
@@ -113,7 +113,9 @@ contract PoolManager {
         poolAddress = address(pool);
         pools.push(pool);
         isPool[poolAddress] = true;
-        matchIdToPool[matchId] = poolAddress;
+        matchIdToPool[matchCount] = poolAddress;
+
+        IPOAP(poapContract).createMatch(matchCount, matchName);
 
         emit PoolCreated(
             poolAddress,
@@ -122,6 +124,9 @@ contract PoolManager {
             matchStartTime,
             matchDuration
         );
+
+        matchCount++;
+        return poolAddress;
     }
 
     /**
