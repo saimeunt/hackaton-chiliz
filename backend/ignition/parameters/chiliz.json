@@ -1,0 +1,9 @@
+{
+  "BettingPoolModule": {
+    "routerAddress": "0x1918EbB39492C8b98865c5E53219c3f1AE79e76F",
+    "psgAddress": "0xc2661815C69c2B3924D3dd0c2C1358A1E38A3105",
+    "wPSGAddress": "0x476eF844B3E8318b3bc887a7db07a1A0FEde5557",
+    "acmAddress": "0xF9C0F80a6c67b1B39bdDF00ecD57f2533ef5b688",
+    "wACMAddress": "0x859DB9e2569bb87990482fC53E2F902E52585Ecb"
+  }
+}
