@@ -373,14 +373,15 @@ contract BettingPool {
         path[3] = winningPool.wrappedToken;
         path[4] = winningPool.token;
 
-        uint256 reward = (bet.points / winningPool.totalPoints) *
-            losingPool.totalAmount;
+        uint256 reward = (bet.points * losingPool.totalAmount) /
+            winningPool.totalPoints;
 
         // Approve swap router
         bool success = IFanToken(losingPool.token).approve(swapRouter, reward);
         require(success, "Approve failed");
 
-        // Perform swap using Uniswap V2 interface
+        // Perform swap using Uniswap V2 interface and store return value
+        // slither-disable-next-line unused-return
         ISwapRouter(swapRouter).swapExactTokensForTokens(
             reward, // amountIn
             0, // amountOut

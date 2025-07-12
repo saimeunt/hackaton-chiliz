@@ -288,9 +288,7 @@ contract BettingPoolTest is Test {
         vm.prank(bob);
         pool.placeBet(address(team1Token), betAmount);
 
-        (uint256 totalAmount, uint256 bettorCount) = pool.getPoolInfo(
-            address(team1Token)
-        );
+        (, uint256 bettorCount) = pool.getPoolInfo(address(team1Token));
 
         // Note: totalAmount might be 0 due to contract issues, but bettorCount should work
         assertEq(bettorCount, 2);
