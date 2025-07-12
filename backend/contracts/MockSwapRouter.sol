@@ -28,6 +28,7 @@ contract MockSwapRouter is ISwapRouter {
         address to,
         uint256 deadline
     ) external override returns (uint256[] memory amounts) {
+        // slither-disable-next-line timestamp
         require(block.timestamp <= deadline, "SwapRouter: EXPIRED");
         require(path.length >= 2, "SwapRouter: INVALID_PATH");
         require(to != address(0), "SwapRouter: INVALID_TO");
@@ -58,6 +59,7 @@ contract MockSwapRouter is ISwapRouter {
         address to,
         uint256 deadline
     ) external override returns (uint256[] memory amounts) {
+        // slither-disable-next-line timestamp
         require(block.timestamp <= deadline, "SwapRouter: EXPIRED");
         require(path.length >= 2, "SwapRouter: INVALID_PATH");
         require(to != address(0), "SwapRouter: INVALID_TO");
