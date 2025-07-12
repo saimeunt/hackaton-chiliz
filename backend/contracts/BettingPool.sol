@@ -6,7 +6,7 @@ import "./ISwapRouter.sol";
 import "./IPOAP.sol";
 import "./IBettingPoolFactory.sol";
 
-contract BettingPool {
+contract BettingPool is IBettingPoolFactory {
     // Events
     event BetPlaced(
         address indexed user,

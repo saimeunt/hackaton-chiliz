@@ -94,6 +94,7 @@ contract BettingPoolFactory is PoolManager, IBettingPoolFactory {
         uint256 matchId
     ) external nonReentrant onlyOwner {
         _verifyPOAPAttendance(user, matchId);
+        _updateUserMatchCount(user, matchId);
     }
 
     /**
@@ -147,10 +148,7 @@ contract BettingPoolFactory is PoolManager, IBettingPoolFactory {
      * @param user Address of the user
      * @param matchId POAP match ID
      */
-    function _updateUserMatchCount(
-        address user,
-        uint256 matchId
-    ) internal override {
+    function _updateUserMatchCount(address user, uint256 matchId) internal {
         // Verify POAP ownership
         uint256 balance = IPOAP(poapContract).balanceOf(user, matchId);
         require(balance > 0, "No POAP for this match");
