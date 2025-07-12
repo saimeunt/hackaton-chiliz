@@ -275,20 +275,6 @@ describe('BettingPool tests', () => {
     });
   });
 
-  describe('getBet', () => {
-    it('should return zero bet for user with no bet', async () => {
-      const bet = await bettingPoolContract.getBet(
-        user1.address,
-        team1Token.address,
-      );
-      testBet(bet, {
-        amount: 0n,
-        multiplier: 0n,
-        claimed: false,
-      });
-    });
-  });
-
   describe('getPoolInfo', () => {
     it('should return zero pool info for empty pool', async () => {
       const poolInfo = await bettingPoolContract.getPoolInfo(

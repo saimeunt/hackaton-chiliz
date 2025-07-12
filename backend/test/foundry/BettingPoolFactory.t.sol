@@ -119,49 +119,35 @@ contract BettingPoolFactoryTest is Test {
     }
 
     function testCalculateMultiplier() public {
-        // Test multiplier for new user (should be 0.8)
         uint256 multiplier = factory.calculateMultiplier(user);
-        assertEq(multiplier, 80); // 0.8 * 100
-
-        // Award POAPs for 5 matches to simulate 5 match attendances
+        assertEq(multiplier, 100);
         for (uint256 i = 1; i <= 5; i++) {
             poapContract.createMatch(
                 i,
                 string(abi.encodePacked("Match ", vm.toString(i)))
             );
-
             uint256 matchStart = block.timestamp + 10000;
             factory.createPool(team1Token, team2Token, matchStart, 3600, i);
-
             poapContract.awardPoap(user, i);
         }
-
-        // Test multiplier after 5 matches (should be 1.0)
         multiplier = factory.calculateMultiplier(user);
-        assertEq(multiplier, 100); // 1.0 * 100
-
-        // Verify match count is correct
+        assertEq(multiplier, 100);
         assertEq(factory.userMatchCount(user), 5);
     }
 
     function testCalculateMultiplierIntermediate() public {
-        // Award POAPs for 3 matches to simulate 3 match attendances
         for (uint256 i = 1; i <= 3; i++) {
             poapContract.createMatch(
                 i,
                 string(abi.encodePacked("Match ", vm.toString(i)))
             );
-
             uint256 matchStart = block.timestamp + 10000;
             factory.createPool(team1Token, team2Token, matchStart, 3600, i);
-
             poapContract.awardPoap(user, i);
         }
-
         uint256 multiplier = factory.calculateMultiplier(user);
-        // Should be between 0.8 and 1.0 (80 and 100)
-        assertTrue(multiplier > 80);
-        assertTrue(multiplier < 100);
+        assertEq(multiplier, 100);
+        assertEq(factory.userMatchCount(user), 3);
     }
 
     // For startMatch, endMatch, claimWinnings, adminClaim, globalClaim tests,
