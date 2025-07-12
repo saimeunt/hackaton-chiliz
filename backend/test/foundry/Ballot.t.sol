@@ -65,7 +65,7 @@ contract BallotTestHelper is Test {
 contract ConstructorTest is BallotTestHelper {
     function testInitialization() public {
         ballotContract = initBallot();
-        assertEq(ballotContract.chairperson(), owner);
+        assertEq(ballotContract.CHAIRPERSON(), owner);
         (
             uint256 weight,
             bool voted,

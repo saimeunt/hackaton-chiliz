@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.25;
 
-import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import {ERC1155} from "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 contract MockPOAP is ERC1155, Ownable {
     mapping(uint256 => string) public matchNames;
@@ -27,7 +27,7 @@ contract MockPOAP is ERC1155, Ownable {
      * @param user Address of the user
      * @param matchId ID of the match
      */
-    function awardPOAP(address user, uint256 matchId) external onlyOwner {
+    function awardPoap(address user, uint256 matchId) external onlyOwner {
         require(bytes(matchNames[matchId]).length > 0, "Match does not exist");
 
         // Allow multiple awards for the same match (for testing purposes)

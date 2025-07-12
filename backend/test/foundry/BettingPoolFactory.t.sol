@@ -98,7 +98,7 @@ contract BettingPoolFactoryTest is Test {
 
         // Create the match in the POAP contract and award POAP to the user
         poapContract.createMatch(123, "Test Match");
-        poapContract.awardPOAP(user, 123);
+        poapContract.awardPoap(user, 123);
 
         // Verify POAP attendance
         vm.expectEmit(true, true, false, true);

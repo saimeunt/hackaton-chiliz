@@ -25,7 +25,7 @@ contract Ballot {
         uint256 voteCount; // number of accumulated votes
     }
 
-    address public immutable chairperson;
+    address public immutable CHAIRPERSON;
 
     mapping(address => Voter) public voters;
 
@@ -36,8 +36,8 @@ contract Ballot {
      * @param proposalNames names of proposals
      */
     constructor(bytes32[] memory proposalNames) {
-        chairperson = msg.sender;
-        voters[chairperson].weight = 1;
+        CHAIRPERSON = msg.sender;
+        voters[CHAIRPERSON].weight = 1;
         uint256 proposalNamesLength = proposalNames.length;
         for (uint256 i = 0; i < proposalNamesLength; i++) {
             // 'Proposal({...})' creates a temporary
@@ -53,7 +53,7 @@ contract Ballot {
      */
     function giveRightToVote(address voter) public {
         require(
-            msg.sender == chairperson,
+            msg.sender == CHAIRPERSON,
             "Only chairperson can give right to vote."
         );
         require(!voters[voter].voted, "The voter already voted.");

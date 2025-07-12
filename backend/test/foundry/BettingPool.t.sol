@@ -174,7 +174,7 @@ contract BettingPoolTest is Test {
 
     function test_POAPMultiplier() public {
         // Award POAP to alice for attending matches
-        poap.awardPOAP(alice, matchId);
+        poap.awardPoap(alice, matchId);
 
         // Verify POAP attendance
         factory.verifyPOAPAttendance(alice, matchId);
@@ -196,7 +196,7 @@ contract BettingPoolTest is Test {
                 i,
                 string(abi.encodePacked("Match ", vm.toString(i)))
             );
-            poap.awardPOAP(alice, i);
+            poap.awardPoap(alice, i);
             factory.verifyPOAPAttendance(alice, i);
         }
 
@@ -267,8 +267,8 @@ contract BettingPoolTest is Test {
         pool.placeBet(address(team1Token), betAmount);
 
         // 2. Award POAP to alice and charlie
-        poap.awardPOAP(alice, matchId);
-        poap.awardPOAP(charlie, matchId);
+        poap.awardPoap(alice, matchId);
+        poap.awardPoap(charlie, matchId);
 
         factory.verifyPOAPAttendance(alice, matchId);
         factory.verifyPOAPAttendance(charlie, matchId);

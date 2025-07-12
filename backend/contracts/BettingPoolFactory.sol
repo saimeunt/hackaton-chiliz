@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.25;
 
-import "./BettingPool.sol";
-import "./IFanToken.sol";
+import {BettingPool} from "./BettingPool.sol";
+import {IFanToken} from "./IFanToken.sol";
 
 contract BettingPoolFactory {
     // Events
