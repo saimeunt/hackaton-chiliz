@@ -4,6 +4,7 @@ pragma solidity ^0.8.20;
 import "./IFanToken.sol";
 import "./ISwapRouter.sol";
 import "./IPOAP.sol";
+import "./IBettingPoolFactory.sol";
 
 contract BettingPool {
     // Events
@@ -61,7 +62,6 @@ contract BettingPool {
     TeamPool public team1Pool;
     TeamPool public team2Pool;
 
-    mapping(address => uint256) public userMatchCount; // Track user's match attendance
     mapping(address => bool) public hasClaimed;
 
     // Reentrancy protection
@@ -347,31 +347,7 @@ contract BettingPool {
      * @return Multiplier value (0.8 to 1.5)
      */
     function calculateMultiplier(address user) public view returns (uint256) {
-        uint256 matchCount = userMatchCount[user];
-
-        if (matchCount == 0) return 80; // 0.8 * 100
-        if (matchCount >= 100) return 150; // 1.5 * 100
-        if (matchCount >= 5) return 100; // 1.0 * 100
-
-        // Logarithmic curve from 0.8 to 1.0 over 5 matches
-        // Formula: 0.8 + (0.2 * log(matchCount + 1) / log(6))
-        uint256 multiplier = 80 + ((20 * _log(matchCount + 1)) / _log(6));
-        return multiplier;
-    }
-
-    /**
-     * @dev Update user match count (called by factory when POAP is verified)
-     * @param user Address of the user
-     * @param matchId POAP match ID
-     */
-    function updateUserMatchCount(
-        address user,
-        uint256 matchId
-    ) external onlyFactory {
-        // Verify POAP ownership
-        uint256 balance = IPOAP(poapContract).balanceOf(user, matchId);
-        require(balance > 0, "No POAP for this match");
-        userMatchCount[user]++;
+        return IBettingPoolFactory(factory).calculateMultiplier(user);
     }
 
     // Internal functions
@@ -455,17 +431,6 @@ contract BettingPool {
             }
         }
         return unclaimed;
-    }
-
-    function _log(uint256 x) internal pure returns (uint256) {
-        // Simple logarithm approximation for small numbers
-        if (x <= 1) return 0;
-        if (x <= 2) return 69; // log(2) * 100
-        if (x <= 3) return 110; // log(3) * 100
-        if (x <= 4) return 139; // log(4) * 100
-        if (x <= 5) return 161; // log(5) * 100
-        if (x <= 6) return 179; // log(6) * 100
-        return 179; // Default to log(6)
     }
 
     // View functions

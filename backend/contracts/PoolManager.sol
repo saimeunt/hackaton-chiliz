@@ -158,7 +158,21 @@ contract PoolManager {
         require(poolAddress != address(0), "Invalid match ID");
 
         emit POAPVerified(user, matchId);
-        BettingPool(poolAddress).updateUserMatchCount(user, matchId);
+        // Update user match count in the factory instead of the pool
+        // We'll call the internal function directly since we're in the same contract
+        _updateUserMatchCount(user, matchId);
+    }
+
+    /**
+     * @dev Update user match count (called internally when POAP is verified)
+     * @param user Address of the user
+     * @param matchId POAP match ID
+     */
+    function _updateUserMatchCount(
+        address user,
+        uint256 matchId
+    ) internal virtual {
+        // This will be overridden by BettingPoolFactory
     }
 
     /**
