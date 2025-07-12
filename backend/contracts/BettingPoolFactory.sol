@@ -4,13 +4,14 @@ pragma solidity ^0.8.20;
 import {PoolManager} from "./PoolManager.sol";
 import {IFanToken} from "./IFanToken.sol";
 import {IPOAP} from "./IPOAP.sol";
+import {IBettingPoolFactory} from "./IBettingPoolFactory.sol";
 
 /**
  * @title BettingPoolFactory
  * @dev Factory contract for creating and managing betting pools
  * Inherits from PoolManager to use the core pool management functionality
  */
-contract BettingPoolFactory is PoolManager {
+contract BettingPoolFactory is PoolManager, IBettingPoolFactory {
     // Events
     event OwnershipTransferred(
         address indexed previousOwner,

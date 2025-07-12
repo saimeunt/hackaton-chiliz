@@ -4,6 +4,7 @@ pragma solidity ^0.8.20;
 import "./IFanToken.sol";
 import "./ISwapRouter.sol";
 import "./IPOAP.sol";
+import "./IBettingPoolFactory.sol";
 
 contract BettingPool {
     // Events
@@ -346,7 +347,7 @@ contract BettingPool {
      * @return Multiplier value (0.8 to 1.5)
      */
     function calculateMultiplier(address user) public view returns (uint256) {
-        return this.calculateMultiplier(user);
+        return IBettingPoolFactory(factory).calculateMultiplier(user);
     }
 
     // Internal functions
