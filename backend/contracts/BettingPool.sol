@@ -64,7 +64,17 @@ contract BettingPool {
     mapping(address => uint256) public userMatchCount; // Track user's match attendance
     mapping(address => bool) public hasClaimed;
 
+    // Reentrancy protection
+    bool private _locked;
+
     // Modifiers
+    modifier nonReentrant() {
+        require(!_locked, "Reentrant call");
+        _locked = true;
+        _;
+        _locked = false;
+    }
+
     modifier onlyFactory() {
         require(msg.sender == factory, "Only factory can call this");
         _;
@@ -130,6 +140,7 @@ contract BettingPool {
         team2Pool.token = _team2Token;
 
         matchStatus = MatchStatus.UPCOMING;
+        winningTeamToken = address(0); // Initialize to zero address
     }
 
     /**
@@ -140,7 +151,7 @@ contract BettingPool {
     function placeBet(
         address teamToken,
         uint256 amount
-    ) external onlyBeforeWithdrawalBlock {
+    ) external nonReentrant onlyBeforeWithdrawalBlock {
         require(
             teamToken == team1Token || teamToken == team2Token,
             "Invalid team token"
@@ -180,31 +191,32 @@ contract BettingPool {
 
     /**
      * @dev End the match and set the winner
-     * @param _winningTeamToken The token of the winning team
+     * @param newWinningTeamToken The token of the winning team
      */
     function endMatch(
-        address _winningTeamToken
+        address newWinningTeamToken
     ) external onlyFactory onlyAfterMatch {
         require(
             matchStatus == MatchStatus.IN_PROGRESS,
             "Match not in progress"
         );
         require(
-            _winningTeamToken == team1Token || _winningTeamToken == team2Token,
+            newWinningTeamToken == team1Token ||
+                newWinningTeamToken == team2Token,
             "Invalid winning team"
         );
 
-        winningTeamToken = _winningTeamToken;
+        winningTeamToken = newWinningTeamToken;
         matchStatus = MatchStatus.FINISHED;
 
-        emit MatchEnded(_winningTeamToken);
+        emit MatchEnded(newWinningTeamToken);
     }
 
     /**
      * @dev Claim winnings for a user
      * @param user Address of the user claiming
      */
-    function claimWinnings(address user) external {
+    function claimWinnings(address user) external nonReentrant {
         require(matchStatus == MatchStatus.FINISHED, "Match not finished");
         require(!hasClaimed[user], "Already claimed");
         require(winningTeamToken != address(0), "Winner not set");
@@ -245,7 +257,7 @@ contract BettingPool {
     /**
      * @dev Admin claim for unclaimed tokens after 1 year
      */
-    function adminClaim() external onlyFactory {
+    function adminClaim() external nonReentrant onlyFactory {
         // Using block.timestamp for time delays is acceptable for this use case
         // as it provides sufficient granularity for claim delays
         require(
@@ -274,7 +286,7 @@ contract BettingPool {
     /**
      * @dev Global claim for remaining tokens after 2 years
      */
-    function globalClaim() external onlyFactory {
+    function globalClaim() external nonReentrant onlyFactory {
         // Using block.timestamp for time delays is acceptable for this use case
         // as it provides sufficient granularity for claim delays
         require(

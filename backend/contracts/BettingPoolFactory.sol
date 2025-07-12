@@ -33,7 +33,17 @@ contract BettingPoolFactory {
     mapping(address => bool) public isPool;
     mapping(uint256 => address) public matchIdToPool; // POAP match ID to pool address
 
+    // Reentrancy protection
+    bool private _locked;
+
     // Modifiers
+    modifier nonReentrant() {
+        require(!_locked, "Reentrant call");
+        _locked = true;
+        _;
+        _locked = false;
+    }
+
     modifier onlyOwner() {
         require(msg.sender == owner, "Only owner can call this");
         _;
@@ -109,7 +119,7 @@ contract BettingPoolFactory {
      * @dev Start a match
      * @param poolAddress Address of the pool to start
      */
-    function startMatch(address poolAddress) external onlyOwner {
+    function startMatch(address poolAddress) external nonReentrant onlyOwner {
         require(isPool[poolAddress], "Invalid pool address");
         BettingPool(poolAddress).startMatch();
         emit MatchStarted(poolAddress);
@@ -123,7 +133,7 @@ contract BettingPoolFactory {
     function endMatch(
         address poolAddress,
         address winningTeamToken
-    ) external onlyOwner {
+    ) external nonReentrant onlyOwner {
         require(isPool[poolAddress], "Invalid pool address");
         BettingPool(poolAddress).endMatch(winningTeamToken);
         emit MatchEnded(poolAddress, winningTeamToken);
@@ -137,7 +147,7 @@ contract BettingPoolFactory {
     function verifyPOAPAttendance(
         address user,
         uint256 matchId
-    ) external onlyOwner {
+    ) external nonReentrant onlyOwner {
         address poolAddress = matchIdToPool[matchId];
         require(poolAddress != address(0), "Invalid match ID");
 
@@ -150,7 +160,10 @@ contract BettingPoolFactory {
      * @param poolAddress Address of the pool
      * @param user Address of the user
      */
-    function claimWinnings(address poolAddress, address user) external {
+    function claimWinnings(
+        address poolAddress,
+        address user
+    ) external nonReentrant {
         require(isPool[poolAddress], "Invalid pool address");
         BettingPool(poolAddress).claimWinnings(user);
     }
@@ -159,7 +172,7 @@ contract BettingPoolFactory {
      * @dev Admin claim for unclaimed tokens after 1 year
      * @param poolAddress Address of the pool
      */
-    function adminClaim(address poolAddress) external onlyOwner {
+    function adminClaim(address poolAddress) external nonReentrant onlyOwner {
         require(isPool[poolAddress], "Invalid pool address");
         BettingPool(poolAddress).adminClaim();
     }
@@ -168,7 +181,7 @@ contract BettingPoolFactory {
      * @dev Global claim for remaining tokens after 2 years
      * @param poolAddress Address of the pool
      */
-    function globalClaim(address poolAddress) external onlyOwner {
+    function globalClaim(address poolAddress) external nonReentrant onlyOwner {
         require(isPool[poolAddress], "Invalid pool address");
         BettingPool(poolAddress).globalClaim();
     }
@@ -192,7 +205,7 @@ contract BettingPoolFactory {
     function emergencyRecover(
         address token,
         uint256 amount
-    ) external onlyOwner {
+    ) external nonReentrant onlyOwner {
         bool success = IFanToken(token).transfer(owner, amount);
         require(success, "Transfer failed");
     }
