@@ -36,12 +36,6 @@ importers:
       '@nomicfoundation/hardhat-verify':
         specifier: ^2.0.14
         version: 2.0.14(hardhat@2.25.0(ts-node@10.9.2(@types/node@24.0.13)(typescript@5.8.3))(typescript@5.8.3))
-      '@openzeppelin/contracts':
-        specifier: ^5.3.0
-        version: 5.3.0
-      '@pythnetwork/pyth-sdk-solidity':
-        specifier: ^4.2.0
-        version: 4.2.0
       '@typechain/ethers-v6':
         specifier: ^0.5.1
         version: 0.5.1(ethers@6.15.0)(typechain@8.3.2(typescript@5.8.3))(typescript@5.8.3)
@@ -57,9 +51,6 @@ importers:
       '@types/node':
         specifier: ^24.0.13
         version: 24.0.13
-      '@uniswap/v2-core':
-        specifier: ^1.0.1
-        version: 1.0.1
       chai:
         specifier: ^4.5.0
         version: 4.5.0
@@ -660,9 +651,6 @@ packages:
     resolution: {integrity: sha512-c83qWb22rNRuB0UaVCI0uRPNRr8Z0FWnEIvT47jiHAmOIUHbBOg5XvV7pM5x+rKn9HRpjxquDbXYSXr3fAKFcw==}
     engines: {node: '>=12'}
 
-  '@pythnetwork/pyth-sdk-solidity@4.2.0':
-    resolution: {integrity: sha512-IO4pRqloqEXdbWqFbiNqthpaA5Dktl+t5GXckwdReEti90H4zcgxvINFLrSfRp7ylN2cP/LVgoCRHGEJGYlwKg==}
-
   '@scure/base@1.1.9':
     resolution: {integrity: sha512-8YKhl8GHiNI/pU2VMaofa2Tor7PJRAjwQLBBuilkJ9L5+13yVbC7JO/wS7piioAvPSwR3JKM1IJ/u4xQzbcXKg==}
 
@@ -804,10 +792,6 @@ packages:
 
   '@types/secp256k1@4.0.6':
     resolution: {integrity: sha512-hHxJU6PAEUn0TP4S/ZOzuTUvJWuZ6eIKeNKb5RBpODvSl6hp1Wrw4s7ATY50rklRCScUDpHzVA/DQdSjJ3UoYQ==}
-
-  '@uniswap/v2-core@1.0.1':
-    resolution: {integrity: sha512-MtybtkUPSyysqLY2U210NBDeCHX+ltHt3oADGdjqoThZaFRDKwM6k1Nb3F0A3hk5hwuQvytFWhrWHOEq6nVJ8Q==}
-    engines: {node: '>=10'}
 
   abbrev@1.0.9:
     resolution: {integrity: sha512-LEyx4aLEC3x6T0UguF6YILf+ntvmOaWsVfENmIW0E9H09vKlLDGelMjjSm0jkDHALj8A8quZ/HapKNigzwge+Q==}
@@ -3550,8 +3534,6 @@ snapshots:
       '@pnpm/network.ca-file': 1.0.2
       config-chain: 1.1.13
 
-  '@pythnetwork/pyth-sdk-solidity@4.2.0': {}
-
   '@scure/base@1.1.9': {}
 
   '@scure/base@1.2.6': {}
@@ -3719,8 +3701,6 @@ snapshots:
   '@types/secp256k1@4.0.6':
     dependencies:
       '@types/node': 24.0.13
-
-  '@uniswap/v2-core@1.0.1': {}
 
   abbrev@1.0.9: {}
 
