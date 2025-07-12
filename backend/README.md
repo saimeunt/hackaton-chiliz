@@ -109,9 +109,6 @@ factory.verifyPOAPAttendance(user, matchId);
 
 ### 4. Match Management
 ```solidity
-// Start the match
-factory.startMatch(poolAddress);
-
 // End the match with the winner
 factory.endMatch(poolAddress, winningTeamToken);
 ```

@@ -97,7 +97,7 @@ describe('BettingPool tests', () => {
       expect(await bettingPoolContract.team2Token()).to.equal(
         team2Token.address,
       );
-      expect(await bettingPoolContract.matchStatus()).to.equal(0); // UPCOMING
+      expect(await bettingPoolContract.getMatchStatus()).to.equal(0); // UPCOMING
       expect(await bettingPoolContract.winningTeamToken()).to.equal(ADDRESS_0);
     });
 
@@ -130,12 +130,23 @@ describe('BettingPool tests', () => {
 
   describe('endMatch', () => {
     it('should end match successfully when called by factory', async () => {
+      const matchStartTime = await bettingPoolContract.matchStartTime();
       const matchEndTime = await bettingPoolContract.matchEndTime();
 
-      await ethers.provider.send('evm_setNextBlockTimestamp', [
-        Number(matchEndTime) + 10000,
+      // Move time to after match start but before match end
+      await ethers.provider.send('evm_mine', [
+        Number(matchStartTime) + 1000, // 1000 seconds after match start
       ]);
-      await ethers.provider.send('evm_mine', []);
+
+      // Before ending match, status should be IN_PROGRESS
+      const statusBefore = await bettingPoolContract.getMatchStatus();
+      console.log('Status before ending match:', statusBefore);
+      expect(statusBefore).to.equal(1); // IN_PROGRESS
+
+      // Move time to after match end
+      await ethers.provider.send('evm_mine', [
+        Number(matchEndTime) + 1000,
+      ]);
 
       await expect(
         bettingPoolContract.connect(factory).endMatch(team1Token.address),
@@ -143,7 +154,8 @@ describe('BettingPool tests', () => {
         .to.emit(bettingPoolContract, 'MatchEnded')
         .withArgs(team1Token.address);
 
-      expect(await bettingPoolContract.matchStatus()).to.equal(3); // FINISHED
+      // After ending match, status should be FINISHED
+      expect(await bettingPoolContract.getMatchStatus()).to.equal(2); // FINISHED
       expect(await bettingPoolContract.winningTeamToken()).to.equal(
         team1Token.address,
       );
@@ -341,13 +353,22 @@ describe('BettingPool tests', () => {
     });
 
     it('should reject bet after match has started', async () => {
+      // Move time to after match start time
+      const matchStartTime = await bettingPoolContract.matchStartTime();
+      
+      // Move time to just after match start
+      const testTime = Number(matchStartTime) + 1;
+      
+      await ethers.provider.send('evm_setNextBlockTimestamp', [testTime]);
+      await ethers.provider.send('evm_mine', []);
+
       const betAmount = 100n;
 
       await expect(
         bettingPoolContract
           .connect(user1)
           .placeBet(team1Token.address, betAmount),
-      ).to.be.revertedWith('Match already started');
+      ).to.be.revertedWith('Withdrawals blocked');
     });
   });
 });

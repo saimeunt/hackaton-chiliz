@@ -138,7 +138,7 @@ contract BettingPoolTest is Test {
         factory.endMatch(address(pool), address(team1Token));
 
         assertEq(
-            uint256(pool.matchStatus()),
+            uint256(pool.getMatchStatus()),
             uint256(BettingPool.MatchStatus.FINISHED)
         );
         assertEq(pool.winningTeamToken(), address(team1Token));
@@ -238,7 +238,7 @@ contract BettingPoolTest is Test {
 
         // 5. Verify match status and winner
         assertEq(
-            uint256(pool.matchStatus()),
+            uint256(pool.getMatchStatus()),
             uint256(BettingPool.MatchStatus.FINISHED)
         );
         assertEq(pool.winningTeamToken(), address(team1Token));
