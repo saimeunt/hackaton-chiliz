@@ -128,4 +128,4 @@ jobs:
         with:
           check_hidden: true
           check_filenames: true
-          skip: pnpm-lock.yaml,./.git/objects,**/lib
+          skip: pnpm-lock.yaml,./.git/objects,**/lib,./cspell.json
