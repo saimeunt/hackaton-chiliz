@@ -2,10 +2,7 @@ import { HardhatUserConfig } from 'hardhat/config';
 import '@nomicfoundation/hardhat-toolbox';
 import 'solidity-docgen';
 
-const {
-  ETHERSCAN_API_KEY = '',
-  PRIVATE_KEY = '',
-} = process.env;
+const { ETHERSCAN_API_KEY = '', PRIVATE_KEY = '' } = process.env;
 
 const config: HardhatUserConfig = {
   docgen: { outputDir: 'doc' },
@@ -31,7 +28,7 @@ const config: HardhatUserConfig = {
       url: 'https://spicy-rpc.chiliz.com',
       chainId: 88882,
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
-    }
+    },
   },
   solidity: '0.8.25',
 };
