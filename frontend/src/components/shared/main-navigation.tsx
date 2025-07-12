@@ -3,7 +3,6 @@
 import { Trophy, Users, TrendingUp } from 'lucide-react';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { usePathname } from 'next/navigation';
-import { ConnectKitButton } from 'connectkit';
 import {
   DesktopSideMenu,
   PageType,
@@ -47,7 +46,7 @@ export function MainNavigation({ children }: { children: React.ReactNode }) {
 
           <div className="w-full flex-1"></div>
           <ThemeToggle />
-          <ConnectKitButton showAvatar={true} showBalance={true} />
+          <appkit-button />
         </header>
         <div className="flex flex-1 flex-col">
           <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 w-full max-w-screen-md place-self-center bg-gray-50 dark:bg-gray-950">
