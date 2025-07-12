@@ -37,8 +37,8 @@ contract BettingPoolTest is Test {
         poap = new MockPOAP();
         swapRouter = new MockSwapRouter();
 
-        team1Token = new MockFanToken("Team A Fan Token", "T1FT", 18, owner);
-        team2Token = new MockFanToken("Team B Fan Token", "T2FT", 18, owner);
+        team1Token = new MockFanToken("Team A Fan Token", "T1FT", 0, owner);
+        team2Token = new MockFanToken("Team B Fan Token", "T2FT", 0, owner);
 
         factory = new BettingPoolFactory(address(swapRouter), address(poap));
 
@@ -65,24 +65,24 @@ contract BettingPoolTest is Test {
 
         // Mint tokens to users
         vm.prank(owner);
-        team1Token.mint(alice, 1000 * 10 ** 18);
+        team1Token.mint(alice, 1000);
         vm.prank(owner);
-        team1Token.mint(bob, 1000 * 10 ** 18);
+        team1Token.mint(bob, 1000);
         vm.prank(owner);
-        team1Token.mint(charlie, 1000 * 10 ** 18);
+        team1Token.mint(charlie, 1000);
 
         vm.prank(owner);
-        team2Token.mint(alice, 1000 * 10 ** 18);
+        team2Token.mint(alice, 1000);
         vm.prank(owner);
-        team2Token.mint(bob, 1000 * 10 ** 18);
+        team2Token.mint(bob, 1000);
         vm.prank(owner);
-        team2Token.mint(charlie, 1000 * 10 ** 18);
+        team2Token.mint(charlie, 1000);
 
         // Mint tokens to the pool to ensure it has enough for payouts
         vm.prank(owner);
-        team1Token.mint(address(pool), 100000 * 10 ** 18);
+        team1Token.mint(address(pool), 100000);
         vm.prank(owner);
-        team2Token.mint(address(pool), 100000 * 10 ** 18);
+        team2Token.mint(address(pool), 100000);
 
         // Approve tokens for betting
         vm.prank(alice);
@@ -102,7 +102,7 @@ contract BettingPoolTest is Test {
     }
 
     function test_PlaceBet() public {
-        uint256 betAmount = 100 * 10 ** 18;
+        uint256 betAmount = 100;
 
         vm.prank(alice);
         pool.placeBet(address(team1Token), betAmount);
@@ -123,7 +123,7 @@ contract BettingPoolTest is Test {
         // Move time to after withdrawal block
         vm.warp(matchStartTime - 30 minutes);
 
-        uint256 betAmount = 100 * 10 ** 18;
+        uint256 betAmount = 100;
 
         vm.prank(alice);
         vm.expectRevert("Withdrawals blocked");
@@ -161,7 +161,7 @@ contract BettingPoolTest is Test {
         poap.awardPoap(alice, matchId);
 
         // Place bet and check multiplier
-        uint256 betAmount = 100 * 10 ** 18;
+        uint256 betAmount = 100;
 
         vm.prank(alice);
         pool.placeBet(address(team1Token), betAmount);
@@ -184,7 +184,7 @@ contract BettingPoolTest is Test {
 
     function test_AdminClaim() public {
         // Place bets and end match
-        uint256 betAmount = 100 * 10 ** 18;
+        uint256 betAmount = 100;
 
         vm.prank(alice);
         pool.placeBet(address(team1Token), betAmount);
@@ -208,7 +208,7 @@ contract BettingPoolTest is Test {
 
     function test_GlobalClaim() public {
         // Place bets and end match
-        uint256 betAmount = 100 * 10 ** 18;
+        uint256 betAmount = 100;
 
         vm.prank(alice);
         pool.placeBet(address(team1Token), betAmount);
@@ -232,7 +232,7 @@ contract BettingPoolTest is Test {
 
     function test_BasicBettingFlow() public {
         // 1. Place bets
-        uint256 betAmount = 100 * 10 ** 18;
+        uint256 betAmount = 100;
 
         vm.prank(alice);
         pool.placeBet(address(team1Token), betAmount);
@@ -264,7 +264,7 @@ contract BettingPoolTest is Test {
     }
 
     function test_GetBetInfo() public {
-        uint256 betAmount = 100 * 10 ** 18;
+        uint256 betAmount = 100;
 
         vm.prank(alice);
         pool.placeBet(address(team1Token), betAmount);
@@ -280,7 +280,7 @@ contract BettingPoolTest is Test {
     }
 
     function test_GetPoolInfo() public {
-        uint256 betAmount = 100 * 10 ** 18;
+        uint256 betAmount = 100;
 
         vm.prank(alice);
         pool.placeBet(address(team1Token), betAmount);
@@ -295,7 +295,7 @@ contract BettingPoolTest is Test {
     }
 
     function test_GetBettors() public {
-        uint256 betAmount = 100 * 10 ** 18;
+        uint256 betAmount = 100;
 
         vm.prank(alice);
         pool.placeBet(address(team1Token), betAmount);

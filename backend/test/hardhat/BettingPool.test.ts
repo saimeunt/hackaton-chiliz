@@ -355,7 +355,7 @@ describe('BettingPool tests', () => {
 
   describe('placeBet', () => {
     it('should reject bet below minimum amount', async () => {
-      const lowAmount = ethers.parseEther('0');
+      const lowAmount = 0n;
 
       await expect(
         bettingPoolContract
@@ -365,7 +365,7 @@ describe('BettingPool tests', () => {
     });
 
     it('should reject bet with invalid team token', async () => {
-      const betAmount = ethers.parseEther('100');
+      const betAmount = 100n;
       const invalidToken = user3.address; // Random address as invalid token
 
       await expect(
@@ -383,7 +383,7 @@ describe('BettingPool tests', () => {
       ]);
       await ethers.provider.send('evm_mine', []);
 
-      const betAmount = ethers.parseEther('100');
+      const betAmount = 100n;
 
       await expect(
         bettingPoolContract
@@ -396,7 +396,7 @@ describe('BettingPool tests', () => {
       // Start the match first
       await bettingPoolContract.connect(factory).startMatch();
 
-      const betAmount = ethers.parseEther('100');
+      const betAmount = 100n;
 
       await expect(
         bettingPoolContract
