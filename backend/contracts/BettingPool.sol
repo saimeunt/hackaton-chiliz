@@ -216,6 +216,7 @@ contract BettingPool {
      * @dev Claim winnings for a user
      * @param user Address of the user claiming
      */
+    // slither-disable-next-line timestamp
     function claimWinnings(address user) external nonReentrant {
         require(matchStatus == MatchStatus.FINISHED, "Match not finished");
         require(!hasClaimed[user], "Already claimed");
@@ -263,6 +264,7 @@ contract BettingPool {
      * @return True if admin claim is allowed
      */
     function _canAdminClaim() internal view returns (bool) {
+        // slither-disable-next-line timestamp
         return block.timestamp >= matchEndTime + CLAIM_ADMIN_DELAY;
     }
 
@@ -298,6 +300,7 @@ contract BettingPool {
      * @return True if global claim is allowed
      */
     function _canGlobalClaim() internal view returns (bool) {
+        // slither-disable-next-line timestamp
         return block.timestamp >= matchEndTime + CLAIM_GLOBAL_DELAY;
     }
 

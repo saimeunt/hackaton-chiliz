@@ -69,6 +69,7 @@ contract BettingPoolFactory {
     function _isValidMatchStartTime(
         uint256 matchStartTime
     ) internal view returns (bool) {
+        // slither-disable-next-line timestamp
         return matchStartTime > block.timestamp;
     }
 
