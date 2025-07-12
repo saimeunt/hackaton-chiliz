@@ -9,7 +9,7 @@ Test us : https://clash-of-fanz.vercel.app/
 Betting project, but with a twist !
 Make it real with DeFi and Attendance proof
 
-"My club is better than yours !" : Prove it, make your fan token worth your club involvement. And rekt the others by automatically swaping their boring token. Go to the stadium, earn more, eazy lil hooligan.
+"My club is better than yours !" : Prove it, make your fan token worth your club involvement. And rekt the others by automatically swapping their boring token. Go to the stadium, earn more, eazy pz (lemon squeezy) lil hooligan.
 
 
 ### One track ? All tracks !

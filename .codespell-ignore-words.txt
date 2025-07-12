@@ -1,2 +1,3 @@
 amountIn
-fonction 
+fonction
+goUp
