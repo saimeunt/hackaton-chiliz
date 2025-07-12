@@ -33,7 +33,7 @@ export function MobileNavigationMenu({
           <div className="flex flex-col h-full">
             <div className="p-6">
               <Link href="/" onClick={() => setOpen(false)}>
-                <Logo iconSize="sm" textSize="md" />
+                <Logo size="full" />
               </Link>
             </div>
 
@@ -47,11 +47,10 @@ export function MobileNavigationMenu({
                     key={page.url}
                     href={page.url}
                     onClick={() => setOpen(false)}
-                    className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      isActive
+                    className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive
                         ? 'bg-purple-100 text-purple-900 dark:bg-purple-900/20 dark:text-purple-200'
                         : 'text-gray-700 hover:bg-purple-50 hover:text-purple-700 dark:text-gray-300 dark:hover:bg-purple-900/10 dark:hover:text-purple-300'
-                    }`}
+                      }`}
                   >
                     <Icon className="mr-3 h-4 w-4" />
                     {page.label}
