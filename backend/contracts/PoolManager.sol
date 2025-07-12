@@ -119,7 +119,10 @@ contract PoolManager {
         isPool[poolAddress] = true;
         matchIdToPool[currentMatchCount] = poolAddress;
 
-        // External call after state changes
+        // Update matchCount before external call to prevent reentrancy
+        matchCount = currentMatchCount + 1;
+
+        // External call after all state changes
         IPOAP(poapContract).createMatch(currentMatchCount, matchName);
 
         emit PoolCreated(
@@ -129,9 +132,6 @@ contract PoolManager {
             matchStartTime,
             matchDuration
         );
-
-        // Update matchCount after external call
-        matchCount = currentMatchCount + 1;
         return poolAddress;
     }
 

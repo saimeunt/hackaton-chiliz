@@ -91,10 +91,13 @@ contract MockPOAP is ERC1155, Ownable, IPOAP {
         return hasAttended[account][id] ? 1 : 0;
     }
 
+    /**
+     * @dev Override isApprovedForAll to implement IPOAP interface
+     */
     function isApprovedForAll(
         address account,
         address operator
     ) public view override(ERC1155, IPOAP) returns (bool) {
-        return super.isApprovedForAll(account, operator);
+        return ERC1155.isApprovedForAll(account, operator);
     }
 }
