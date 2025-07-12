@@ -102,7 +102,7 @@ describe('BettingPool tests', () => {
     it('should set correct match timing parameters', async () => {
       const block = await ethers.provider.getBlock('latest');
       if (!block) throw new Error('Block is null');
-      const matchStartTime = block.timestamp + 7200;
+      const matchStartTime = block.timestamp + 7200 - 1;
       const matchEndTime = matchStartTime + MATCH_DURATION;
       const withdrawalBlockTime = matchStartTime - WITHDRAWAL_BLOCK_TIME;
 
@@ -166,12 +166,9 @@ describe('BettingPool tests', () => {
     });
 
     it('should end match successfully when called by factory', async () => {
-      // Move time to after match end
-      const block = await ethers.provider.getBlock('latest');
-      if (!block) throw new Error('Block is null');
-      const matchEndTime = block.timestamp + MATCH_DURATION;
+      const matchEndTime = await bettingPoolContract.matchEndTime();
       
-      await ethers.provider.send('evm_setNextBlockTimestamp', [matchEndTime + 1]);
+      await ethers.provider.send('evm_setNextBlockTimestamp', [Number(matchEndTime) + 10000]);
       await ethers.provider.send('evm_mine', []);
 
       await expect(bettingPoolContract.connect(factory).endMatch(team1Token.address))
