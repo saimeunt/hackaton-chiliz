@@ -12,6 +12,12 @@ Install Foundry
 $ curl -L https://foundry.paradigm.xyz | bash
 ```
 
+Install Slither (for Mac)
+```
+$ brew install pipx
+$ pipx install slither-analyzer
+```
+
 ## Frontend install
 
 ```

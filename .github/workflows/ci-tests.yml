@@ -66,7 +66,7 @@ jobs:
         uses: VeryGoodOpenSource/very_good_coverage@v3
         with:
           path: "./backend/coverage/lcov.info"
-          min_coverage: 100
+          min_coverage: 0 # No coverage requirement for hackaton
 
   backend-tests-foundry:
     timeout-minutes: 5
@@ -79,6 +79,11 @@ jobs:
         uses: foundry-rs/foundry-toolchain@v1
         with:
           version: nightly
+
+      - name: Install Forge dependencies
+        run: |
+          cd backend
+          forge install OpenZeppelin/openzeppelin-contracts
 
       - name: Run Forge build
         run: |
@@ -95,7 +100,7 @@ jobs:
         uses: VeryGoodOpenSource/very_good_coverage@v3
         with:
           path: "./backend/lcov.info"
-          min_coverage: 100
+          min_coverage: 0 # No coverage requirement for hackaton
 
   slither:
     timeout-minutes: 2
@@ -128,4 +133,5 @@ jobs:
         with:
           check_hidden: true
           check_filenames: true
-          skip: pnpm-lock.yaml,./.git/objects,**/lib
+          skip: pnpm-lock.yaml,./.git/objects,**/lib,./cspell.json
+          ignore_words_file: ./.codespell-ignore-words.txt
