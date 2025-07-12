@@ -150,7 +150,7 @@ contract BettingPoolFactoryTest is Test {
         assertEq(factory.userMatchCount(user), 3);
     }
 
-    // For startMatch, endMatch, claimWinnings, adminClaim, globalClaim tests,
+    // For endMatch, claimWinnings, adminClaim, globalClaim tests,
     // we would need to deploy a real BettingPool and mock the calls, or use a mock contract.
     // These tests need to be completed according to BettingPool logic.
 

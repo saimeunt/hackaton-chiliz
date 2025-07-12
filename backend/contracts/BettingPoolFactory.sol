@@ -75,14 +75,6 @@ contract BettingPoolFactory is PoolManager, IBettingPoolFactory {
     }
 
     /**
-     * @dev Start a match
-     * @param poolAddress Address of the pool to start
-     */
-    function startMatch(address poolAddress) external nonReentrant onlyOwner {
-        _startMatch(poolAddress);
-    }
-
-    /**
      * @dev End a match and set the winner
      * @param poolAddress Address of the pool
      * @param winningTeamToken Token of the winning team

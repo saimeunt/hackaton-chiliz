@@ -125,17 +125,6 @@ contract PoolManager {
     }
 
     /**
-     * @dev Start a match
-     * @param poolAddress Address of the pool to start
-     */
-    function _startMatch(
-        address poolAddress
-    ) internal onlyValidPool(poolAddress) {
-        emit MatchStarted(poolAddress);
-        BettingPool(poolAddress).startMatch();
-    }
-
-    /**
      * @dev End a match and set the winner
      * @param poolAddress Address of the pool
      * @param winningTeamToken Token of the winning team
@@ -232,7 +221,7 @@ contract PoolManager {
             pool.team2Token(),
             pool.matchStartTime(),
             pool.matchEndTime(),
-            pool.matchStatus(),
+            pool.getMatchStatus(),
             pool.winningTeamToken()
         );
     }

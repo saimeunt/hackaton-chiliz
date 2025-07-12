@@ -99,7 +99,7 @@ describe('BettingPoolFactory', function () {
     });
   });
 
-  describe('startMatch/endMatch', () => {
+  describe('endMatch', () => {
     let poolAddr: string;
     beforeEach(async () => {
       const block = await ethers.provider.getBlock('latest');
@@ -116,10 +116,6 @@ describe('BettingPoolFactory', function () {
       poolAddr = await factory.matchIdToPool(99);
     });
     it('should start and end match as owner', async () => {
-      await expect(factory.startMatch(poolAddr)).to.emit(
-        factory,
-        'MatchStarted',
-      );
       // Advance time after matchEndTime
       const pool = await ethers.getContractAt('BettingPool', poolAddr);
       const matchEndTime = await pool.matchEndTime();
@@ -133,9 +129,6 @@ describe('BettingPoolFactory', function () {
       );
     });
     it('should revert if not owner', async () => {
-      await expect(
-        factory.connect(other).startMatch(poolAddr),
-      ).to.be.revertedWith('Only owner can call this');
       await expect(
         factory.connect(other).endMatch(poolAddr, team1Token.address),
       ).to.be.revertedWith('Only owner can call this');

@@ -14,7 +14,6 @@ contract BettingPool {
         uint256 amount,
         uint256 multiplier
     );
-    event MatchStarted(uint256 startTime);
     event MatchEnded(address indexed winningTeamToken);
     event Claimed(address indexed user, uint256 amount);
     event AdminClaimed(uint256 amount);
@@ -25,7 +24,6 @@ contract BettingPool {
     enum MatchStatus {
         UPCOMING,
         IN_PROGRESS,
-        STOPPED,
         FINISHED
     }
 
@@ -55,7 +53,6 @@ contract BettingPool {
     uint256 public constant CLAIM_ADMIN_DELAY = 365 days;
     uint256 public constant CLAIM_GLOBAL_DELAY = 730 days; // 2 years
 
-    MatchStatus public matchStatus;
     address public immutable team1Token;
     address public immutable team2Token;
     address public winningTeamToken; // Initialized to address(0), set in endMatch() - cannot be constant as it changes
@@ -67,6 +64,7 @@ contract BettingPool {
 
     mapping(address => bool) public hasClaimed;
 
+    bool private _matchEnded = false;
     // Reentrancy protection
     bool private _locked;
 
@@ -142,7 +140,6 @@ contract BettingPool {
         team1Pool.token = _team1Token;
         team2Pool.token = _team2Token;
 
-        matchStatus = MatchStatus.UPCOMING;
         winningTeamToken = address(0); // Initialize to zero address
     }
 
@@ -160,7 +157,10 @@ contract BettingPool {
             "Invalid team token"
         );
         require(amount > 0, "Bet amount too low");
-        require(matchStatus == MatchStatus.UPCOMING, "Match already started");
+        require(
+            getMatchStatus() == MatchStatus.UPCOMING,
+            "Match already started"
+        );
 
         // Calculate multiplier based on POAP attendance
         uint256 multiplier = calculateMultiplier(msg.sender);
@@ -184,15 +184,6 @@ contract BettingPool {
     }
 
     /**
-     * @dev Start the match (can only be called by factory)
-     */
-    function startMatch() external onlyFactory onlyBeforeMatch {
-        require(matchStatus == MatchStatus.UPCOMING, "Match already started");
-        matchStatus = MatchStatus.IN_PROGRESS;
-        emit MatchStarted(block.timestamp);
-    }
-
-    /**
      * @dev End the match and set the winner
      * @param newWinningTeamToken The token of the winning team
      */
@@ -200,7 +191,7 @@ contract BettingPool {
         address newWinningTeamToken
     ) external onlyFactory onlyAfterMatch {
         require(
-            matchStatus == MatchStatus.IN_PROGRESS,
+            getMatchStatus() == MatchStatus.IN_PROGRESS,
             "Match not in progress"
         );
         require(
@@ -208,9 +199,9 @@ contract BettingPool {
                 newWinningTeamToken == team2Token,
             "Invalid winning team"
         );
-        // TODO: gestion draw
+        require(!_matchEnded, "Match already ended");
+        _matchEnded = true;
         winningTeamToken = newWinningTeamToken;
-        matchStatus = MatchStatus.FINISHED;
 
         emit MatchEnded(newWinningTeamToken);
     }
@@ -221,7 +212,7 @@ contract BettingPool {
      */
     // slither-disable-next-line timestamp
     function claimWinnings(address user) external nonReentrant {
-        require(matchStatus == MatchStatus.FINISHED, "Match not finished");
+        require(getMatchStatus() == MatchStatus.FINISHED, "Match not finished");
         require(!hasClaimed[user], "Already claimed");
         require(winningTeamToken != address(0), "Winner not set");
 
@@ -271,7 +262,7 @@ contract BettingPool {
      */
     function adminClaim() external nonReentrant onlyFactory {
         require(_canAdminClaim(), "Too early for admin claim");
-        require(matchStatus == MatchStatus.FINISHED, "Match not finished");
+        require(getMatchStatus() == MatchStatus.FINISHED, "Match not finished");
 
         _claimUnclaimedPool(team1Pool);
         _claimUnclaimedPool(team2Pool);
@@ -294,7 +285,7 @@ contract BettingPool {
      */
     function globalClaim() external nonReentrant onlyFactory {
         require(_canGlobalClaim(), "Too early for global claim");
-        require(matchStatus == MatchStatus.FINISHED, "Match not finished");
+        require(getMatchStatus() == MatchStatus.FINISHED, "Match not finished");
 
         uint256 totalRemaining = 0;
 
@@ -404,6 +395,20 @@ contract BettingPool {
     }
 
     // View functions
+    /**
+     * @dev Get the current match status based on time and match state
+     * @return Current match status (UPCOMING, IN_PROGRESS, or FINISHED)
+     */
+    function getMatchStatus() public view returns (MatchStatus) {
+        if (_matchEnded) {
+            return MatchStatus.FINISHED;
+        }
+        if (block.timestamp >= matchStartTime) {
+            return MatchStatus.IN_PROGRESS;
+        }
+        return MatchStatus.UPCOMING;
+    }
+
     function getBet(
         address user,
         address teamToken

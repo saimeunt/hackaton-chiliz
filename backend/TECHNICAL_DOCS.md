@@ -44,7 +44,6 @@ struct TeamPool {
 enum MatchStatus {
     UPCOMING,    // Upcoming match
     IN_PROGRESS, // Match in progress
-    STOPPED,     // Match stopped
     FINISHED     // Match finished
 }
 ```
@@ -82,7 +81,6 @@ enum MatchStatus {
 
 #### Management Functions
 - `createPool()` : Create a new betting pool
-- `startMatch()` : Start a match
 - `endMatch()` : End a match with winner declaration
 - `verifyPOAPAttendance()` : Verify POAP attendance
 

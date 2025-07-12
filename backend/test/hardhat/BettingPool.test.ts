@@ -128,51 +128,7 @@ describe('BettingPool tests', () => {
     });
   });
 
-  describe('startMatch', () => {
-    it('should start match successfully when called by factory', async () => {
-      await expect(bettingPoolContract.connect(factory).startMatch()).to.emit(
-        bettingPoolContract,
-        'MatchStarted',
-      );
-
-      expect(await bettingPoolContract.matchStatus()).to.equal(1); // IN_PROGRESS
-    });
-
-    it('should reject startMatch when called by non-factory', async () => {
-      await expect(
-        bettingPoolContract.connect(user1).startMatch(),
-      ).to.be.revertedWith('Only factory can call this');
-    });
-
-    it('should reject startMatch when match already started', async () => {
-      await bettingPoolContract.connect(factory).startMatch();
-
-      await expect(
-        bettingPoolContract.connect(factory).startMatch(),
-      ).to.be.revertedWith('Match already started');
-    });
-
-    it('should reject startMatch after match start time', async () => {
-      // Move time to after match start time
-      const matchStartTime = await bettingPoolContract.matchStartTime();
-
-      await ethers.provider.send('evm_setNextBlockTimestamp', [
-        Number(matchStartTime) + 1,
-      ]);
-      await ethers.provider.send('evm_mine', []);
-
-      await expect(
-        bettingPoolContract.connect(factory).startMatch(),
-      ).to.be.revertedWith('Match already started');
-    });
-  });
-
   describe('endMatch', () => {
-    beforeEach(async () => {
-      // Start the match first
-      await bettingPoolContract.connect(factory).startMatch();
-    });
-
     it('should end match successfully when called by factory', async () => {
       const matchEndTime = await bettingPoolContract.matchEndTime();
 
@@ -250,9 +206,6 @@ describe('BettingPool tests', () => {
 
   describe('adminClaim', () => {
     beforeEach(async () => {
-      // Start and end match
-      await bettingPoolContract.connect(factory).startMatch();
-
       const matchEndTime = await bettingPoolContract.matchEndTime();
 
       await ethers.provider.send('evm_setNextBlockTimestamp', [
@@ -278,9 +231,6 @@ describe('BettingPool tests', () => {
 
   describe('globalClaim', () => {
     beforeEach(async () => {
-      // Start and end match
-      await bettingPoolContract.connect(factory).startMatch();
-
       const matchEndTime = await bettingPoolContract.matchEndTime();
 
       await ethers.provider.send('evm_setNextBlockTimestamp', [
@@ -338,8 +288,6 @@ describe('BettingPool tests', () => {
       const fixture = await loadFixture(deployContractFixture);
       const newContract = fixture.bettingPoolContract;
 
-      await newContract.connect(factory).startMatch();
-
       const matchEndTime = await newContract.matchEndTime();
 
       await ethers.provider.send('evm_setNextBlockTimestamp', [
@@ -393,9 +341,6 @@ describe('BettingPool tests', () => {
     });
 
     it('should reject bet after match has started', async () => {
-      // Start the match first
-      await bettingPoolContract.connect(factory).startMatch();
-
       const betAmount = 100n;
 
       await expect(

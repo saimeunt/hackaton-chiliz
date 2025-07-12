@@ -30,7 +30,7 @@ Develop a decentralized sports betting system where fans can bet their fan token
 
 ### 🏗️ Technical Architecture
 - ✅ **Factory Pattern** : Pool creation for each match
-- ✅ **Match States** : Upcoming, in progress, stopped, finished
+- ✅ **Match States** : Upcoming, in progress, finished
 - ✅ **Security Controls** : Multiple levels of protection
 
 ## 📁 File Structure

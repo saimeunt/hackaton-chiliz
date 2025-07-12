@@ -130,19 +130,7 @@ contract BettingPoolTest is Test {
         pool.placeBet(address(team1Token), betAmount);
     }
 
-    function test_StartMatch() public {
-        factory.startMatch(address(pool));
-
-        assertEq(
-            uint256(pool.matchStatus()),
-            uint256(BettingPool.MatchStatus.IN_PROGRESS)
-        );
-    }
-
     function test_EndMatch() public {
-        // Start match
-        factory.startMatch(address(pool));
-
         // Move time to after match end
         vm.warp(matchStartTime + matchDuration + 1);
 
@@ -189,8 +177,6 @@ contract BettingPoolTest is Test {
         vm.prank(alice);
         pool.placeBet(address(team1Token), betAmount);
 
-        factory.startMatch(address(pool));
-
         vm.warp(matchStartTime + matchDuration + 1);
 
         factory.endMatch(address(pool), address(team1Token));
@@ -212,8 +198,6 @@ contract BettingPoolTest is Test {
 
         vm.prank(alice);
         pool.placeBet(address(team1Token), betAmount);
-
-        factory.startMatch(address(pool));
 
         vm.warp(matchStartTime + matchDuration + 1);
 
@@ -246,9 +230,6 @@ contract BettingPoolTest is Test {
         // 2. Award POAP to alice and charlie
         poap.awardPoap(alice, matchId);
         poap.awardPoap(charlie, matchId);
-
-        // 3. Start match
-        factory.startMatch(address(pool));
 
         // 4. End match with team1 as winner
         vm.warp(matchStartTime + matchDuration + 1);
