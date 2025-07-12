@@ -124,9 +124,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run CodeSpell
-        uses: codespell-project/actions-codespell@v2.0
+        uses: codespell-project/actions-codespell@v2.1
         with:
           check_hidden: true
           check_filenames: true
-          skip: pnpm-lock.yaml,./.git/objects
-          ignore: "**/lib/**"
+          skip: pnpm-lock.yaml,./.git/objects,**/lib
