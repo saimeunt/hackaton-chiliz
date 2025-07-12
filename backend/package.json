@@ -5,18 +5,19 @@
     "lint": "pnpm lint:solhint && pnpm lint:prettier:ts && pnpm lint:prettier:sol",
     "lint:prettier:sol": "prettier --log-level warn --ignore-path .gitignore '{contracts,test}/**/*.sol' --check",
     "lint:prettier:sol:fix": "prettier --log-level warn --ignore-path .gitignore '{contracts,test}/**/*.sol' --write",
-    "lint:prettier:ts": "prettier --log-level warn --ignore-path .gitignore '**/*.{js,ts}' --check",
-    "lint:prettier:ts:fix": "prettier --log-level warn --ignore-path .gitignore '**/*.{js,ts}' --write",
-    "lint:solhint": "solhint {contracts,test}/**/*.sol",
+    "lint:prettier:ts": "prettier --log-level warn --ignore-path .gitignore '{contracts,test,scripts}/**/*.{js,ts}' --check",
+    "lint:prettier:ts:fix": "prettier --log-level warn --ignore-path .gitignore '{contracts,test,scripts}/**/*.{js,ts}' --write",
+    "lint:solhint": "solhint '{contracts,test}/**/*.sol'",
     "prepare": "git config --local core.hooksPath .githooks",
-    "slither": "python3 -m slither .",
+    "slither": "slither . --config slither.config.json",
     "start:node": "hardhat node",
     "test": "pnpm test:hardhat && pnpm test:foundry",
     "test:foundry": "forge test",
     "test:hardhat": "pnpm hardhat test"
   },
   "dependencies": {
-    "hardhat": "^2.25.0"
+    "hardhat": "^2.25.0",
+    "@openzeppelin/contracts": "^5.0.0"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.9",
