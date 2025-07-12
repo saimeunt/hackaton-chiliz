@@ -5,7 +5,6 @@ import { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 
 const ADDRESS_0 = '0x0000000000000000000000000000000000000000';
-const MIN_BET_AMOUNT = ethers.parseEther('10');
 const MATCH_DURATION = 7200; // 2 hours
 const WITHDRAWAL_BLOCK_TIME = 3600; // 1 hour before match
 
@@ -100,9 +99,6 @@ describe('BettingPool tests', () => {
       );
       expect(await bettingPoolContract.matchStatus()).to.equal(0); // UPCOMING
       expect(await bettingPoolContract.winningTeamToken()).to.equal(ADDRESS_0);
-      expect(await bettingPoolContract.MIN_BET_AMOUNT()).to.equal(
-        MIN_BET_AMOUNT,
-      );
     });
 
     it('should set correct match timing parameters', async () => {
@@ -359,7 +355,7 @@ describe('BettingPool tests', () => {
 
   describe('placeBet', () => {
     it('should reject bet below minimum amount', async () => {
-      const lowAmount = ethers.parseEther('5');
+      const lowAmount = ethers.parseEther('0');
 
       await expect(
         bettingPoolContract

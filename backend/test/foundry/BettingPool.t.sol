@@ -112,7 +112,7 @@ contract BettingPoolTest is Test {
     }
 
     function test_PlaceBetMinimumAmount() public {
-        uint256 betAmount = 5 * 10 ** 18; // Below minimum
+        uint256 betAmount = 0; // Below minimum
 
         vm.prank(alice);
         vm.expectRevert("Bet amount too low");

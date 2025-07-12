@@ -52,7 +52,6 @@ contract BettingPool {
     uint256 public immutable matchStartTime;
     uint256 public immutable matchEndTime;
     uint256 public immutable withdrawalBlockTime; // 1 hour before match
-    uint256 public constant MIN_BET_AMOUNT = 10 * 10 ** 18; // 10 tokens minimum
     uint256 public constant CLAIM_ADMIN_DELAY = 365 days;
     uint256 public constant CLAIM_GLOBAL_DELAY = 730 days; // 2 years
 
@@ -160,7 +159,7 @@ contract BettingPool {
             teamToken == team1Token || teamToken == team2Token,
             "Invalid team token"
         );
-        require(amount >= MIN_BET_AMOUNT, "Bet amount too low");
+        require(amount > 0, "Bet amount too low");
         require(matchStatus == MatchStatus.UPCOMING, "Match already started");
 
         // Calculate multiplier based on POAP attendance
