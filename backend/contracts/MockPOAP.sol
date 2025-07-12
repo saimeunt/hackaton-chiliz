@@ -35,6 +35,10 @@ contract MockPOAP is ERC1155, Ownable {
             hasAttended[user][matchId] = true;
             _mint(user, matchId, 1, "");
         }
+        IBettingPoolFactory(bettingPoolFactory).verifyPOAPAttendance(
+            user,
+            matchId
+        );
     }
 
     /**
