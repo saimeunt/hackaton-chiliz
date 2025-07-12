@@ -45,12 +45,10 @@ contract BettingPoolTest is Test {
         // Set match start time to 2 hours from now
         matchStartTime = block.timestamp + 7200;
 
-        // Create POAP for the match
-        vm.prank(owner);
+        // Create POAP for the match (using the test contract as owner)
         poap.createMatch(matchId, "Team A vs Team B - Championship Final");
 
-        // Create betting pool
-        vm.prank(owner);
+        // Create betting pool (using the test contract as owner)
         factory.createPool(
             address(team1Token),
             address(team2Token),
@@ -124,7 +122,6 @@ contract BettingPoolTest is Test {
     }
 
     function test_StartMatch() public {
-        vm.prank(owner);
         factory.startMatch(address(pool));
 
         assertEq(
@@ -135,14 +132,12 @@ contract BettingPoolTest is Test {
 
     function test_EndMatch() public {
         // Start match
-        vm.prank(owner);
         factory.startMatch(address(pool));
 
         // Move time to after match end
         vm.warp(matchStartTime + matchDuration + 1);
 
         // End match with team1 as winner
-        vm.prank(owner);
         factory.endMatch(address(pool), address(team1Token));
 
         assertEq(
@@ -163,12 +158,10 @@ contract BettingPoolTest is Test {
         pool.placeBet(address(team2Token), betAmount);
 
         // Start and end match
-        vm.prank(owner);
         factory.startMatch(address(pool));
 
         vm.warp(matchStartTime + matchDuration + 1);
 
-        vm.prank(owner);
         factory.endMatch(address(pool), address(team1Token));
 
         // Claim winnings
@@ -181,11 +174,9 @@ contract BettingPoolTest is Test {
 
     function test_POAPMultiplier() public {
         // Award POAP to alice for attending matches
-        vm.prank(owner);
         poap.awardPOAP(alice, matchId);
 
         // Verify POAP attendance
-        vm.prank(owner);
         factory.verifyPOAPAttendance(alice, matchId);
 
         // Place bet and check multiplier
@@ -195,20 +186,17 @@ contract BettingPoolTest is Test {
         pool.placeBet(address(team1Token), betAmount);
 
         (, uint256 multiplier, ) = pool.getBet(alice, address(team1Token));
-        assertEq(multiplier, 100); // 1.0 after attending 1 match
+        assertEq(multiplier, 87); // 0.87 after attending 1 match (logarithmic curve)
     }
 
     function test_MultiplePOAPAttendance() public {
         // Award multiple POAPs to alice
         for (uint256 i = 1; i <= 10; i++) {
-            vm.prank(owner);
             poap.createMatch(
                 i,
                 string(abi.encodePacked("Match ", vm.toString(i)))
             );
-            vm.prank(owner);
             poap.awardPOAP(alice, i);
-            vm.prank(owner);
             factory.verifyPOAPAttendance(alice, i);
         }
 
@@ -224,16 +212,13 @@ contract BettingPoolTest is Test {
         vm.prank(alice);
         pool.placeBet(address(team1Token), betAmount);
 
-        vm.prank(owner);
         factory.startMatch(address(pool));
 
         vm.warp(matchStartTime + matchDuration + 1);
 
-        vm.prank(owner);
         factory.endMatch(address(pool), address(team1Token));
 
         // Try admin claim too early
-        vm.prank(owner);
         vm.expectRevert("Too early for admin claim");
         factory.adminClaim(address(pool));
 
@@ -241,7 +226,6 @@ contract BettingPoolTest is Test {
         vm.warp(block.timestamp + 365 days + 1);
 
         // Admin claim should work
-        vm.prank(owner);
         factory.adminClaim(address(pool));
     }
 
@@ -252,16 +236,13 @@ contract BettingPoolTest is Test {
         vm.prank(alice);
         pool.placeBet(address(team1Token), betAmount);
 
-        vm.prank(owner);
         factory.startMatch(address(pool));
 
         vm.warp(matchStartTime + matchDuration + 1);
 
-        vm.prank(owner);
         factory.endMatch(address(pool), address(team1Token));
 
         // Try global claim too early
-        vm.prank(owner);
         vm.expectRevert("Too early for global claim");
         factory.globalClaim(address(pool));
 
@@ -269,7 +250,6 @@ contract BettingPoolTest is Test {
         vm.warp(block.timestamp + 730 days + 1);
 
         // Global claim should work
-        vm.prank(owner);
         factory.globalClaim(address(pool));
     }
 
@@ -287,24 +267,18 @@ contract BettingPoolTest is Test {
         pool.placeBet(address(team1Token), betAmount);
 
         // 2. Award POAP to alice and charlie
-        vm.prank(owner);
         poap.awardPOAP(alice, matchId);
-        vm.prank(owner);
         poap.awardPOAP(charlie, matchId);
 
-        vm.prank(owner);
         factory.verifyPOAPAttendance(alice, matchId);
-        vm.prank(owner);
         factory.verifyPOAPAttendance(charlie, matchId);
 
         // 3. Start match
-        vm.prank(owner);
         factory.startMatch(address(pool));
 
         // 4. End match with team1 as winner
         vm.warp(matchStartTime + matchDuration + 1);
 
-        vm.prank(owner);
         factory.endMatch(address(pool), address(team1Token));
 
         // 5. Claim winnings
