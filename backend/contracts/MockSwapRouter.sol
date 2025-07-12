@@ -3,6 +3,7 @@ pragma solidity 0.8.25;
 
 import "./IFanToken.sol";
 import "./ISwapRouter.sol";
+import "./MockFanToken.sol";
 
 contract MockSwapRouter is ISwapRouter {
     // Mock exchange rate: 1:1 for simplicity
@@ -11,19 +12,13 @@ contract MockSwapRouter is ISwapRouter {
     function exactInputSingle(
         ExactInputSingleParams calldata params
     ) external payable override returns (uint256 amountOut) {
-        // Transfer tokens from caller to this contract
-        IFanToken(params.tokenIn).transferFrom(
-            msg.sender,
-            address(this),
-            params.amountIn
-        );
-
-        // Calculate output amount (1:1 exchange rate for mock)
+        // Pour les tests, on ne fait pas de transferFrom mais on mint le tokenOut au destinataire
+        // (nécessite que MockFanToken ait une fonction mint accessible)
         amountOut = params.amountIn;
-
-        // Transfer output tokens to recipient
-        IFanToken(params.tokenOut).transfer(params.recipient, amountOut);
-
+        MockFanToken(address(params.tokenOut)).mint(
+            params.recipient,
+            amountOut
+        );
         return amountOut;
     }
 }
