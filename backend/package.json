@@ -9,7 +9,7 @@
     "lint:prettier:ts:fix": "prettier --log-level warn --ignore-path .gitignore '{contracts,test,scripts}/**/*.{js,ts}' --write",
     "lint:solhint": "solhint '{contracts,test}/**/*.sol'",
     "prepare": "git config --local core.hooksPath .githooks",
-    "slither": "python3 -m slither .",
+    "slither": "slither . --config slither.config.json",
     "start:node": "hardhat node",
     "test": "pnpm test:hardhat && pnpm test:foundry",
     "test:foundry": "forge test",

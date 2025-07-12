@@ -12,24 +12,12 @@ contract MockSwapRouter is ISwapRouter {
     // Owner for security
     address public immutable owner;
 
-    // Mapping to track authorized withdrawers
-    mapping(address => bool) public authorizedWithdrawers;
-
     constructor() {
         owner = msg.sender;
-        authorizedWithdrawers[msg.sender] = true;
     }
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Only owner can call this");
-        _;
-    }
-
-    modifier onlyAuthorized() {
-        require(
-            authorizedWithdrawers[msg.sender],
-            "Not authorized to withdraw"
-        );
         _;
     }
 
@@ -47,25 +35,13 @@ contract MockSwapRouter is ISwapRouter {
     }
 
     // Function to withdraw any ether that might be sent to this contract
-    // This is a mock contract for testing, so allowing any user to withdraw is acceptable
-    function withdraw() external onlyAuthorized {
+    // Restricted to owner only for security in mock contract
+    function withdraw() external onlyOwner {
         uint256 balance = address(this).balance;
         require(balance > 0, "No ETH to withdraw");
 
-        (bool success, ) = payable(msg.sender).call{value: balance}("");
+        (bool success, ) = payable(owner).call{value: balance}("");
         require(success, "ETH transfer failed");
-    }
-
-    // Function to authorize withdrawers (only owner)
-    function authorizeWithdrawer(address withdrawer) external onlyOwner {
-        require(withdrawer != address(0), "Invalid address");
-        authorizedWithdrawers[withdrawer] = true;
-    }
-
-    // Function to revoke withdrawer authorization (only owner)
-    function revokeWithdrawer(address withdrawer) external onlyOwner {
-        require(withdrawer != address(0), "Invalid address");
-        authorizedWithdrawers[withdrawer] = false;
     }
 
     // Emergency function to recover tokens stuck in router

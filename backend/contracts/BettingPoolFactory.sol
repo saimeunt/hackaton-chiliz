@@ -80,6 +80,7 @@ contract BettingPoolFactory {
         require(team1Token != team2Token, "Teams must be different");
         // Using block.timestamp for future time validation is acceptable
         // as it provides sufficient granularity for match scheduling
+        // This is a legitimate use case for timestamp comparison
         require(
             matchStartTime > block.timestamp,
             "Match start time must be in the future"

@@ -243,11 +243,13 @@ contract BettingPool {
         }
 
         // Transfer winnings last (interaction)
+        // Note: totalWinnings > 0 is not a timestamp comparison, it's a balance check
         if (totalWinnings > 0) {
             bool success = IFanToken(winningTeamToken).transfer(
                 user,
                 totalWinnings
             );
+            // Note: success check is not a timestamp comparison, it's a transfer result check
             require(success, "Transfer failed");
         }
 
