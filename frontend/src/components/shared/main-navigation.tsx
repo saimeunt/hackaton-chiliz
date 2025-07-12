@@ -1,6 +1,13 @@
 'use client';
 
-import { Trophy, Users, TrendingUp, UserCircle } from 'lucide-react';
+import {
+  Trophy,
+  Users,
+  TrendingUp,
+  UserCircle,
+  Plus,
+  List,
+} from 'lucide-react';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { usePathname } from 'next/navigation';
 import {
@@ -8,9 +15,11 @@ import {
   PageType,
 } from '@/components/shared/desktop-side-menu';
 import { MobileNavigationMenu } from '@/components/shared/mobile-navigation-menu';
+import { useAdmin } from '@/hooks/useAdmin';
 
 export function MainNavigation({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { isAdmin } = useAdmin();
 
   const pages: PageType[] = [
     {
@@ -37,6 +46,23 @@ export function MainNavigation({ children }: { children: React.ReactNode }) {
       label: 'Profile',
       url: '/profile',
     },
+    // Admin pages - only show if user is admin
+    ...(isAdmin
+      ? [
+          {
+            count: null,
+            icon: Plus,
+            label: 'Create Match',
+            url: '/admin/create-match',
+          },
+          {
+            count: null,
+            icon: List,
+            label: 'Manage Matches',
+            url: '/admin/matches',
+          },
+        ]
+      : []),
   ];
 
   return (
