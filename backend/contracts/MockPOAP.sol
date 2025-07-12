@@ -76,6 +76,7 @@ contract MockPOAP is ERC1155, Ownable {
      * @param factory Address of the betting pool factory
      */
     function setBettingPoolFactory(address factory) external onlyOwner {
+        require(factory != address(0), "Factory cannot be zero address");
         bettingPoolFactory = factory;
     }
 
