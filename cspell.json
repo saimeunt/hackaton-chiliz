@@ -16,6 +16,7 @@
     ],
     "ignorePaths": [
       "**/lib/**",
-      "*.config.*"
+      "*.config.*",
+      "cspell.json"
     ]
 }
