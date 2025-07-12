@@ -129,3 +129,4 @@ jobs:
           check_hidden: true
           check_filenames: true
           skip: pnpm-lock.yaml,./.git/objects
+          ignore: "**/lib/**"
