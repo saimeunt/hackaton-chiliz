@@ -56,7 +56,7 @@ contract BettingPool {
     MatchStatus public matchStatus;
     address public immutable team1Token;
     address public immutable team2Token;
-    address public winningTeamToken;
+    address public winningTeamToken; // Initialized to address(0), set in endMatch() - cannot be constant as it changes
 
     TeamPool public team1Pool;
     TeamPool public team2Pool;
@@ -148,23 +148,23 @@ contract BettingPool {
         require(amount >= MIN_BET_AMOUNT, "Bet amount too low");
         require(matchStatus == MatchStatus.UPCOMING, "Match already started");
 
-        // Transfer tokens from user to contract
+        // Calculate multiplier based on POAP attendance
+        uint256 multiplier = calculateMultiplier(msg.sender);
+
+        // Add bet to appropriate pool first (Checks-Effects-Interactions pattern)
+        if (teamToken == team1Token) {
+            _addBetToPool(team1Pool, msg.sender, amount, multiplier);
+        } else {
+            _addBetToPool(team2Pool, msg.sender, amount, multiplier);
+        }
+
+        // Transfer tokens from user to contract (interaction last)
         bool success = IFanToken(teamToken).transferFrom(
             msg.sender,
             address(this),
             amount
         );
         require(success, "Transfer failed");
-
-        // Calculate multiplier based on POAP attendance
-        uint256 multiplier = calculateMultiplier(msg.sender);
-
-        // Add bet to appropriate pool
-        if (teamToken == team1Token) {
-            _addBetToPool(team1Pool, msg.sender, amount, multiplier);
-        } else {
-            _addBetToPool(team2Pool, msg.sender, amount, multiplier);
-        }
 
         emit BetPlaced(msg.sender, teamToken, amount, multiplier);
     }
@@ -209,6 +209,7 @@ contract BettingPool {
         require(!hasClaimed[user], "Already claimed");
         require(winningTeamToken != address(0), "Winner not set");
 
+        // Mark as claimed first (Checks-Effects-Interactions pattern)
         hasClaimed[user] = true;
 
         uint256 totalWinnings = 0;
@@ -229,20 +230,24 @@ contract BettingPool {
             totalWinnings += _swapAndCalculateWinnings(team2Pool, user);
         }
 
+        // Transfer winnings last (interaction)
         if (totalWinnings > 0) {
             bool success = IFanToken(winningTeamToken).transfer(
                 user,
                 totalWinnings
             );
             require(success, "Transfer failed");
-            emit Claimed(user, totalWinnings);
         }
+
+        emit Claimed(user, totalWinnings);
     }
 
     /**
      * @dev Admin claim for unclaimed tokens after 1 year
      */
     function adminClaim() external onlyFactory {
+        // Using block.timestamp for time delays is acceptable for this use case
+        // as it provides sufficient granularity for claim delays
         require(
             block.timestamp >= matchEndTime + CLAIM_ADMIN_DELAY,
             "Too early for admin claim"
@@ -261,14 +266,17 @@ contract BettingPool {
                 totalUnclaimed
             );
             require(success, "Transfer failed");
-            emit AdminClaimed(totalUnclaimed);
         }
+
+        emit AdminClaimed(totalUnclaimed);
     }
 
     /**
      * @dev Global claim for remaining tokens after 2 years
      */
     function globalClaim() external onlyFactory {
+        // Using block.timestamp for time delays is acceptable for this use case
+        // as it provides sufficient granularity for claim delays
         require(
             block.timestamp >= matchEndTime + CLAIM_GLOBAL_DELAY,
             "Too early for global claim"
@@ -297,8 +305,9 @@ contract BettingPool {
                 );
                 require(success2, "Transfer failed");
             }
-            emit GlobalClaimed(totalRemaining);
         }
+
+        emit GlobalClaimed(totalRemaining);
     }
 
     /**

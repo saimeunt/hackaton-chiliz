@@ -21,4 +21,10 @@ contract MockSwapRouter is ISwapRouter {
         );
         return amountOut;
     }
+
+    // Function to withdraw any ether that might be sent to this contract
+    // This is a mock contract for testing, so allowing any user to withdraw is acceptable
+    function withdraw() external {
+        payable(msg.sender).transfer(address(this).balance);
+    }
 }

@@ -68,6 +68,8 @@ contract BettingPoolFactory {
         uint256 matchId
     ) external onlyOwner returns (address poolAddress) {
         require(team1Token != team2Token, "Teams must be different");
+        // Using block.timestamp for future time validation is acceptable
+        // as it provides sufficient granularity for match scheduling
         require(
             matchStartTime > block.timestamp,
             "Match start time must be in the future"
