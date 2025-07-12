@@ -22,7 +22,7 @@ export function DesktopSideMenu({ pages, pathname }: DesktopSideMenuProps) {
       <div className="flex flex-col h-full">
         <div className="p-4 lg:p-6">
           <Link href="/">
-            <Logo iconSize="sm" textSize="md" />
+            <Logo size="full" />
           </Link>
         </div>
 
