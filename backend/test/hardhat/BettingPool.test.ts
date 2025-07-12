@@ -275,8 +275,6 @@ describe('BettingPool tests', () => {
     });
   });
 
-
-
   describe('getBet', () => {
     it('should return zero bet for user with no bet', async () => {
       const bet = await bettingPoolContract.getBet(

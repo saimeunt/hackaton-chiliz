@@ -211,20 +211,20 @@ describe('BettingPoolFactory', function () {
       for (let i = 1; i <= 5; i++) {
         await poapContract.createMatch(i, `Match ${i}`);
         await poapContract.awardPoap(owner.address, i);
-        
+
         // Create a pool for this matchId
         const block = await ethers.provider.getBlock('latest');
         if (!block) throw new Error('Block is null');
         const now = block.timestamp;
-        
+
         await factory.createPool(
           team1Token.address,
           team2Token.address,
           now + 1000,
           3600,
-          i
+          i,
         );
-        
+
         await factory.verifyPOAPAttendance(owner.address, i);
       }
 
@@ -237,20 +237,20 @@ describe('BettingPoolFactory', function () {
       for (let i = 1; i <= 100; i++) {
         await poapContract.createMatch(i, `Match ${i}`);
         await poapContract.awardPoap(owner.address, i);
-        
+
         // Create a pool for this matchId
         const block = await ethers.provider.getBlock('latest');
         if (!block) throw new Error('Block is null');
         const now = block.timestamp;
-        
+
         await factory.createPool(
           team1Token.address,
           team2Token.address,
           now + 1000,
           3600,
-          i
+          i,
         );
-        
+
         await factory.verifyPOAPAttendance(owner.address, i);
       }
 
@@ -263,20 +263,20 @@ describe('BettingPoolFactory', function () {
       for (let i = 1; i <= 3; i++) {
         await poapContract.createMatch(i, `Match ${i}`);
         await poapContract.awardPoap(owner.address, i);
-        
+
         // Create a pool for this matchId
         const block = await ethers.provider.getBlock('latest');
         if (!block) throw new Error('Block is null');
         const now = block.timestamp;
-        
+
         await factory.createPool(
           team1Token.address,
           team2Token.address,
           now + 1000,
           3600,
-          i
+          i,
         );
-        
+
         await factory.verifyPOAPAttendance(owner.address, i);
       }
 
