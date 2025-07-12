@@ -2,11 +2,11 @@
 pragma solidity 0.8.25;
 
 import "forge-std/Test.sol";
-import "../contracts/BettingPool.sol";
-import "../contracts/BettingPoolFactory.sol";
-import "../contracts/MockFanToken.sol";
-import "../contracts/MockPOAP.sol";
-import "../contracts/MockSwapRouter.sol";
+import "../../contracts/BettingPool.sol";
+import "../../contracts/BettingPoolFactory.sol";
+import "../../contracts/MockFanToken.sol";
+import "../../contracts/MockPOAP.sol";
+import "../../contracts/MockSwapRouter.sol";
 
 contract BettingPoolTest is Test {
     BettingPoolFactory public factory;
