@@ -134,3 +134,4 @@ jobs:
           check_hidden: true
           check_filenames: true
           skip: pnpm-lock.yaml,./.git/objects,**/lib,./cspell.json
+          ignore_words_file: ./.codespell-ignore-words.txt

@@ -12,8 +12,8 @@ contract MockSwapRouter is ISwapRouter {
     function exactInputSingle(
         ExactInputSingleParams calldata params
     ) external payable override returns (uint256 amountOut) {
-        // Pour les tests, on ne fait pas de transferFrom mais on mint le tokenOut au destinataire
-        // (nécessite que MockFanToken ait une fonction mint accessible)
+        // For testing, we do not use transferFrom but mint the tokenOut to the recipient
+        // (requires that MockFanToken has an accessible mint function)
         amountOut = params.amountIn;
         MockFanToken(address(params.tokenOut)).mint(
             params.recipient,
