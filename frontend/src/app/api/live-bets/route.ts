@@ -17,8 +17,6 @@ export interface BetMatch {
   status: 'live' | 'upcoming' | 'finished';
   bettingStats: {
     totalBettors: number;
-    homeBets: number;
-    awayBets: number;
     homePercentage: number;
     awayPercentage: number;
   };
@@ -42,8 +40,6 @@ const mockMatches: BetMatch[] = [
     status: 'live',
     bettingStats: {
       totalBettors: 156,
-      homeBets: 89,
-      awayBets: 67,
       homePercentage: 57,
       awayPercentage: 43,
     },
@@ -65,8 +61,6 @@ const mockMatches: BetMatch[] = [
     status: 'upcoming',
     bettingStats: {
       totalBettors: 89,
-      homeBets: 31,
-      awayBets: 58,
       homePercentage: 35,
       awayPercentage: 65,
     },
@@ -88,8 +82,6 @@ const mockMatches: BetMatch[] = [
     status: 'live',
     bettingStats: {
       totalBettors: 203,
-      homeBets: 124,
-      awayBets: 79,
       homePercentage: 61,
       awayPercentage: 39,
     },
@@ -111,10 +103,50 @@ const mockMatches: BetMatch[] = [
     status: 'upcoming',
     bettingStats: {
       totalBettors: 142,
-      homeBets: 76,
-      awayBets: 66,
       homePercentage: 54,
       awayPercentage: 46,
+    },
+  },
+  {
+    id: '5',
+    homeTeam: {
+      name: 'Vitality',
+      flag: '🇫🇷',
+      color: 'bg-amber-500',
+    },
+    awayTeam: {
+      name: 'MIBR',
+      flag: '🇧🇷',
+      color: 'bg-green-500',
+    },
+    competition: 'CS:GO Major',
+    time: '19:00',
+    status: 'live',
+    bettingStats: {
+      totalBettors: 312,
+      homePercentage: 63,
+      awayPercentage: 37,
+    },
+  },
+  {
+    id: '6',
+    homeTeam: {
+      name: 'OG',
+      flag: '🇪🇺',
+      color: 'bg-red-600',
+    },
+    awayTeam: {
+      name: 'Team Heretics',
+      flag: '🇪🇸',
+      color: 'bg-slate-700',
+    },
+    competition: 'Valorant Champions Tour',
+    time: '20:30',
+    status: 'upcoming',
+    bettingStats: {
+      totalBettors: 189,
+      homePercentage: 46,
+      awayPercentage: 54,
     },
   },
 ];

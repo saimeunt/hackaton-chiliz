@@ -1,23 +1,3 @@
-export interface LiveMatch {
-  id: string;
-  title: string;
-  homeTeam: string;
-  awayTeam: string;
-  startTime: string;
-  status: 'live' | 'upcoming' | 'finished';
-  connectedUsers: number;
-  totalPool: number;
-  odds: {
-    home: number;
-    draw: number;
-    away: number;
-  };
-  score?: {
-    home: number;
-    away: number;
-  };
-}
-
 export interface UpcomingEvent {
   id: string;
   title: string;
@@ -39,62 +19,6 @@ export interface POAPBadge {
   rarity: 'common' | 'rare' | 'epic' | 'legendary';
   multiplier: number;
 }
-
-export const liveMatches: LiveMatch[] = [
-  {
-    id: '1',
-    title: 'PSG vs Barcelona',
-    homeTeam: 'PSG',
-    awayTeam: 'Barcelona',
-    startTime: '21:00',
-    status: 'live',
-    connectedUsers: 45,
-    totalPool: 125000,
-    odds: {
-      home: 2.1,
-      draw: 3.4,
-      away: 2.8,
-    },
-    score: {
-      home: 2,
-      away: 1,
-    },
-  },
-  {
-    id: '2',
-    title: 'Real Madrid vs Liverpool',
-    homeTeam: 'Real Madrid',
-    awayTeam: 'Liverpool',
-    startTime: '21:00',
-    status: 'live',
-    connectedUsers: 32,
-    totalPool: 98000,
-    odds: {
-      home: 2.5,
-      draw: 3.1,
-      away: 2.3,
-    },
-    score: {
-      home: 0,
-      away: 1,
-    },
-  },
-  {
-    id: '3',
-    title: 'Manchester City vs Arsenal',
-    homeTeam: 'Manchester City',
-    awayTeam: 'Arsenal',
-    startTime: '18:30',
-    status: 'upcoming',
-    connectedUsers: 28,
-    totalPool: 87500,
-    odds: {
-      home: 1.8,
-      draw: 3.7,
-      away: 3.2,
-    },
-  },
-];
 
 export const upcomingEvents: UpcomingEvent[] = [
   {
@@ -132,6 +56,24 @@ export const upcomingEvents: UpcomingEvent[] = [
     time: '19:00',
     type: 'special',
     reward: 'Season Finale POAP + 3x Multiplier',
+  },
+  {
+    id: '5',
+    title: 'CS:GO Major Championship',
+    description: 'Elite esports tournament featuring top CS:GO teams',
+    date: 'Friday June 21',
+    time: '16:00',
+    type: 'tournament',
+    reward: 'Major Champion POAP + 2.5x Multiplier',
+  },
+  {
+    id: '6',
+    title: 'Valorant Champions Tour',
+    description: 'International Valorant competition with massive prize pool',
+    date: 'Saturday June 22',
+    time: '18:00',
+    type: 'tournament',
+    reward: 'VCT POAP + Exclusive Skin',
   },
 ];
 
