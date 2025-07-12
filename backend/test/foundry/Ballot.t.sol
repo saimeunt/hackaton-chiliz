@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
-
-pragma solidity 0.8.25;
+pragma solidity ^0.8.20;
 
 import {Test} from "forge-std/Test.sol";
 import {Ballot} from "@/contracts/Ballot.sol";
@@ -65,7 +64,7 @@ contract BallotTestHelper is Test {
 contract ConstructorTest is BallotTestHelper {
     function testInitialization() public {
         ballotContract = initBallot();
-        assertEq(ballotContract.CHAIRPERSON(), owner);
+        assertEq(ballotContract.chairperson(), owner);
         (
             uint256 weight,
             bool voted,
