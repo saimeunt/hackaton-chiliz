@@ -8,7 +8,7 @@ Make it real with DeFi and Attendance proof
 
 "My club is better than yours !" : Prove it, make your fan token worth your club involvement. And rekt the others by automatically swaping their boring token. Go to the stadium, earn more, eazy lil hooligan.
 
-![logo](https://github.com/Varadiell/hackaton-chiliz/tree/main/assets/illus.png "Logo")
+![logo](https://github.com/Varadiell/hackaton-chiliz/tree/main/assets/logoVecto2.png "Logo")
 
 ### One track ? All tracks !
 - Fan Token Utility
