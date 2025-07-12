@@ -20,12 +20,6 @@ type PoolInfo = {
   bettorCount: bigint;
 };
 
-function testBet(bet: Bet, betToCompare: Bet) {
-  expect(bet.amount).to.equal(betToCompare.amount);
-  expect(bet.multiplier).to.equal(betToCompare.multiplier);
-  expect(bet.claimed).to.equal(betToCompare.claimed);
-}
-
 function testPoolInfo(poolInfo: PoolInfo, poolInfoToCompare: PoolInfo) {
   expect(poolInfo.totalAmount).to.equal(poolInfoToCompare.totalAmount);
   expect(poolInfo.bettorCount).to.equal(poolInfoToCompare.bettorCount);
@@ -417,7 +411,8 @@ describe('BettingPool tests', () => {
         bettingPoolContract
           .connect(user1)
           .placeBet(team1Token.address, betAmount),
-      ).to.be.revertedWith('Match already started');
+        ).to.be.revertedWith('Match already started');
+      });
     });
   });
 });
