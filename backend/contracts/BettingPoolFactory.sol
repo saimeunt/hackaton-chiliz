@@ -18,7 +18,11 @@ contract BettingPoolFactory is PoolManager, IBettingPoolFactory {
         address indexed previousOwner,
         address indexed newOwner
     );
-    event UserMatchCountUpdated(address indexed user, uint256 newCount);
+    event UserMatchCountUpdated(
+        address indexed user,
+        uint256 newCount,
+        uint256 matchId
+    );
 
     // State variables
     address public owner;
@@ -152,7 +156,7 @@ contract BettingPoolFactory is PoolManager, IBettingPoolFactory {
      */
     function _updateUserMatchCount(address user, uint256 matchId) internal {
         userMatchCount[user]++;
-        emit UserMatchCountUpdated(user, userMatchCount[user]);
+        emit UserMatchCountUpdated(user, userMatchCount[user], matchId);
     }
 
     /**
