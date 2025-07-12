@@ -157,7 +157,7 @@ forge build
 ## 🔮 Future Improvements
 
 ### Proposed Features
-- **Real DEX Integration** : Uniswap V3, SushiSwap
+- **Real DEX Integration** : Uniswap V2, SushiSwap
 - **User Interface** : Web3 frontend
 - **Liquidity System** : Liquidity pools for fan tokens
 - **Result Oracles** : Oracle integration for scores

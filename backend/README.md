@@ -67,7 +67,7 @@ Mock swap router to simulate token exchanges.
 Interface for ERC20 fan tokens.
 
 #### `ISwapRouter.sol`
-Interface for swap routers (Uniswap V3 compatible).
+Interface for swap routers (Uniswap V2 compatible).
 
 #### `IPOAP.sol`
 Interface for POAP contracts.
@@ -186,7 +186,7 @@ forge test
 ## Future Improvements
 
 ### Proposed Features
-- Integration with real DEXs (Uniswap V3, SushiSwap)
+- Integration with real DEXs (Uniswap V2, SushiSwap)
 - Fan token liquidity system
 - Web3 user interface
 - Regular bettor reward system

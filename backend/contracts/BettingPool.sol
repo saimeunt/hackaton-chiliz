@@ -417,22 +417,22 @@ contract BettingPool {
         bool success = IFanToken(pool.token).approve(swapRouter, bet.amount);
         require(success, "Approve failed");
 
-        // Perform swap
-        ISwapRouter.ExactInputSingleParams memory params = ISwapRouter
-            .ExactInputSingleParams({
-                tokenIn: pool.token,
-                tokenOut: winningTeamToken,
-                fee: 3000, // 0.3% fee
-                recipient: address(this),
-                deadline: block.timestamp + 300, // 5 minutes
-                amountIn: bet.amount,
-                amountOutMinimum: 0, // No slippage protection for simplicity
-                sqrtPriceLimitX96: 0
-            });
+        // Create path for swap (tokenIn -> tokenOut)
+        address[] memory path = new address[](2);
+        path[0] = pool.token;
+        path[1] = winningTeamToken;
 
-        uint256 swappedAmount = ISwapRouter(swapRouter).exactInputSingle(
-            params
-        );
+        // Perform swap using Uniswap V2 interface
+        uint256[] memory amounts = ISwapRouter(swapRouter)
+            .swapExactTokensForTokens(
+                bet.amount, // amountIn
+                0, // amountOutMin (no slippage protection for simplicity)
+                path, // path
+                address(this), // to
+                block.timestamp + 300 // deadline (5 minutes)
+            );
+
+        uint256 swappedAmount = amounts[1]; // amountOut is at index 1
 
         // Calculate winnings based on swapped amount
         uint256 totalPoolAmount = team1Pool.totalAmount + team2Pool.totalAmount;
