@@ -12,49 +12,6 @@ const WPSG_WHALE = '0xC3aC90d4ef94f44FC1C59caF7E8aEc9feC7f4eB2';
 const ACM_WHALE = '0x6F4557853Cab0F6fFB69d5e66696275c3e41a33D';
 const WACM_WHALE = '0x2e1751e3dB8eD811423396bBD2f56041b4Be669a';
 
-// Helper function to get random number between min and max
-function getRandomNumber(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-// Helper function to generate random match data
-function generateRandomMatch(index: number) {
-  const teamNames = [
-    'PSG',
-    'Real Madrid',
-    'Barcelona',
-    'Manchester United',
-    'Liverpool',
-    'Bayern Munich',
-    'Juventus',
-    'AC Milan',
-    'Inter Milan',
-    'Arsenal',
-    'Chelsea',
-    'Manchester City',
-    'Atletico Madrid',
-    'Borussia Dortmund',
-    'Porto',
-    'Benfica',
-    'Ajax',
-    'PSV',
-    'Feyenoord',
-    'Celtic',
-  ];
-
-  const team1Index = index % teamNames.length;
-  const team2Index = (index + 1) % teamNames.length;
-
-  return {
-    team1Name: teamNames[team1Index],
-    team2Name: teamNames[team2Index],
-    matchStartTime:
-      Math.floor(Date.now() / 1000) + getRandomNumber(3600, 86400 * 7), // 1 hour to 7 days from now
-    matchDuration: getRandomNumber(5400, 7200), // 1.5 to 2 hours
-    matchId: index + 1,
-  };
-}
-
 const BettingPoolModule = buildModule('BettingPoolModule', (module) => {
   // 1. Deploy MockSwapRouter (no constructor parameters)
   const routerAddress = module.getParameter('routerAddress');
@@ -108,75 +65,14 @@ const BettingPoolModule = buildModule('BettingPoolModule', (module) => {
     },
   );
 
-  // --- MATCHES RANDOMIZATION ---
-  const NB_MATCHES = 20;
-  const teamTokens = [wPSGToken, wACMToken /*, team3Token, team4Token*/];
-
-  for (let i = 0; i < NB_MATCHES; i++) {
-    const ID = String(i).padStart(3, '0');
-
-    // Generate random match data
-    const matchData = generateRandomMatch(i);
-
-    // Select random team tokens (different teams)
-    const team1TokenIndex = i % teamTokens.length;
-    const team2TokenIndex = (i + 1) % teamTokens.length;
-
-    // === Create match POAP
-    const callCreatePOAP = module.call(
-      mockPOAP,
-      'createMatch',
-      [
-        BigInt(matchData.matchId),
-        `${matchData.team1Name} vs ${matchData.team2Name}`,
-      ],
-      {
-        after: [mockPOAP],
-        id: `create_poap_${ID}`,
-      },
-    );
-
-    // === Create betting pool
-    const callCreatePool = module.call(
-      bettingPoolFactory,
-      'createPool',
-      [
-        teamTokens[team1TokenIndex],
-        teamTokens[team2TokenIndex],
-        BigInt(matchData.matchStartTime),
-        BigInt(matchData.matchDuration),
-        BigInt(matchData.matchId),
-      ],
-      {
-        after: [callCreatePOAP, bettingPoolFactory],
-        id: `create_pool_${ID}`,
-      },
-    );
-
-    // === Randomly start some matches (70% chance)
-    // Note: We'll create pools but won't start/end them automatically
-    // as we need the actual pool addresses which are created dynamically
-    // These operations should be done manually after deployment or through
-    // a separate script that can read the pool addresses from events
-
-    // === Randomly award POAPs to some users (40% chance)
-    const shouldAwardPOAP = getRandomNumber(0, 99) < 40;
-    if (shouldAwardPOAP) {
-      // Award POAP to random users
-      const users = [ADDR_0, ADDR_1, ADDR_2, ADDR_3, ADDR_4];
-      const randomUser = users[getRandomNumber(0, users.length - 1)];
-
-      module.call(
-        mockPOAP,
-        'awardPoap',
-        [randomUser, BigInt(matchData.matchId)],
-        {
-          after: [callCreatePOAP],
-          id: `award_poap_${ID}`,
-        },
-      );
-    }
-  }
+  const callTransferOwnership = module.call(
+    mockPOAP,
+    'transferOwnership',
+    [bettingPoolFactory],
+    {
+      after: [bettingPoolFactory],
+    },
+  );
 
   // Mint some initial tokens to users for testing
   const initialMintAmount = BigInt(1000 * 10 ** 18); // 1000 tokens
