@@ -9,7 +9,7 @@ cache_path  = 'cache_forge'
 
 remappings = [
   "@/contracts/=contracts/",
-  "@openzeppelin/=node_modules/@openzeppelin/",
+  "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
 ]
 
 [fuzz]

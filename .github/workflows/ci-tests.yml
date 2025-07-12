@@ -80,6 +80,11 @@ jobs:
         with:
           version: nightly
 
+      - name: Install Forge dependencies
+        run: |
+          cd backend
+          forge install OpenZeppelin/openzeppelin-contracts
+
       - name: Run Forge build
         run: |
           cd backend
