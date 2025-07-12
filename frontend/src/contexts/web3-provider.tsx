@@ -17,7 +17,7 @@ export const appKit = createAppKit({
     name: 'clash-of-fanz',
     description: 'Clash of Fanz',
     url: 'https://clash-of-fanz.vercel.app', // origin must match your domain & subdomain
-    icons: ['https://assets.reown.com/reown-profile-pic.png'],
+    icons: ['https://clash-of-fanz.vercel.app/logo.png'],
   },
   featuredWalletIds: [
     'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96',
