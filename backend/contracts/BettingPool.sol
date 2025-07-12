@@ -6,7 +6,7 @@ import "./ISwapRouter.sol";
 import "./IPOAP.sol";
 import "./IBettingPoolFactory.sol";
 
-contract BettingPool is IBettingPoolFactory {
+contract BettingPool {
     // Events
     event BetPlaced(
         address indexed user,
@@ -32,13 +32,15 @@ contract BettingPool is IBettingPoolFactory {
     // Structs
     struct Bet {
         uint256 amount;
-        uint256 multiplier;
+        uint256 points;
         bool claimed;
     }
 
     struct TeamPool {
         address token;
+        address wrappedToken;
         uint256 totalAmount;
+        uint256 totalPoints;
         mapping(address => Bet) bets;
         address[] bettors;
     }
@@ -58,6 +60,8 @@ contract BettingPool is IBettingPoolFactory {
     address public immutable team1Token;
     address public immutable team2Token;
     address public winningTeamToken; // Initialized to address(0), set in endMatch() - cannot be constant as it changes
+    address public immutable wrappedChilizToken =
+        0x721EF6871f1c4Efe730Dce047D40D1743B886946;
 
     TeamPool public team1Pool;
     TeamPool public team2Pool;
@@ -205,7 +209,7 @@ contract BettingPool is IBettingPoolFactory {
                 newWinningTeamToken == team2Token,
             "Invalid winning team"
         );
-
+        // TODO: gestion draw
         winningTeamToken = newWinningTeamToken;
         matchStatus = MatchStatus.FINISHED;
 
@@ -227,20 +231,12 @@ contract BettingPool is IBettingPoolFactory {
 
         uint256 totalWinnings = 0;
 
-        // Check team1 pool
         if (team1Pool.token == winningTeamToken) {
-            totalWinnings += _calculateWinnings(team1Pool, user);
+            totalWinnings = _reclaim(team1Pool, user);
+            _swapAndCalculateWinnings(team1Pool, team2Pool, user);
         } else {
-            // Swap losing team tokens for winning team tokens
-            totalWinnings += _swapAndCalculateWinnings(team1Pool, user);
-        }
-
-        // Check team2 pool
-        if (team2Pool.token == winningTeamToken) {
-            totalWinnings += _calculateWinnings(team2Pool, user);
-        } else {
-            // Swap losing team tokens for winning team tokens
-            totalWinnings += _swapAndCalculateWinnings(team2Pool, user);
+            totalWinnings = _reclaim(team2Pool, user);
+            _swapAndCalculateWinnings(team2Pool, team1Pool, user);
         }
 
         // Transfer winnings last (interaction)
@@ -278,21 +274,8 @@ contract BettingPool is IBettingPoolFactory {
         require(_canAdminClaim(), "Too early for admin claim");
         require(matchStatus == MatchStatus.FINISHED, "Match not finished");
 
-        uint256 totalUnclaimed = 0;
-
-        // Calculate unclaimed amounts
-        totalUnclaimed += _calculateUnclaimedAmount(team1Pool);
-        totalUnclaimed += _calculateUnclaimedAmount(team2Pool);
-
-        if (totalUnclaimed > 0) {
-            bool success = IFanToken(winningTeamToken).transfer(
-                factory,
-                totalUnclaimed
-            );
-            require(success, "Transfer failed");
-        }
-
-        emit AdminClaimed(totalUnclaimed);
+        _claimUnclaimedPool(team1Pool);
+        _claimUnclaimedPool(team2Pool);
     }
 
     /**
@@ -357,80 +340,67 @@ contract BettingPool is IBettingPoolFactory {
         uint256 amount,
         uint256 multiplier
     ) internal {
-        if (pool.bets[user].amount == 0) {
+        if (pool.bets[user].points == 0) {
             pool.bettors.push(user);
         }
 
         pool.bets[user].amount += amount;
-        pool.bets[user].multiplier = multiplier;
-        pool.totalAmount += amount;
+        uint256 points = amount * multiplier;
+        pool.bets[user].points += points;
+        pool.totalPoints += points;
     }
 
-    function _calculateWinnings(
-        TeamPool storage pool,
+    function _reclaim(
+        TeamPool storage winningPool,
         address user
     ) internal view returns (uint256) {
-        Bet storage bet = pool.bets[user];
-        if (bet.amount == 0 || bet.claimed) return 0;
-
-        // Calculate proportional winnings
-        uint256 totalPoolAmount = team1Pool.totalAmount + team2Pool.totalAmount;
-        // Avoid division before multiplication by using higher precision
-        uint256 winnings = (bet.amount * bet.multiplier * totalPoolAmount) /
-            (100 * pool.totalAmount);
-
-        return winnings;
+        return winningPool.bets[user].amount;
     }
 
     function _swapAndCalculateWinnings(
-        TeamPool storage pool,
+        TeamPool storage winningPool,
+        TeamPool storage losingPool,
         address user
     ) internal returns (uint256) {
-        Bet storage bet = pool.bets[user];
-        if (bet.amount == 0 || bet.claimed) return 0;
-
-        // Approve swap router
-        bool success = IFanToken(pool.token).approve(swapRouter, bet.amount);
-        require(success, "Approve failed");
+        Bet storage bet = winningPool.bets[user];
+        if (bet.points == 0 || bet.claimed) return 0;
 
         // Create path for swap (tokenIn -> tokenOut)
-        address[] memory path = new address[](2);
-        path[0] = pool.token;
-        path[1] = winningTeamToken;
+        address[] memory path = new address[](5);
+        path[0] = losingPool.token;
+        path[1] = losingPool.wrappedToken;
+        path[2] = wrappedChilizToken;
+        path[3] = winningPool.wrappedToken;
+        path[4] = winningPool.token;
+
+        uint256 reward = (bet.points / winningPool.totalPoints) *
+            losingPool.totalAmount;
+
+        // Approve swap router
+        bool success = IFanToken(losingPool.token).approve(swapRouter, reward);
+        require(success, "Approve failed");
 
         // Perform swap using Uniswap V2 interface
-        uint256[] memory amounts = ISwapRouter(swapRouter)
-            .swapExactTokensForTokens(
-                bet.amount, // amountIn
-                0, // amountOutMin (no slippage protection for simplicity)
-                path, // path
-                address(this), // to
-                block.timestamp + 300 // deadline (5 minutes)
-            );
-
-        uint256 swappedAmount = amounts[1]; // amountOut is at index 1
-
-        // Calculate winnings based on swapped amount
-        uint256 totalPoolAmount = team1Pool.totalAmount + team2Pool.totalAmount;
-        // Avoid division before multiplication by using higher precision
-        uint256 winnings = (swappedAmount * bet.multiplier * totalPoolAmount) /
-            (100 * pool.totalAmount);
+        ISwapRouter(swapRouter).swapExactTokensForTokens(
+            reward, // amountIn
+            0, // amountOut
+            path, // path
+            address(user), // to
+            block.timestamp + 300 // deadline (5 minutes)
+        );
 
         bet.claimed = true;
-        return winnings;
+        return reward;
     }
 
-    function _calculateUnclaimedAmount(
-        TeamPool storage pool
-    ) internal view returns (uint256) {
-        uint256 unclaimed = 0;
-        for (uint256 i = 0; i < pool.bettors.length; i++) {
-            address bettor = pool.bettors[i];
-            if (!hasClaimed[bettor] && pool.bets[bettor].amount > 0) {
-                unclaimed += _calculateWinnings(pool, bettor);
-            }
-        }
-        return unclaimed;
+    function _claimUnclaimedPool(TeamPool storage pool) internal {
+        bool success = IFanToken(pool.token).transfer(
+            IBettingPoolFactory(factory).owner(),
+            pool.totalAmount
+        );
+        require(success, "Transfer failed");
+
+        emit AdminClaimed(pool.totalAmount);
     }
 
     // View functions
@@ -440,7 +410,9 @@ contract BettingPool is IBettingPoolFactory {
     ) external view returns (uint256 amount, uint256 multiplier, bool claimed) {
         TeamPool storage pool = teamToken == team1Token ? team1Pool : team2Pool;
         Bet storage bet = pool.bets[user];
-        return (bet.amount, bet.multiplier, bet.claimed);
+        if (bet.points == 0)
+            return (bet.amount, calculateMultiplier(user), bet.claimed);
+        return (bet.amount, calculateMultiplier(user), bet.claimed);
     }
 
     function getPoolInfo(
