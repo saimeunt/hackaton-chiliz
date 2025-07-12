@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Trophy, Users, TrendingUp } from 'lucide-react';
+import { Trophy, Users, TrendingUp, UserCircle } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -40,7 +40,7 @@ export default function Home() {
             platform
           </p>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             <Link href="/live-bets">
               <Card className="hover:shadow-xl transition-shadow cursor-pointer">
                 <CardHeader>
@@ -122,6 +122,39 @@ export default function Home() {
                   </CardDescription>
                   <div className="flex items-center text-blue-600 dark:text-blue-400 font-semibold">
                     Join Community
+                    <svg
+                      className="w-4 h-4 ml-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+
+            <Link href="/profile">
+              <Card className="hover:shadow-xl transition-shadow cursor-pointer">
+                <CardHeader>
+                  <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900 rounded-lg flex items-center justify-center mb-4">
+                    <UserCircle className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                  </div>
+                  <CardTitle className="text-2xl">My Profile</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="mb-6">
+                    Manage your information, track your performance and unlock
+                    exclusive levels.
+                  </CardDescription>
+                  <div className="flex items-center text-emerald-600 dark:text-emerald-400 font-semibold">
+                    View My Profile
                     <svg
                       className="w-4 h-4 ml-2"
                       fill="none"

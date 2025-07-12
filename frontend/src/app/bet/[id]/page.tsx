@@ -14,20 +14,34 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
-import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useMatchById } from '@/hooks/useLiveBets';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function BetDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const betId = params.id as string;
   const { match, loading, error } = useMatchById(betId);
+  const [canGoBack, setCanGoBack] = useState(false);
 
   const [selectedTeam, setSelectedTeam] = useState<'home' | 'away' | null>(
     null,
   );
   const [betAmount, setBetAmount] = useState('');
+
+  useEffect(() => {
+    // Check if there's a previous page in the history
+    setCanGoBack(window.history.length > 1);
+  }, []);
+
+  const handleBackClick = () => {
+    if (canGoBack) {
+      router.back();
+    } else {
+      router.push('/live-bets');
+    }
+  };
 
   // Simulated fan token balances
   const fanTokens = {
@@ -111,12 +125,10 @@ export default function BetDetailPage() {
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-4">
-          <Link href="/live-bets">
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Live Bets
-            </Button>
-          </Link>
+          <Button variant="outline" size="sm" onClick={handleBackClick}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back
+          </Button>
         </div>
         <div className="flex flex-col items-center justify-center py-12 space-y-4">
           <AlertCircle className="h-12 w-12 text-red-500" />
@@ -138,14 +150,12 @@ export default function BetDetailPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header avec bouton retour */}
+      {/* Header with back button */}
       <div className="flex items-center gap-4">
-        <Link href="/live-bets">
-          <Button variant="outline" size="sm">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Live Bets
-          </Button>
-        </Link>
+        <Button variant="outline" size="sm" onClick={handleBackClick}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back
+        </Button>
         <div>
           <h1 className="text-title font-rubik text-gray-900 dark:text-gray-100">
             {match.homeTeam.name} vs {match.awayTeam.name}

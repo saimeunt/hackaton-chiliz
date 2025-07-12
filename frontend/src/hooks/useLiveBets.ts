@@ -59,34 +59,34 @@ export function useMatchById(id: string): UseMatchByIdReturn {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchMatch = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const response = await fetch('/api/live-bets');
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data: BetMatch[] = await response.json();
-      const foundMatch = data.find((m) => m.id === id);
-
-      if (!foundMatch) {
-        throw new Error('Match not found');
-      }
-
-      setMatch(foundMatch);
-    } catch (err) {
-      console.error('Error fetching match:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch match');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchMatch = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const response = await fetch('/api/live-bets');
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data: BetMatch[] = await response.json();
+        const foundMatch = data.find((m) => m.id === id);
+
+        if (!foundMatch) {
+          throw new Error('Match not found');
+        }
+
+        setMatch(foundMatch);
+      } catch (err) {
+        console.error('Error fetching match:', err);
+        setError(err instanceof Error ? err.message : 'Failed to fetch match');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchMatch();
   }, [id]);
 
