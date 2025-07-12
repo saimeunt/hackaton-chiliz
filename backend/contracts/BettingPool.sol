@@ -403,6 +403,7 @@ contract BettingPool {
         if (_matchEnded) {
             return MatchStatus.FINISHED;
         }
+        // slither-disable-next-line timestamp
         if (block.timestamp >= matchStartTime) {
             return MatchStatus.IN_PROGRESS;
         }

@@ -4,8 +4,9 @@ pragma solidity ^0.8.20;
 import {ERC1155} from "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IBettingPoolFactory} from "./IBettingPoolFactory.sol";
+import {IPOAP} from "./IPOAP.sol";
 
-contract MockPOAP is ERC1155, Ownable {
+contract MockPOAP is ERC1155, Ownable, IPOAP {
     mapping(uint256 => string) public matchNames;
     mapping(address => mapping(uint256 => bool)) public hasAttended;
     address public bettingPoolFactory;
@@ -86,7 +87,14 @@ contract MockPOAP is ERC1155, Ownable {
     function balanceOf(
         address account,
         uint256 id
-    ) public view override returns (uint256) {
+    ) public view override(ERC1155, IPOAP) returns (uint256) {
         return hasAttended[account][id] ? 1 : 0;
+    }
+
+    function isApprovedForAll(
+        address account,
+        address operator
+    ) public view override(ERC1155, IPOAP) returns (bool) {
+        return super.isApprovedForAll(account, operator);
     }
 }
