@@ -19,6 +19,12 @@ const config: HardhatUserConfig = {
       },
       chainId: 31337,
     },
+    // anvil --fork-url https://rpc.ankr.com/chiliz --auto-impersonate
+    anvil: {
+      url: 'http://localhost:8545',
+      chainId: 88888,
+      accounts: 'remote',
+    },
     chiliz: {
       url: 'https://rpc.ankr.com/chiliz',
       chainId: 88888,
