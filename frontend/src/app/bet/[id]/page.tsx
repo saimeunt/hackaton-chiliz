@@ -31,7 +31,7 @@ export default function BetDetailPage() {
         </div>
       </div>
 
-      {/* Simulation d'une page de détail */}
+      {/* Simulation of a detail page */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
           <CardHeader>
@@ -114,7 +114,7 @@ export default function BetDetailPage() {
         </Card>
       </div>
 
-      {/* Section de développement futur */}
+      {/* Future development section */}
       <Card className="border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-900/20">
         <CardContent className="p-6">
           <div className="text-center">

@@ -28,7 +28,7 @@ export default function Community() {
         </div>
       </div>
 
-      {/* Statistiques de la communauté */}
+      {/* Community statistics */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card className="border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
           <CardContent className="p-4 text-center">

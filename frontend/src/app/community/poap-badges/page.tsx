@@ -20,7 +20,7 @@ export default function POAPBadgesPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header avec bouton retour */}
+      {/* Header with back button */}
       <div className="flex items-center gap-4">
         <Link href="/community">
           <Button variant="outline" size="sm">
@@ -38,7 +38,7 @@ export default function POAPBadgesPage() {
         </div>
       </div>
 
-      {/* Statistiques des multiplicateurs */}
+      {/* Multiplier statistics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
           <CardContent className="p-6 text-center">
@@ -83,7 +83,7 @@ export default function POAPBadgesPage() {
         </Card>
       </div>
 
-      {/* Explication du système de multiplicateur */}
+      {/* Multiplier system explanation */}
       <Card className="border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-900/20">
         <CardHeader>
           <CardTitle className="text-purple-900 dark:text-purple-100 flex items-center gap-2">
@@ -131,7 +131,7 @@ export default function POAPBadgesPage() {
         </CardContent>
       </Card>
 
-      {/* Collection de badges */}
+      {/* Badge collection */}
       <div className="space-y-4">
         <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
           Your Badge Collection

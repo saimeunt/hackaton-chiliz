@@ -34,7 +34,7 @@ export function BetCard({ match }: BetCardProps) {
         group
       `}
     >
-      {/* Badge Live en haut à droite */}
+      {/* Live badge */}
       {isLive && (
         <div className="absolute top-3 right-3 z-10">
           <Badge className="bg-green-500 text-white px-2 py-1 text-xs font-medium animate-pulse">
@@ -43,16 +43,16 @@ export function BetCard({ match }: BetCardProps) {
         </div>
       )}
 
-      {/* Effet de glow au hover */}
+      {/* Glow effect on hover */}
       <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-purple-500/5 to-purple-500/0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
       <CardHeader className="pb-4 relative z-10">
-        {/* Date et heure en haut */}
+        {/* Date and time */}
         <div className="text-sm text-gray-500 dark:text-gray-400 font-medium mb-3 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
           {competition} • {isLive ? 'Live now' : `Today at ${time}`}
         </div>
 
-        {/* Équipes face à face avec points de couleur */}
+        {/* Teams face to face with color points */}
         <div className="flex items-center justify-center gap-4">
           <div className="flex flex-col items-center gap-1">
             <div className="flex items-center gap-2">
@@ -99,10 +99,10 @@ export function BetCard({ match }: BetCardProps) {
           />
         </div>
 
-        {/* Spacer pour pousser le contenu vers le bas */}
+        {/* Spacer to push content down */}
         <div className="flex-1"></div>
 
-        {/* Bas de carte - Message d'incitation centré */}
+        {/* Card bottom - Centered incentive message */}
         <div className="space-y-4">
           <div className="w-full">
             <IncitationBetText
@@ -113,10 +113,10 @@ export function BetCard({ match }: BetCardProps) {
             />
           </div>
 
-          {/* Petite barre de séparation */}
+          {/* Small separator bar */}
           <div className="w-full h-px bg-gray-200 dark:bg-gray-700 group-hover:bg-purple-300 dark:group-hover:bg-purple-600 transition-colors"></div>
 
-          {/* Statistiques centrées */}
+          {/* Centered statistics */}
           <div className="flex items-center justify-center gap-2 text-sm text-gray-600 dark:text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
             <Users className="h-4 w-4" />
             <span className="font-medium">{totalBettors} active bettors</span>
@@ -124,7 +124,7 @@ export function BetCard({ match }: BetCardProps) {
         </div>
       </CardContent>
 
-      {/* Indicateur de clic en bas à droite */}
+      {/* Click indicator at bottom right */}
       <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
         <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center">
           <span className="text-white text-xs">→</span>

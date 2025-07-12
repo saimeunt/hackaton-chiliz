@@ -6,7 +6,7 @@ interface IncitationBetTextProps {
 }
 
 const messages = {
-  // 0-10% de différence - très serré
+  // 0-10% difference - very tight
   neck_to_neck: [
     "It's neck and neck! This match is too close to call! 🔥",
     'What a battle! The fans are split right down the middle! ⚡',
@@ -15,7 +15,7 @@ const messages = {
     'Dead heat! Every vote counts now! 🚀',
   ],
 
-  // 11-20% de différence - légère domination
+  // 11-20% difference - slight domination
   slight_lead: [
     '{leader} fans are pulling ahead, but {trailing} supporters are fighting back! 💪',
     "{leader} taking the lead, but {trailing} isn't giving up! 🏃‍♂️",
@@ -24,7 +24,7 @@ const messages = {
     "It's heating up! {leader} fans are pushing forward! 🚀",
   ],
 
-  // 21-35% de différence - domination
+  // 21-35% difference - domination
   dominating: [
     '{leader} fans are dominating! {trailing} supporters need to rally! 🚀',
     '{leader} is taking control! {trailing} fans, time to step up! 💪',
@@ -33,7 +33,7 @@ const messages = {
     'Strong showing from {leader}! {trailing} needs a comeback! 📊',
   ],
 
-  // 36-50% de différence - écrasement
+  // 36-50% difference - crushing
   crushing: [
     '{leader} fans are absolutely crushing it! {trailing} supporters getting obliterated! 💥',
     'Total domination by {leader}! {trailing} fans are nowhere to be seen! 🌪️',
@@ -65,7 +65,7 @@ export function IncitationBetText({
     messageArray = messages.crushing;
   }
 
-  // Sélection aléatoire du message
+  // Random message selection
   const randomIndex = Math.floor(Math.random() * messageArray.length);
   const message = messageArray[randomIndex]
     .replace('{leader}', leader)

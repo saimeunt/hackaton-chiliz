@@ -13,7 +13,7 @@ export function Logo({
   showText = true,
   className = '',
 }: LogoProps) {
-  // Utiliser iconSize et textSize si définis, sinon utiliser size par défaut
+  // Use iconSize and textSize if defined, otherwise use default size
   const effectiveIconSize = iconSize || size;
   const effectiveTextSize = textSize || size;
 

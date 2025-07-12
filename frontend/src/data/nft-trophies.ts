@@ -9,7 +9,7 @@ export interface NFTTrophy {
     trait_type: string;
     value: string;
   }[];
-  achievement_id?: string; // Lié à un achievement spécifique
+  achievement_id?: string; // Linked to a specific achievement
 }
 
 export const nftTrophies: NFTTrophy[] = [
@@ -96,12 +96,12 @@ export const nftTrophies: NFTTrophy[] = [
   },
 ];
 
-// Trier par date d'acquisition (plus récent en premier)
+// Sort by acquisition date (most recent first)
 export const sortedNFTTrophies = [...nftTrophies].sort(
   (a, b) => b.acquiredAt.getTime() - a.acquiredAt.getTime(),
 );
 
-// Fonction utilitaire pour obtenir la couleur selon la rareté
+// Utility function to get color based on rarity
 export function getRarityColor(rarity: NFTTrophy['rarity']): string {
   switch (rarity) {
     case 'common':
@@ -117,7 +117,7 @@ export function getRarityColor(rarity: NFTTrophy['rarity']): string {
   }
 }
 
-// Fonction pour formater la date d'acquisition
+// Function to format acquisition date
 export function formatAcquiredDate(date: Date): string {
   return date.toLocaleDateString('en-US', {
     year: 'numeric',

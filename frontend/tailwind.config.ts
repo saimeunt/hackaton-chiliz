@@ -8,7 +8,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Couleurs personnalisées basées sur les points de design
+        // Custom colors based on design points
         brand: {
           DEFAULT: '#866CEE',
           50: '#F4F1FE',
@@ -35,10 +35,10 @@ export default {
           800: '#B45309',
           900: '#92400E',
         },
-        // Couleurs presque blanches/noires pour un look plus doux
+        // Almost white/black colors for a softer look
         'almost-white': '#FAFAFD',
         'almost-black': '#202020',
-        // Variantes pour la cohérence
+        // Variants for consistency
         background: {
           DEFAULT: '#FAFAFD',
           dark: '#202020',
@@ -49,12 +49,12 @@ export default {
         },
       },
       fontFamily: {
-        // Polices personnalisées
+        // Custom fonts
         rubik: ['Rubik', 'sans-serif'],
         'dm-sans': ['DM Sans', 'sans-serif'],
       },
       fontSize: {
-        // Tailles personnalisées si nécessaire
+        // Custom sizes if needed
         display: ['3.5rem', { lineHeight: '1.2', fontWeight: '700' }],
         title: ['2.5rem', { lineHeight: '1.3', fontWeight: '600' }],
       },

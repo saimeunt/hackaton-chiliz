@@ -28,7 +28,7 @@ export default function Achievements() {
         </div>
       </div>
 
-      {/* Statistiques générales */}
+      {/* General statistics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
           <CardContent className="p-6 text-center">
@@ -82,12 +82,12 @@ export default function Achievements() {
         <AchievementsCarousel itemsPerView={3} />
       </div>
 
-      {/* Section NFT Trophées */}
+      {/* NFT Trophies section */}
       <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/10 dark:to-purple-800/10 rounded-lg p-6">
         <NFTTrophyGrid />
       </div>
 
-      {/* Section d'encouragement */}
+      {/* Encouragement message */}
       <Card className="border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-900/20">
         <CardContent className="p-6 text-center">
           <div className="text-4xl mb-4">🎯</div>

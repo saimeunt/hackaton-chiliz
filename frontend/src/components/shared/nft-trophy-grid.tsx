@@ -52,12 +52,12 @@ export function NFTTrophyGrid() {
               key={trophy.id}
               className="border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 hover:shadow-lg transition-all duration-300 relative overflow-hidden group"
             >
-              {/* Effet de glow selon la rareté */}
+              {/* Glow effect based on rarity */}
               <div
                 className={`absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300 ${rarityColor.replace('bg-', 'bg-gradient-to-br from-')} to-transparent`}
               />
 
-              {/* Badge de rareté */}
+              {/* Rarity badge */}
               <div className="absolute top-3 right-3 z-10">
                 <Badge
                   className={`${rarityColor} text-white text-xs font-medium capitalize`}
@@ -67,7 +67,7 @@ export function NFTTrophyGrid() {
               </div>
 
               <CardHeader className="pb-4">
-                {/* Icône NFT */}
+                {/* NFT icon */}
                 <div className="flex justify-center mb-4">
                   <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900/20 dark:to-purple-800/20 flex items-center justify-center text-5xl border-4 border-purple-200 dark:border-purple-700">
                     {trophy.image}
@@ -84,7 +84,7 @@ export function NFTTrophyGrid() {
               </CardHeader>
 
               <CardContent className="space-y-4">
-                {/* Date d'acquisition */}
+                {/* Acquisition date */}
                 <div className="text-center py-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
                   <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
                     Acquired on
@@ -94,7 +94,7 @@ export function NFTTrophyGrid() {
                   </div>
                 </div>
 
-                {/* Attributs */}
+                {/* Attributes */}
                 <div className="space-y-2">
                   <div className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Attributes:
@@ -113,7 +113,7 @@ export function NFTTrophyGrid() {
                   </div>
                 </div>
 
-                {/* ID du NFT */}
+                {/* NFT ID */}
                 <div className="text-center pt-2 border-t border-gray-200 dark:border-gray-700">
                   <p className="text-xs text-gray-500 dark:text-gray-400">
                     NFT ID: {trophy.id}
@@ -125,7 +125,7 @@ export function NFTTrophyGrid() {
         })}
       </div>
 
-      {/* Statistiques en bas */}
+      {/* Statistics at bottom */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
         {(['common', 'rare', 'epic', 'legendary'] as const).map((rarity) => {
           const count = sortedNFTTrophies.filter(

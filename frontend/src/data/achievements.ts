@@ -267,7 +267,7 @@ export const achievements: Achievement[] = [
   },
 ];
 
-// Fonction utilitaire pour obtenir la couleur selon la difficulté
+// Utility function to get color based on difficulty
 export function getDifficultyColor(
   difficulty: Achievement['difficulty'],
 ): string {

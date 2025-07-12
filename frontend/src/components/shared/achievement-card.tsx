@@ -32,7 +32,7 @@ export function AchievementCard({ achievement }: AchievementCardProps) {
       ${unlocked ? 'border-green-300 dark:border-green-700' : ''}
     `}
     >
-      {/* Badge de difficulté */}
+      {/* Difficulty badge */}
       <div className="absolute top-3 right-3 z-10">
         <Badge
           className={`${difficultyColor} text-white text-xs font-medium capitalize`}
@@ -41,7 +41,7 @@ export function AchievementCard({ achievement }: AchievementCardProps) {
         </Badge>
       </div>
 
-      {/* Icône de statut */}
+      {/* Status icon */}
       <div className="absolute top-3 left-3 z-10">
         {unlocked ? (
           <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
@@ -55,7 +55,7 @@ export function AchievementCard({ achievement }: AchievementCardProps) {
       </div>
 
       <CardHeader className="pb-4 pt-12">
-        {/* Icône principale */}
+        {/* Main icon */}
         <div className="flex justify-center mb-4">
           <div
             className={`
@@ -84,7 +84,7 @@ export function AchievementCard({ achievement }: AchievementCardProps) {
           </p>
         </div>
 
-        {/* Progress Bar (si pas encore débloqué) */}
+        {/* Progress Bar (if not yet unlocked) */}
         {!unlocked && progress > 0 && (
           <div className="space-y-2">
             <div className="flex justify-between text-xs text-gray-600 dark:text-gray-400">
@@ -115,7 +115,7 @@ export function AchievementCard({ achievement }: AchievementCardProps) {
           </div>
         </div>
 
-        {/* Date de déblocage si applicable */}
+        {/* Unlock date if applicable */}
         {unlocked && achievement.unlockedAt && (
           <div className="text-center pt-2 border-t border-gray-200 dark:border-gray-700">
             <p className="text-xs text-green-600 dark:text-green-400">

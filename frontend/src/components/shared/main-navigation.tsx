@@ -39,7 +39,7 @@ export function MainNavigation({ children }: { children: React.ReactNode }) {
       {/* Desktop Sidebar */}
       <DesktopSideMenu pages={pages} pathname={pathname} />
 
-      {/* Contenu principal - décalé pour laisser place au menu fixe */}
+      {/* Main content - offset to leave space for fixed menu */}
       <div className="md:ml-[220px] lg:ml-[280px] flex flex-col min-h-screen">
         <header className="flex h-14 items-center gap-4 border-b bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 px-4 lg:h-[60px] lg:px-6">
           {/* Mobile Navigation */}
