@@ -1,123 +1,123 @@
-# 🏆 Système de Paris Sportifs - Résumé Complet
+# 🏆 Sports Betting System - Complete Summary
 
-## 🎯 Objectif du Projet
+## 🎯 Project Objective
 
-Développer un système de paris sportifs décentralisé où les fans peuvent parier leurs fan tokens sur leurs équipes favorites, avec un système de récompenses basé sur l'attendance aux matchs via POAPs.
+Develop a decentralized sports betting system where fans can bet their fan tokens on their favorite teams, with a reward system based on match attendance via POAPs.
 
-## ✅ Fonctionnalités Implémentées
+## ✅ Implemented Features
 
-### 🎲 Système de Paris
-- ✅ **Paris avec Fan Tokens** : Les fans parient leurs fan tokens sur leurs équipes
-- ✅ **Mise Minimum** : 10 fan tokens minimum pour éviter les paris de poussière
-- ✅ **Blocage des Retraits** : 1 heure avant le début du match
-- ✅ **Winner Takes All** : Les gagnants récupèrent tous les tokens de la pool
+### 🎲 Betting System
+- ✅ **Fan Token Betting** : Fans bet their fan tokens on their teams
+- ✅ **Minimum Bet** : 10 fan tokens minimum to avoid dust bets
+- ✅ **Withdrawal Blocking** : 1 hour before match start
+- ✅ **Winner Takes All** : Winners collect all tokens from the pool
 
-### 🎫 Système POAP et Multiplicateurs
-- ✅ **Vérification POAP** : Confirmation de l'attendance aux matchs
-- ✅ **Multiplicateurs Dynamiques** :
-  - Nouveaux utilisateurs : 0.8x
-  - Après 5 matchs : 1.0x
-  - Maximum (100+ matchs) : 1.5x
-  - Courbe logarithmique entre 5 et 100 matchs
+### 🎫 POAP System and Multipliers
+- ✅ **POAP Verification** : Confirmation of match attendance
+- ✅ **Dynamic Multipliers** :
+  - New users : 0.8x
+  - After 5 matches : 1.0x
+  - Maximum (100+ matches) : 1.5x
+  - Logarithmic curve between 5 and 100 matches
 
-### 💰 Gestion des Gains
-- ✅ **Swap Automatique** : Échange immédiat des tokens perdants vers les gagnants
-- ✅ **Distribution Proportionale** : Gains calculés au prorata des tokens investis
-- ✅ **Claims Multiples** :
-  - Claim immédiat après match
-  - Claim admin après 1 an
-  - Claim global après 2 ans
+### 💰 Winnings Management
+- ✅ **Automatic Swap** : Immediate exchange of losing tokens to winning ones
+- ✅ **Proportional Distribution** : Winnings calculated proportionally to invested tokens
+- ✅ **Multiple Claims** :
+  - Immediate claim after match
+  - Admin claim after 1 year
+  - Global claim after 2 years
 
-### 🏗️ Architecture Technique
-- ✅ **Factory Pattern** : Création de pools pour chaque match
-- ✅ **États du Match** : À venir, en cours, arrêté, terminé
-- ✅ **Contrôles de Sécurité** : Multiples niveaux de protection
+### 🏗️ Technical Architecture
+- ✅ **Factory Pattern** : Pool creation for each match
+- ✅ **Match States** : Upcoming, in progress, stopped, finished
+- ✅ **Security Controls** : Multiple levels of protection
 
-## 📁 Structure des Fichiers
+## 📁 File Structure
 
 ```
 backend/
 ├── contracts/
-│   ├── BettingPool.sol           # Contrat principal de pool
-│   ├── BettingPoolFactory.sol    # Factory pour créer les pools
-│   ├── IFanToken.sol             # Interface pour les fan tokens
-│   ├── ISwapRouter.sol           # Interface pour les swaps
-│   ├── IPOAP.sol                 # Interface pour les POAPs
-│   ├── MockFanToken.sol          # Token mock pour tests
-│   ├── MockPOAP.sol              # POAP mock pour tests
-│   └── MockSwapRouter.sol        # Swap router mock pour tests
+│   ├── BettingPool.sol           # Main pool contract
+│   ├── BettingPoolFactory.sol    # Factory to create pools
+│   ├── IFanToken.sol             # Interface for fan tokens
+│   ├── ISwapRouter.sol           # Interface for swaps
+│   ├── IPOAP.sol                 # Interface for POAPs
+│   ├── MockFanToken.sol          # Mock token for tests
+│   ├── MockPOAP.sol              # Mock POAP for tests
+│   └── MockSwapRouter.sol        # Mock swap router for tests
 ├── test/
 │   └── foundry/
-│       └── BettingPool.t.sol     # Tests complets du système
+│       └── BettingPool.t.sol     # Complete system tests
 ├── scripts/
-│   └── setup.ts                  # Script de configuration
-├── README.md                     # Documentation utilisateur
-├── TECHNICAL_DOCS.md             # Documentation technique
-└── SYSTEM_SUMMARY.md             # Ce fichier
+│   └── setup.ts                  # Setup script
+├── README.md                     # User documentation
+├── TECHNICAL_DOCS.md             # Technical documentation
+└── SYSTEM_SUMMARY.md             # This file
 ```
 
-## 🔧 Contrats Principaux
+## 🔧 Main Contracts
 
 ### 1. BettingPool.sol
-**Rôle** : Gère un pool de paris pour un match spécifique
+**Role** : Manages a betting pool for a specific match
 
-**Fonctionnalités Clés** :
-- Placement de paris avec validation
-- Calcul des multiplicateurs POAP
-- Gestion des états du match
-- Swap automatique des tokens
-- Distribution des gains
+**Key Features** :
+- Bet placement with validation
+- POAP multiplier calculation
+- Match state management
+- Automatic token swapping
+- Winnings distribution
 
 ### 2. BettingPoolFactory.sol
-**Rôle** : Factory pour créer et gérer les pools de paris
+**Role** : Factory to create and manage betting pools
 
-**Fonctionnalités Clés** :
-- Création de nouveaux pools
-- Gestion du cycle de vie des matchs
-- Vérification des POAPs
-- Claims admin et global
+**Key Features** :
+- New pool creation
+- Match lifecycle management
+- POAP verification
+- Admin and global claims
 
-### 3. Contrats de Support
-- **MockFanToken.sol** : Token ERC20 pour les tests
-- **MockPOAP.sol** : Système POAP pour l'attendance
-- **MockSwapRouter.sol** : Router de swap pour les échanges
+### 3. Support Contracts
+- **MockFanToken.sol** : ERC20 token for tests
+- **MockPOAP.sol** : POAP system for attendance
+- **MockSwapRouter.sol** : Swap router for exchanges
 
-## 🧪 Tests et Validation
+## 🧪 Tests and Validation
 
-### Tests Implémentés
-- ✅ **Placement de Paris** : Validation des montants et multiplicateurs
-- ✅ **Gestion des États** : Transitions de match et contrôles d'accès
-- ✅ **Système POAP** : Vérification et calcul des multiplicateurs
-- ✅ **Distribution des Gains** : Calculs précis et swaps automatiques
-- ✅ **Claims** : Délais et récupération des tokens
-- ✅ **Workflow Complet** : Test end-to-end du système
+### Implemented Tests
+- ✅ **Bet Placement** : Amount and multiplier validation
+- ✅ **State Management** : Match transitions and access controls
+- ✅ **POAP System** : Verification and multiplier calculation
+- ✅ **Winnings Distribution** : Precise calculations and automatic swaps
+- ✅ **Claims** : Delays and token recovery
+- ✅ **Complete Workflow** : End-to-end system test
 
-### Couverture de Tests
-- Tests unitaires pour chaque fonction
-- Tests d'intégration pour les workflows
-- Tests de sécurité pour les cas limites
-- Tests de performance pour les calculs complexes
+### Test Coverage
+- Unit tests for each function
+- Integration tests for workflows
+- Security tests for edge cases
+- Performance tests for complex calculations
 
-## 🔒 Sécurité
+## 🔒 Security
 
-### Mesures Implémentées
-- **Contrôles d'Accès** : Modifiers pour restreindre les fonctions
-- **Validation des Données** : Vérification des montants et adresses
-- **Protection contre les Attaques** : Montants minimums et délais
-- **Gestion des États** : Transitions sécurisées entre états
+### Implemented Measures
+- **Access Controls** : Modifiers to restrict functions
+- **Data Validation** : Amount and address verification
+- **Attack Protection** : Minimum amounts and delays
+- **State Management** : Secure transitions between states
 
-### Risques Mitigés
-- ✅ Attaques par poussière (montant minimum)
-- ✅ Manipulation des paris (blocage avant match)
-- ✅ Claims prématurés (délais de sécurité)
-- ✅ Accès non autorisés (contrôles d'accès)
+### Mitigated Risks
+- ✅ Dust attacks (minimum amount)
+- ✅ Bet manipulation (pre-match blocking)
+- ✅ Premature claims (security delays)
+- ✅ Unauthorized access (access controls)
 
-## 🚀 Déploiement et Utilisation
+## 🚀 Deployment and Usage
 
-### Prérequis
-- Node.js et npm/pnpm
-- Foundry (pour les tests)
-- Hardhat (optionnel)
+### Prerequisites
+- Node.js and npm/pnpm
+- Foundry (for tests)
+- Hardhat (optional)
 
 ### Installation
 ```bash
@@ -127,10 +127,10 @@ pnpm install
 
 ### Tests
 ```bash
-# Tests Foundry
+# Foundry tests
 forge test
 
-# Tests Hardhat
+# Hardhat tests
 pnpm test:hardhat
 ```
 
@@ -139,70 +139,70 @@ pnpm test:hardhat
 forge build
 ```
 
-## 📊 Métriques et KPIs
+## 📊 Metrics and KPIs
 
-### Métriques Clés
-- **Nombre de Pools** : Pools créés par match
-- **Volume de Paris** : Total des tokens pariés
-- **Distribution Multiplicateurs** : Répartition des bonus POAP
-- **Taux de Claim** : Pourcentage de gains réclamés
-- **Performance Swaps** : Taux de succès des échanges
+### Key Metrics
+- **Number of Pools** : Pools created per match
+- **Betting Volume** : Total tokens bet
+- **Multiplier Distribution** : POAP bonus distribution
+- **Claim Rate** : Percentage of winnings claimed
+- **Swap Performance** : Exchange success rate
 
 ### Monitoring
-- Suivi des événements de paris
-- Monitoring des swaps automatiques
-- Alertes sur les anomalies
-- Tracking des multiplicateurs
+- Bet event tracking
+- Automatic swap monitoring
+- Anomaly alerts
+- Multiplier tracking
 
-## 🔮 Améliorations Futures
+## 🔮 Future Improvements
 
-### Fonctionnalités Proposées
-- **Intégration DEX Réelle** : Uniswap V3, SushiSwap
-- **Interface Utilisateur** : Frontend Web3
-- **Système de Liquidité** : Pools de liquidité pour fan tokens
-- **Oracles de Résultats** : Intégration d'oracles pour les scores
-- **Récompenses Supplémentaires** : Bonus pour parieurs réguliers
+### Proposed Features
+- **Real DEX Integration** : Uniswap V3, SushiSwap
+- **User Interface** : Web3 frontend
+- **Liquidity System** : Liquidity pools for fan tokens
+- **Result Oracles** : Oracle integration for scores
+- **Additional Rewards** : Bonuses for regular bettors
 
-### Optimisations Techniques
-- **Batch Claims** : Réduction des coûts de gas
-- **Cache Multiplicateurs** : Optimisation des calculs
-- **Compression des Données** : Réduction du stockage
-- **Optimisation Gas** : Amélioration de l'efficacité
+### Technical Optimizations
+- **Batch Claims** : Gas cost reduction
+- **Multiplier Caching** : Calculation optimization
+- **Data Compression** : Storage reduction
+- **Gas Optimization** : Efficiency improvement
 
-## 📈 Impact et Bénéfices
+## 📈 Impact and Benefits
 
-### Pour les Fans
-- **Engagement Renforcé** : Incitation à assister aux matchs
-- **Récompenses Équitables** : Gains proportionnels à l'investissement
-- **Transparence Totale** : Tous les calculs sur la blockchain
-- **Contrôle Total** : Possession de leurs tokens
+### For Fans
+- **Enhanced Engagement** : Incentive to attend matches
+- **Fair Rewards** : Winnings proportional to investment
+- **Total Transparency** : All calculations on blockchain
+- **Total Control** : Ownership of their tokens
 
-### Pour les Clubs
-- **Liquidité des Tokens** : Échanges automatiques
-- **Engagement Communautaire** : Système de récompenses
-- **Nouveaux Revenus** : Frais sur les swaps
-- **Données Précieuses** : Métriques d'engagement
+### For Clubs
+- **Token Liquidity** : Automatic exchanges
+- **Community Engagement** : Reward system
+- **New Revenue** : Swap fees
+- **Valuable Data** : Engagement metrics
 
-### Pour l'Écosystème
-- **Innovation DeFi** : Nouveau cas d'usage pour les fan tokens
-- **Adoption Blockchain** : Introduction au Web3
-- **Communauté Active** : Engagement des supporters
-- **Croissance Durable** : Modèle économique viable
+### For the Ecosystem
+- **DeFi Innovation** : New use case for fan tokens
+- **Blockchain Adoption** : Web3 introduction
+- **Active Community** : Supporter engagement
+- **Sustainable Growth** : Viable economic model
 
 ## 🎉 Conclusion
 
-Le système de paris sportifs développé représente une innovation majeure dans l'écosystème des fan tokens et du DeFi. Il combine :
+The developed sports betting system represents a major innovation in the fan token and DeFi ecosystem. It combines:
 
-- **Technologie Avancée** : Smart contracts sécurisés et optimisés
-- **Expérience Utilisateur** : Interface intuitive et processus simplifiés
-- **Économie Durable** : Modèle de récompenses équitable
-- **Sécurité Robuste** : Multiples couches de protection
+- **Advanced Technology** : Secure and optimized smart contracts
+- **User Experience** : Intuitive interface and simplified processes
+- **Sustainable Economy** : Fair reward model
+- **Robust Security** : Multiple layers of protection
 
-Ce système ouvre la voie à de nouvelles possibilités d'engagement des fans et de valorisation des fan tokens, tout en maintenant les standards de sécurité et de transparence de la blockchain.
+This system opens the way to new possibilities for fan engagement and fan token valuation, while maintaining blockchain security and transparency standards.
 
 ---
 
-**Statut** : ✅ **Développement Terminé**  
-**Tests** : ✅ **Validés**  
-**Documentation** : ✅ **Complète**  
-**Prêt pour** : 🚀 **Déploiement en Production** 
+**Status** : ✅ **Development Complete**  
+**Tests** : ✅ **Validated**  
+**Documentation** : ✅ **Complete**  
+**Ready for** : 🚀 **Production Deployment** 
