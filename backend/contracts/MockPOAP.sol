@@ -29,13 +29,12 @@ contract MockPOAP is ERC1155, Ownable {
      */
     function awardPOAP(address user, uint256 matchId) external onlyOwner {
         require(bytes(matchNames[matchId]).length > 0, "Match does not exist");
-        require(
-            !hasAttended[user][matchId],
-            "User already attended this match"
-        );
 
-        hasAttended[user][matchId] = true;
-        _mint(user, matchId, 1, "");
+        // Allow multiple awards for the same match (for testing purposes)
+        if (!hasAttended[user][matchId]) {
+            hasAttended[user][matchId] = true;
+            _mint(user, matchId, 1, "");
+        }
     }
 
     /**
