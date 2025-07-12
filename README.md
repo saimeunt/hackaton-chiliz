@@ -1,4 +1,23 @@
-# hackaton-chiliz
+# Clash Of Fanzzz
+# hackaton-chiliz submission
+
+### Done by Simon Arvaux, William Simon--Vezo, Franck Rieu-Patey
+
+Betting project, but with a twist !
+Make it real with DeFi and Attendance proof
+
+"My club is better than yours !" : Prove it, make your fan token worth your club involvement. And rekt the others by automatically swaping their boring token. Go to the stadium, earn more, eazy lil hooligan.
+
+![Logo](https://github.com/Varadiell/hackaton-chiliz/tree/main/assets/illus.png).
+
+### One track ? All tracks !
+- Fan Token Utility
+- DeFi
+- Socios Wallet Connectivity / Features 
+
+Live on mainnet, test in prod.
+
+
 
 ## Backend install
 
