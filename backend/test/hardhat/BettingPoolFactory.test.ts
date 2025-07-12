@@ -200,6 +200,93 @@ describe('BettingPoolFactory', function () {
     // Pour un vrai test, il faudrait un mock ERC20
   });
 
+  describe('calculateMultiplier', () => {
+    it('should return 0.8x multiplier for new users', async () => {
+      const multiplier = await factory.calculateMultiplier(owner.address);
+      expect(multiplier).to.equal(80n); // 0.8 * 100
+    });
+
+    it('should return 1.0x multiplier after 5 matches', async () => {
+      // Award POAPs for 5 matches to simulate 5 match attendances
+      for (let i = 1; i <= 5; i++) {
+        await poapContract.createMatch(i, `Match ${i}`);
+        await poapContract.awardPoap(owner.address, i);
+
+        // Create a pool for this matchId
+        const block = await ethers.provider.getBlock('latest');
+        if (!block) throw new Error('Block is null');
+        const now = block.timestamp;
+
+        await factory.createPool(
+          team1Token.address,
+          team2Token.address,
+          now + 1000,
+          3600,
+          i,
+        );
+
+        await factory.verifyPOAPAttendance(owner.address, i);
+      }
+
+      const multiplier = await factory.calculateMultiplier(owner.address);
+      expect(multiplier).to.equal(100n); // 1.0 * 100
+    });
+
+    it('should return 1.5x multiplier after 100 matches', async () => {
+      // Award POAPs for 100 matches to simulate 100 match attendances
+      for (let i = 1; i <= 100; i++) {
+        await poapContract.createMatch(i, `Match ${i}`);
+        await poapContract.awardPoap(owner.address, i);
+
+        // Create a pool for this matchId
+        const block = await ethers.provider.getBlock('latest');
+        if (!block) throw new Error('Block is null');
+        const now = block.timestamp;
+
+        await factory.createPool(
+          team1Token.address,
+          team2Token.address,
+          now + 1000,
+          3600,
+          i,
+        );
+
+        await factory.verifyPOAPAttendance(owner.address, i);
+      }
+
+      const multiplier = await factory.calculateMultiplier(owner.address);
+      expect(multiplier).to.equal(150n); // 1.5 * 100
+    });
+
+    it('should return intermediate multiplier for users with 1-4 matches', async () => {
+      // Award POAPs for 3 matches to simulate 3 match attendances
+      for (let i = 1; i <= 3; i++) {
+        await poapContract.createMatch(i, `Match ${i}`);
+        await poapContract.awardPoap(owner.address, i);
+
+        // Create a pool for this matchId
+        const block = await ethers.provider.getBlock('latest');
+        if (!block) throw new Error('Block is null');
+        const now = block.timestamp;
+
+        await factory.createPool(
+          team1Token.address,
+          team2Token.address,
+          now + 1000,
+          3600,
+          i,
+        );
+
+        await factory.verifyPOAPAttendance(owner.address, i);
+      }
+
+      const multiplier = await factory.calculateMultiplier(owner.address);
+      // Should be between 0.8 and 1.0 (80 and 100)
+      expect(multiplier).to.be.greaterThan(80n);
+      expect(multiplier).to.be.lessThan(100n);
+    });
+  });
+
   describe('views', () => {
     it('should return pools and info', async () => {
       const block = await ethers.provider.getBlock('latest');

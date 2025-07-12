@@ -149,7 +149,7 @@ contract PoolManager {
     }
 
     /**
-     * @dev Verify POAP attendance and update user match count
+     * @dev Verify POAP attendance
      * @param user Address of the user
      * @param matchId POAP match ID
      */
@@ -158,7 +158,6 @@ contract PoolManager {
         require(poolAddress != address(0), "Invalid match ID");
 
         emit POAPVerified(user, matchId);
-        BettingPool(poolAddress).updateUserMatchCount(user, matchId);
     }
 
     /**

@@ -3,21 +3,27 @@ pragma solidity ^0.8.20;
 
 import {PoolManager} from "./PoolManager.sol";
 import {IFanToken} from "./IFanToken.sol";
+import {IPOAP} from "./IPOAP.sol";
+import {IBettingPoolFactory} from "./IBettingPoolFactory.sol";
 
 /**
  * @title BettingPoolFactory
  * @dev Factory contract for creating and managing betting pools
  * Inherits from PoolManager to use the core pool management functionality
  */
-contract BettingPoolFactory is PoolManager {
+contract BettingPoolFactory is PoolManager, IBettingPoolFactory {
     // Events
     event OwnershipTransferred(
         address indexed previousOwner,
         address indexed newOwner
     );
+    event UserMatchCountUpdated(address indexed user, uint256 newCount);
 
     // State variables
     address public owner;
+
+    // Track user's match attendance across all pools
+    mapping(address => uint256) public userMatchCount;
 
     // Modifiers
     modifier onlyOwner() {
@@ -88,6 +94,7 @@ contract BettingPoolFactory is PoolManager {
         uint256 matchId
     ) external nonReentrant onlyOwner {
         _verifyPOAPAttendance(user, matchId);
+        _updateUserMatchCount(user, matchId);
     }
 
     /**
@@ -116,6 +123,53 @@ contract BettingPoolFactory is PoolManager {
      */
     function globalClaim(address poolAddress) external nonReentrant onlyOwner {
         _globalClaim(poolAddress);
+    }
+
+    /**
+     * @dev Calculate multiplier based on POAP attendance
+     * @param user Address of the user
+     * @return Multiplier value (0.8 to 1.5)
+     */
+    function calculateMultiplier(address user) public view returns (uint256) {
+        uint256 matchCount = userMatchCount[user];
+
+        if (matchCount == 0) return 80; // 0.8 * 100
+        if (matchCount >= 100) return 150; // 1.5 * 100
+        if (matchCount >= 5) return 100; // 1.0 * 100
+
+        // Logarithmic curve from 0.8 to 1.0 over 5 matches
+        // Formula: 0.8 + (0.2 * log(matchCount + 1) / log(6))
+        uint256 multiplier = 80 + ((20 * _log(matchCount + 1)) / _log(6));
+        return multiplier;
+    }
+
+    /**
+     * @dev Update user match count (called internally when POAP is verified)
+     * @param user Address of the user
+     * @param matchId POAP match ID
+     */
+    function _updateUserMatchCount(address user, uint256 matchId) internal {
+        // Verify POAP ownership
+        uint256 balance = IPOAP(poapContract).balanceOf(user, matchId);
+        require(balance > 0, "No POAP for this match");
+
+        userMatchCount[user]++;
+        emit UserMatchCountUpdated(user, userMatchCount[user]);
+    }
+
+    /**
+     * @dev Simple logarithm approximation for small numbers
+     * @param x Input value
+     * @return Logarithm value * 100
+     */
+    function _log(uint256 x) internal pure returns (uint256) {
+        if (x <= 1) return 0;
+        if (x <= 2) return 69; // log(2) * 100
+        if (x <= 3) return 110; // log(3) * 100
+        if (x <= 4) return 139; // log(4) * 100
+        if (x <= 5) return 161; // log(5) * 100
+        if (x <= 6) return 179; // log(6) * 100
+        return 179; // Default to log(6)
     }
 
     /**
