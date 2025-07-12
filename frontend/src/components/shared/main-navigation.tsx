@@ -1,6 +1,6 @@
 'use client';
 
-import { Trophy, Users, TrendingUp } from 'lucide-react';
+import { Trophy, Users, TrendingUp, UserCircle } from 'lucide-react';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { usePathname } from 'next/navigation';
 import {
@@ -30,6 +30,12 @@ export function MainNavigation({ children }: { children: React.ReactNode }) {
       icon: Users,
       label: 'Community',
       url: '/community',
+    },
+    {
+      count: null,
+      icon: UserCircle,
+      label: 'Profile',
+      url: '/profile',
     },
   ];
 
