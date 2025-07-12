@@ -410,7 +410,9 @@ contract BettingPool {
     ) external view returns (uint256 amount, uint256 multiplier, bool claimed) {
         TeamPool storage pool = teamToken == team1Token ? team1Pool : team2Pool;
         Bet storage bet = pool.bets[user];
-        return (bet.amount, (bet.amount * 100) / bet.points, bet.claimed);
+        if (bet.points == 0)
+            return (bet.amount, calculateMultiplier(user), bet.claimed);
+        return (bet.amount, calculateMultiplier(user), bet.claimed);
     }
 
     function getPoolInfo(

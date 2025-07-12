@@ -19,6 +19,9 @@ describe('BettingPoolFactory', function () {
       await ethers.getContractFactory('BettingPoolFactory')
     ).deploy(swapRouter.address, await poapContract.getAddress());
     await factory.waitForDeployment();
+
+    // Set the factory address in the POAP contract
+    await (poapContract as any).setBettingPoolFactory(await factory.getAddress());
   });
 
   it('should deploy with correct params', async () => {
@@ -157,20 +160,23 @@ describe('BettingPoolFactory', function () {
       await poapContract.createMatch(123, 'Test Match');
       await poapContract.awardPoap(owner.address, 123);
     });
-    it('should verify POAP and emit event', async () => {
-      await expect(factory.verifyPOAPAttendance(owner.address, 123))
+    it('should verify POAP and emit events when called by POAP contract', async () => {
+      // The POAP contract should call verifyPOAPAttendance when awardPoap is called
+      await expect(poapContract.awardPoap(owner.address, 123))
         .to.emit(factory, 'POAPVerified')
-        .withArgs(owner.address, 123);
+        .withArgs(owner.address, 123)
+        .and.to.emit(factory, 'UserMatchCountUpdated')
+        .withArgs(owner.address, 1n, 123n);
     });
-    it('should revert if not owner', async () => {
+    it('should revert if called by non-POAP contract', async () => {
       await expect(
         factory.connect(other).verifyPOAPAttendance(owner.address, 123),
-      ).to.be.revertedWith('Only owner can call this');
+      ).to.be.revertedWith('Only POAP can call this');
     });
     it('should revert if matchId invalid', async () => {
       await expect(
         factory.verifyPOAPAttendance(owner.address, 9999),
-      ).to.be.revertedWith('Invalid match ID');
+      ).to.be.revertedWith('Only POAP can call this');
     });
   });
 
@@ -210,8 +216,7 @@ describe('BettingPoolFactory', function () {
       // Award POAPs for 5 matches to simulate 5 match attendances
       for (let i = 1; i <= 5; i++) {
         await poapContract.createMatch(i, `Match ${i}`);
-        await poapContract.awardPoap(owner.address, i);
-
+        
         // Create a pool for this matchId
         const block = await ethers.provider.getBlock('latest');
         if (!block) throw new Error('Block is null');
@@ -225,7 +230,7 @@ describe('BettingPoolFactory', function () {
           i,
         );
 
-        await factory.verifyPOAPAttendance(owner.address, i);
+        await poapContract.awardPoap(owner.address, i);
       }
 
       const multiplier = await factory.calculateMultiplier(owner.address);
@@ -236,8 +241,7 @@ describe('BettingPoolFactory', function () {
       // Award POAPs for 100 matches to simulate 100 match attendances
       for (let i = 1; i <= 100; i++) {
         await poapContract.createMatch(i, `Match ${i}`);
-        await poapContract.awardPoap(owner.address, i);
-
+        
         // Create a pool for this matchId
         const block = await ethers.provider.getBlock('latest');
         if (!block) throw new Error('Block is null');
@@ -251,7 +255,7 @@ describe('BettingPoolFactory', function () {
           i,
         );
 
-        await factory.verifyPOAPAttendance(owner.address, i);
+        await poapContract.awardPoap(owner.address, i);
       }
 
       const multiplier = await factory.calculateMultiplier(owner.address);
@@ -262,8 +266,7 @@ describe('BettingPoolFactory', function () {
       // Award POAPs for 3 matches to simulate 3 match attendances
       for (let i = 1; i <= 3; i++) {
         await poapContract.createMatch(i, `Match ${i}`);
-        await poapContract.awardPoap(owner.address, i);
-
+        
         // Create a pool for this matchId
         const block = await ethers.provider.getBlock('latest');
         if (!block) throw new Error('Block is null');
@@ -277,13 +280,16 @@ describe('BettingPoolFactory', function () {
           i,
         );
 
-        await factory.verifyPOAPAttendance(owner.address, i);
+        await poapContract.awardPoap(owner.address, i);
       }
 
       const multiplier = await factory.calculateMultiplier(owner.address);
       // Should be between 0.8 and 1.0 (80 and 100)
       expect(multiplier).to.be.greaterThan(80n);
       expect(multiplier).to.be.lessThan(100n);
+      
+      // Verify match count is correct
+      expect(await factory.userMatchCount(owner.address)).to.equal(3n);
     });
   });
 

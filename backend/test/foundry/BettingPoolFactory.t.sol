@@ -19,6 +19,7 @@ contract BettingPoolFactoryTest is Test {
     function setUp() public {
         poapContract = new MockPOAP();
         factory = new BettingPoolFactory(swapRouter, address(poapContract));
+        poapContract.setBettingPoolFactory(address(factory));
     }
 
     function testOwnerSetCorrectly() public view {
@@ -93,26 +94,74 @@ contract BettingPoolFactoryTest is Test {
 
         // Create the match in the POAP contract and award POAP to the user
         poapContract.createMatch(123, "Test Match");
-        poapContract.awardPoap(user, 123);
 
-        // Verify POAP attendance
+        // Verify POAP attendance - this should be called by the POAP contract
         vm.expectEmit(true, true, false, true);
         emit PoolManager.POAPVerified(user, 123);
-        factory.verifyPOAPAttendance(user, 123);
+        vm.expectEmit(true, true, false, true);
+        emit BettingPoolFactory.UserMatchCountUpdated(user, 1, 123);
+        poapContract.awardPoap(user, 123);
     }
 
-    function testRevertVerifyPOAPAttendanceIfNotOwner() public {
+    function testRevertVerifyPOAPAttendanceIfNotPOAP() public {
         uint256 matchStart = block.timestamp + 10000;
         factory.createPool(team1Token, team2Token, matchStart, 3600, 124);
 
         vm.prank(user);
-        vm.expectRevert("Only owner can call this");
+        vm.expectRevert("Only POAP can call this");
         factory.verifyPOAPAttendance(user, 124);
     }
 
     function testRevertVerifyPOAPAttendanceInvalidMatchId() public {
+        vm.prank(address(poapContract));
         vm.expectRevert("Invalid match ID");
         factory.verifyPOAPAttendance(user, 9999);
+    }
+
+    function testCalculateMultiplier() public {
+        // Test multiplier for new user (should be 0.8)
+        uint256 multiplier = factory.calculateMultiplier(user);
+        assertEq(multiplier, 80); // 0.8 * 100
+
+        // Award POAPs for 5 matches to simulate 5 match attendances
+        for (uint256 i = 1; i <= 5; i++) {
+            poapContract.createMatch(
+                i,
+                string(abi.encodePacked("Match ", vm.toString(i)))
+            );
+
+            uint256 matchStart = block.timestamp + 10000;
+            factory.createPool(team1Token, team2Token, matchStart, 3600, i);
+
+            poapContract.awardPoap(user, i);
+        }
+
+        // Test multiplier after 5 matches (should be 1.0)
+        multiplier = factory.calculateMultiplier(user);
+        assertEq(multiplier, 100); // 1.0 * 100
+
+        // Verify match count is correct
+        assertEq(factory.userMatchCount(user), 5);
+    }
+
+    function testCalculateMultiplierIntermediate() public {
+        // Award POAPs for 3 matches to simulate 3 match attendances
+        for (uint256 i = 1; i <= 3; i++) {
+            poapContract.createMatch(
+                i,
+                string(abi.encodePacked("Match ", vm.toString(i)))
+            );
+
+            uint256 matchStart = block.timestamp + 10000;
+            factory.createPool(team1Token, team2Token, matchStart, 3600, i);
+
+            poapContract.awardPoap(user, i);
+        }
+
+        uint256 multiplier = factory.calculateMultiplier(user);
+        // Should be between 0.8 and 1.0 (80 and 100)
+        assertTrue(multiplier > 80);
+        assertTrue(multiplier < 100);
     }
 
     // For startMatch, endMatch, claimWinnings, adminClaim, globalClaim tests,

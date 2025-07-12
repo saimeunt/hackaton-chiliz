@@ -12,5 +12,13 @@ interface IBettingPoolFactory {
      * @return Multiplier value (0.8 to 1.5)
      */
     function calculateMultiplier(address user) external view returns (uint256);
+
+    /**
+     * @dev Verify POAP attendance and update user match count
+     * @param user Address of the user
+     * @param matchId POAP match ID
+     */
+    function verifyPOAPAttendance(address user, uint256 matchId) external;
+
     function owner() external view returns (address);
 }
