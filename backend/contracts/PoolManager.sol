@@ -131,8 +131,8 @@ contract PoolManager {
     function _startMatch(
         address poolAddress
     ) internal onlyValidPool(poolAddress) {
-        BettingPool(poolAddress).startMatch();
         emit MatchStarted(poolAddress);
+        BettingPool(poolAddress).startMatch();
     }
 
     /**
@@ -144,8 +144,8 @@ contract PoolManager {
         address poolAddress,
         address winningTeamToken
     ) internal onlyValidPool(poolAddress) {
-        BettingPool(poolAddress).endMatch(winningTeamToken);
         emit MatchEnded(poolAddress, winningTeamToken);
+        BettingPool(poolAddress).endMatch(winningTeamToken);
     }
 
     /**
@@ -157,8 +157,8 @@ contract PoolManager {
         address poolAddress = matchIdToPool[matchId];
         require(poolAddress != address(0), "Invalid match ID");
 
-        BettingPool(poolAddress).updateUserMatchCount(user, matchId);
         emit POAPVerified(user, matchId);
+        BettingPool(poolAddress).updateUserMatchCount(user, matchId);
     }
 
     /**
