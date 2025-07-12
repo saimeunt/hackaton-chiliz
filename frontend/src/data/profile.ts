@@ -42,7 +42,6 @@ export interface UserStats {
   totalBets: number;
   wonBets: number;
   lostBets: number;
-  totalWinnings: number;
   achievements: number;
   poapBadges: number;
   joinDate: string;
@@ -53,10 +52,9 @@ export interface UserStats {
 // Mock user data - to be replaced with real data from API/blockchain
 export const mockUserStats: UserStats = {
   xp: 750,
-  totalBets: 23,
+  totalBets: 25,
   wonBets: 14,
   lostBets: 9,
-  totalWinnings: 1240.5,
   achievements: 8,
   poapBadges: 5,
   joinDate: '2024-01-15',

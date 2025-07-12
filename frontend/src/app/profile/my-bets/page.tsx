@@ -11,13 +11,14 @@ import { Progress } from '@/components/ui/progress';
 import {
   ArrowLeft,
   TrendingUp,
-  TrendingDown,
   Target,
   Trophy,
   Calendar,
   CheckCircle,
   XCircle,
   Clock3,
+  Coins,
+  Gift,
 } from 'lucide-react';
 import {
   mockBets,
@@ -29,6 +30,9 @@ import {
 } from '@/data/bets';
 
 function BetCard({ bet }: { bet: Bet }) {
+  const [isClaimingToken, setIsClaimingToken] = useState(false);
+  const [showClaimSuccess, setShowClaimSuccess] = useState(false);
+
   const getStatusIconComponent = (status: BetStatus) => {
     switch (status) {
       case 'won':
@@ -40,8 +44,31 @@ function BetCard({ bet }: { bet: Bet }) {
     }
   };
 
+  const handleClaimTokens = async () => {
+    setIsClaimingToken(true);
+    // Simulate web3 transaction
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    setIsClaimingToken(false);
+    setShowClaimSuccess(true);
+    // Hide success message after 3 seconds
+    setTimeout(() => setShowClaimSuccess(false), 3000);
+    // In real app, this would update the bet's claimed status
+  };
+
   return (
     <Card className="hover:shadow-lg transition-shadow">
+      {/* Success Alert */}
+      {showClaimSuccess && (
+        <div className="absolute top-2 left-2 right-2 z-50 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 shadow-lg">
+          <div className="flex items-center gap-2">
+            <CheckCircle className="w-5 h-5 text-green-500" />
+            <span className="text-sm font-medium text-green-800 dark:text-green-200">
+              You claimed {bet.fanTokenWon} {bet.fanTokenSymbol} tokens! 🎉
+            </span>
+          </div>
+        </div>
+      )}
+
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -67,26 +94,39 @@ function BetCard({ bet }: { bet: Bet }) {
             </span>
             <span className="font-medium">{bet.team}</span>
           </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-600 dark:text-gray-300">
-              Stake
-            </span>
-            <span className="font-medium">{bet.amount}€</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-600 dark:text-gray-300">
-              Odds
-            </span>
-            <span className="font-medium">{bet.odds}</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-600 dark:text-gray-300">
-              Potential win
-            </span>
-            <span className="font-medium text-green-600">
-              {bet.potentialWin}€
-            </span>
-          </div>
+
+          {bet.status === 'pending' &&
+            bet.fanTokenInvested &&
+            bet.fanTokenSymbol && (
+              <>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600 dark:text-gray-300">
+                    Fan tokens bet
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <Coins className="w-4 h-4 text-blue-500" />
+                    <span className="font-medium text-blue-600">
+                      {bet.fanTokenInvested} {bet.fanTokenSymbol}
+                    </span>
+                  </div>
+                </div>
+              </>
+            )}
+
+          {bet.status === 'won' && bet.fanTokenWon && bet.fanTokenSymbol && (
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600 dark:text-gray-300">
+                Fan tokens won
+              </span>
+              <div className="flex items-center gap-2">
+                <Coins className="w-4 h-4 text-amber-500" />
+                <span className="font-medium text-green-600">
+                  {bet.fanTokenWon} {bet.fanTokenSymbol}
+                </span>
+              </div>
+            </div>
+          )}
+
           {bet.result && (
             <div className="pt-2 border-t">
               <div className="flex justify-between items-center">
@@ -95,6 +135,35 @@ function BetCard({ bet }: { bet: Bet }) {
                 </span>
                 <span className="font-medium text-sm">{bet.result}</span>
               </div>
+            </div>
+          )}
+
+          {bet.status === 'won' && bet.fanTokenWon && (
+            <div className="pt-3 border-t">
+              {bet.claimed ? (
+                <Button disabled className="w-full" variant="outline">
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  Tokens Already Claimed
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleClaimTokens}
+                  disabled={isClaimingToken}
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 cursor-pointer"
+                >
+                  {isClaimingToken ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                      Claiming...
+                    </>
+                  ) : (
+                    <>
+                      <Gift className="w-4 h-4 mr-2" />
+                      Claim {bet.fanTokenWon} {bet.fanTokenSymbol}
+                    </>
+                  )}
+                </Button>
+              )}
             </div>
           )}
         </div>
@@ -143,8 +212,8 @@ export default function MyBets() {
     lostBets,
     pendingBets,
     winRate,
-    totalStaked,
-    netProfit,
+    unclaimedTokens,
+    totalTokensWon,
   } = stats;
 
   if (!isConnected) {
@@ -225,10 +294,10 @@ export default function MyBets() {
               <Trophy className="w-5 h-5 text-amber-500" />
               <div>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {totalStaked}€
+                  {totalTokensWon}
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-300">
-                  Total staked
+                  Total fan tokens won
                 </p>
               </div>
             </div>
@@ -238,20 +307,13 @@ export default function MyBets() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
-              {netProfit >= 0 ? (
-                <TrendingUp className="w-5 h-5 text-green-500" />
-              ) : (
-                <TrendingDown className="w-5 h-5 text-red-500" />
-              )}
+              <Coins className="w-5 h-5 text-purple-500" />
               <div>
-                <p
-                  className={`text-2xl font-bold ${netProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}
-                >
-                  {netProfit >= 0 ? '+' : ''}
-                  {netProfit.toFixed(2)}€
+                <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                  {unclaimedTokens}
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-300">
-                  Net Profit
+                  Unclaimed tokens
                 </p>
               </div>
             </div>
@@ -308,10 +370,18 @@ export default function MyBets() {
       {/* Filter tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="all">All ({totalBets})</TabsTrigger>
-          <TabsTrigger value="won">Won ({wonBets})</TabsTrigger>
-          <TabsTrigger value="lost">Lost ({lostBets})</TabsTrigger>
-          <TabsTrigger value="pending">Pending ({pendingBets})</TabsTrigger>
+          <TabsTrigger value="all" className="cursor-pointer">
+            All ({totalBets})
+          </TabsTrigger>
+          <TabsTrigger value="won" className="cursor-pointer">
+            Won ({wonBets})
+          </TabsTrigger>
+          <TabsTrigger value="lost" className="cursor-pointer">
+            Lost ({lostBets})
+          </TabsTrigger>
+          <TabsTrigger value="pending" className="cursor-pointer">
+            Pending ({pendingBets})
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="all" className="space-y-4">
