@@ -155,7 +155,7 @@ describe('BettingPoolFactory', function () {
 
       // Create the match in the POAP contract and award POAP to the owner
       await poapContract.createMatch(123, 'Test Match');
-      await poapContract.awardPOAP(owner.address, 123);
+      await poapContract.awardPoap(owner.address, 123);
     });
     it('should verify POAP and emit event', async () => {
       await expect(factory.verifyPOAPAttendance(owner.address, 123))
