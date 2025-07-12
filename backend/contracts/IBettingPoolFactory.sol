@@ -12,4 +12,5 @@ interface IBettingPoolFactory {
      * @return Multiplier value (0.8 to 1.5)
      */
     function calculateMultiplier(address user) external view returns (uint256);
+    function owner() external view returns (address);
 }
