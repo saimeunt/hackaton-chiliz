@@ -57,7 +57,7 @@ contract BettingPoolTest is Test {
             address(team2Token),
             matchStartTime,
             matchDuration,
-            matchId
+            "Test Match"
         );
 
         // Get the created pool address

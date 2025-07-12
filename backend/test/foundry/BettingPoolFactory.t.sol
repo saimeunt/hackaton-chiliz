@@ -35,7 +35,6 @@ contract BettingPoolFactoryTest is Test {
             team2Token,
             matchStart,
             3600,
-            1,
             "Test Match"
         );
         assertTrue(factory.isPool(poolAddr));
@@ -50,7 +49,6 @@ contract BettingPoolFactoryTest is Test {
             team2Token,
             block.timestamp + 1000,
             3600,
-            2,
             "Test Match"
         );
     }
@@ -62,7 +60,6 @@ contract BettingPoolFactoryTest is Test {
             team1Token,
             block.timestamp + 1000,
             3600,
-            3,
             "Test Match"
         );
     }
@@ -74,7 +71,6 @@ contract BettingPoolFactoryTest is Test {
             team2Token,
             matchStart,
             3600,
-            4,
             "Test Match"
         );
         vm.expectRevert("Match ID already exists");
@@ -83,7 +79,6 @@ contract BettingPoolFactoryTest is Test {
             team2Token,
             matchStart + 1000,
             3600,
-            4,
             "Test Match"
         );
     }
@@ -112,7 +107,6 @@ contract BettingPoolFactoryTest is Test {
             team2Token,
             matchStart,
             3600,
-            123,
             "Test Match"
         );
 
@@ -134,7 +128,6 @@ contract BettingPoolFactoryTest is Test {
             team2Token,
             matchStart,
             3600,
-            124,
             "Test Match"
         );
 
@@ -163,7 +156,6 @@ contract BettingPoolFactoryTest is Test {
                 team2Token,
                 matchStart,
                 3600,
-                i,
                 "Test Match"
             );
             poapContract.awardPoap(user, i);
@@ -185,7 +177,6 @@ contract BettingPoolFactoryTest is Test {
                 team2Token,
                 matchStart,
                 3600,
-                i,
                 "Test Match"
             );
             poapContract.awardPoap(user, i);
@@ -206,7 +197,6 @@ contract BettingPoolFactoryTest is Test {
             team2Token,
             matchStart,
             3600,
-            5,
             "Test Match"
         );
         address[] memory pools = factory.getPools();
