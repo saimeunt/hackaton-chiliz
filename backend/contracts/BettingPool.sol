@@ -54,8 +54,8 @@ contract BettingPool {
     uint256 public constant CLAIM_GLOBAL_DELAY = 730 days; // 2 years
 
     MatchStatus public matchStatus;
-    address public team1Token;
-    address public team2Token;
+    address public immutable team1Token;
+    address public immutable team2Token;
     address public winningTeamToken;
 
     TeamPool public team1Pool;
@@ -160,24 +160,24 @@ contract BettingPool {
 
     /**
      * @dev End the match and set the winner
-     * @param _winningTeamToken The token of the winning team
+     * @param winningTeamToken The token of the winning team
      */
     function endMatch(
-        address _winningTeamToken
+        address winningTeamToken
     ) external onlyFactory onlyAfterMatch {
         require(
             matchStatus == MatchStatus.IN_PROGRESS,
             "Match not in progress"
         );
         require(
-            _winningTeamToken == team1Token || _winningTeamToken == team2Token,
+            winningTeamToken == team1Token || winningTeamToken == team2Token,
             "Invalid winning team"
         );
 
-        winningTeamToken = _winningTeamToken;
+        winningTeamToken = winningTeamToken;
         matchStatus = MatchStatus.FINISHED;
 
-        emit MatchEnded(_winningTeamToken);
+        emit MatchEnded(winningTeamToken);
     }
 
     /**

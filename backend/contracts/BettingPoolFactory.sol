@@ -185,8 +185,9 @@ contract BettingPoolFactory {
 
     // View functions
     function getPools() external view returns (address[] memory) {
-        address[] memory poolAddresses = new address[](pools.length);
-        for (uint256 i = 0; i < pools.length; i++) {
+        uint256 poolsLength = pools.length;
+        address[] memory poolAddresses = new address[](poolsLength);
+        for (uint256 i = 0; i < poolsLength; i++) {
             poolAddresses[i] = address(pools[i]);
         }
         return poolAddresses;

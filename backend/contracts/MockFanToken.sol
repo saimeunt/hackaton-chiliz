@@ -5,7 +5,7 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 contract MockFanToken is ERC20, Ownable {
-    uint8 private _decimals;
+    uint8 private immutable _decimals;
 
     constructor(
         string memory name,
