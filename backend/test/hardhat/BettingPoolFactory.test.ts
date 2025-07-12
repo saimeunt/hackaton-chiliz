@@ -21,7 +21,9 @@ describe('BettingPoolFactory', function () {
     await factory.waitForDeployment();
 
     // Set the factory address in the POAP contract
-    await (poapContract as any).setBettingPoolFactory(await factory.getAddress());
+    await (poapContract as any).setBettingPoolFactory(
+      await factory.getAddress(),
+    );
   });
 
   it('should deploy with correct params', async () => {
