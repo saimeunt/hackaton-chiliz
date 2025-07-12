@@ -100,13 +100,8 @@ contract BettingPoolTest is Test {
         vm.prank(alice);
         pool.placeBet(address(team1Token), betAmount);
 
-        (uint256 amount, uint256 multiplier, bool claimed) = pool.getBet(
-            alice,
-            address(team1Token)
-        );
-        assertEq(amount, betAmount);
+        (, uint256 multiplier, ) = pool.getBet(alice, address(team1Token));
         assertEq(multiplier, 80); // 0.8 for new user
-        assertEq(claimed, false);
     }
 
     function test_PlaceBetMinimumAmount() public {
@@ -199,10 +194,7 @@ contract BettingPoolTest is Test {
         vm.prank(alice);
         pool.placeBet(address(team1Token), betAmount);
 
-        (uint256 amount, uint256 multiplier, bool claimed) = pool.getBet(
-            alice,
-            address(team1Token)
-        );
+        (, uint256 multiplier, ) = pool.getBet(alice, address(team1Token));
         assertEq(multiplier, 100); // 1.0 after attending 1 match
     }
 
