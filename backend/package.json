@@ -13,7 +13,8 @@
     "start:node": "hardhat node",
     "test": "pnpm test:hardhat && pnpm test:foundry",
     "test:foundry": "forge test",
-    "test:hardhat": "pnpm hardhat test"
+    "test:hardhat": "pnpm hardhat test",
+    "test:hardhat:anvil": "pnpm hardhat test ./test/hardhat/BettingPool2.test.ts --network anvil"
   },
   "dependencies": {
     "hardhat": "^2.25.0",

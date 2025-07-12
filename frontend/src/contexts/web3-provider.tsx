@@ -2,49 +2,32 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WagmiProvider } from 'wagmi';
-import { config } from '@/lib/wagmi.config';
+import { createAppKit } from '@reown/appkit/react';
 import React from 'react';
-import { ConnectKitProvider } from 'connectkit';
+import { chiliz } from 'wagmi/chains';
+import { config, wagmiAdapter } from '@/lib/wagmi';
 
 const queryClient = new QueryClient();
+
+export const appKit = createAppKit({
+  adapters: [wagmiAdapter],
+  projectId: process.env.NEXT_PUBLIC_REOWN_PROJECT_ID!,
+  networks: [chiliz],
+  metadata: {
+    name: 'clash-of-fanz',
+    description: 'Clash of Fanz',
+    url: 'https://clash-of-fanz.vercel.app', // origin must match your domain & subdomain
+    icons: ['https://assets.reown.com/reown-profile-pic.png'],
+  },
+  featuredWalletIds: [
+    'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96',
+  ],
+});
 
 export function Web3Provider({ children }: { children: React.ReactNode }) {
   return (
     <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        <ConnectKitProvider
-          customTheme={{
-            '--ck-connectbutton-border-radius': '6px',
-            '--ck-connectbutton-background': 'hsl(var(--background))',
-            '--ck-connectbutton-color': 'hsl(var(--accent-foreground))',
-            '--ck-connectbutton-hover-background': 'hsl(var(--accent))',
-            '--ck-connectbutton-active-background': 'hsl(var(--background))',
-            '--ck-connectbutton-balance-background': 'hsl(var(--muted))',
-            '--ck-connectbutton-balance-color': 'hsl(var(--accent-foreground))',
-            '--ck-connectbutton-balance-hover-background': 'hsl(var(--muted))',
-            '--ck-connectbutton-balance-active-background':
-              'hsl(var(--background))',
-            '--ck-connectbutton-box-shadow': '0 0 0 1px hsl(var(--input))',
-            '--ck-connectbutton-balance-box-shadow':
-              '0 0 0 1px hsl(var(--input))',
-            '--ck-connectbutton-hover-box-shadow':
-              '0 0 0 1px hsl(var(--input))',
-            '--ck-connectbutton-balance-hover-box-shadow':
-              '0 0 0 1px hsl(var(--input))',
-            '--ck-connectbutton-active-box-shadow':
-              '0 0 0 1px hsl(var(--input))',
-            '--ck-connectbutton-balance-active-box-shadow':
-              '0 0 0 1px hsl(var(--input))',
-          }}
-          options={{
-            language: 'en-US',
-          }}
-          mode="auto"
-          theme="auto"
-        >
-          {children}
-        </ConnectKitProvider>
-      </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </WagmiProvider>
   );
 }
