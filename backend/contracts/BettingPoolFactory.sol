@@ -18,7 +18,11 @@ contract BettingPoolFactory is PoolManager, IBettingPoolFactory {
         address indexed previousOwner,
         address indexed newOwner
     );
-    event UserMatchCountUpdated(address indexed user, uint256 newCount);
+    event UserMatchCountUpdated(
+        address indexed user,
+        uint256 newCount,
+        uint256 matchId
+    );
 
     // State variables
     address public owner;
@@ -29,6 +33,11 @@ contract BettingPoolFactory is PoolManager, IBettingPoolFactory {
     // Modifiers
     modifier onlyOwner() {
         require(msg.sender == owner, "Only owner can call this");
+        _;
+    }
+
+    modifier onlyPoap() {
+        require(msg.sender == poapContract, "Only POAP can call this");
         _;
     }
 
@@ -93,7 +102,7 @@ contract BettingPoolFactory is PoolManager, IBettingPoolFactory {
     function verifyPOAPAttendance(
         address user,
         uint256 matchId
-    ) external nonReentrant onlyOwner {
+    ) external nonReentrant onlyPoap {
         _verifyPOAPAttendance(user, matchId);
         _updateUserMatchCount(user, matchId);
     }
@@ -146,12 +155,8 @@ contract BettingPoolFactory is PoolManager, IBettingPoolFactory {
      * @param matchId POAP match ID
      */
     function _updateUserMatchCount(address user, uint256 matchId) internal {
-        // Verify POAP ownership
-        uint256 balance = IPOAP(poapContract).balanceOf(user, matchId);
-        require(balance > 0, "No POAP for this match");
-
         userMatchCount[user]++;
-        emit UserMatchCountUpdated(user, userMatchCount[user]);
+        emit UserMatchCountUpdated(user, userMatchCount[user], matchId);
     }
 
     /**
