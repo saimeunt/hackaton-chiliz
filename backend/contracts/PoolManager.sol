@@ -3,6 +3,7 @@ pragma solidity ^0.8.20;
 
 import {BettingPool} from "./BettingPool.sol";
 import {IFanToken} from "./IFanToken.sol";
+import {IPOAP} from "./IPOAP.sol";
 
 /**
  * @title PoolManager

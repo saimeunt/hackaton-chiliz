@@ -45,7 +45,7 @@ describe('BettingPoolFactory', function () {
         team2Token.address,
         now + 1000,
         3600,
-        42,
+        'Test Match',
       );
       const poolAddr = await factory.matchIdToPool(42);
       expect(poolAddr).to.not.equal(ethers.ZeroAddress);
@@ -60,7 +60,7 @@ describe('BettingPoolFactory', function () {
             team2Token.address,
             Date.now() + 1000,
             3600,
-            43,
+            'Test Match',
           ),
       ).to.be.revertedWith('Only owner can call this');
     });
@@ -71,7 +71,7 @@ describe('BettingPoolFactory', function () {
           team1Token.address,
           Date.now() + 1000,
           3600,
-          44,
+          'Test Match',
         ),
       ).to.be.revertedWith('Teams must be different');
     });
@@ -85,7 +85,7 @@ describe('BettingPoolFactory', function () {
         team2Token.address,
         now + 1000,
         3600,
-        45,
+        'Test Match',
       );
       await expect(
         factory.createPool(
@@ -93,7 +93,7 @@ describe('BettingPoolFactory', function () {
           team2Token.address,
           now + 2000,
           3600,
-          45,
+          'Test Match',
         ),
       ).to.be.revertedWith('Match ID already exists');
     });
@@ -111,7 +111,7 @@ describe('BettingPoolFactory', function () {
         team2Token.address,
         now + 1000,
         3600,
-        99,
+        'Test Match',
       );
       poolAddr = await factory.matchIdToPool(99);
     });
@@ -147,7 +147,7 @@ describe('BettingPoolFactory', function () {
         team2Token.address,
         now + 1000,
         3600,
-        123,
+        'Test Match',
       );
       poolAddr = await factory.matchIdToPool(123);
 
@@ -165,7 +165,7 @@ describe('BettingPoolFactory', function () {
         team2Token.address,
         now + 1000,
         3600,
-        124,
+        'Test Match',
       );
       await expect(poapContract.awardPoap(other.address, 124))
         .to.emit(factory, 'POAPVerified')
@@ -228,7 +228,7 @@ describe('BettingPoolFactory', function () {
           team2Token.address,
           now + 1000,
           3600,
-          i,
+          `Match ${i}`,
         );
         await poapContract.awardPoap(owner.address, i);
       }
@@ -247,7 +247,7 @@ describe('BettingPoolFactory', function () {
           team2Token.address,
           now + 1000,
           3600,
-          i,
+          `Match ${i}`,
         );
         await poapContract.awardPoap(owner.address, i);
       }
@@ -266,7 +266,7 @@ describe('BettingPoolFactory', function () {
           team2Token.address,
           now + 1000,
           3600,
-          i,
+          `Match ${i}`,
         );
         await poapContract.awardPoap(owner.address, i);
       }
@@ -287,7 +287,7 @@ describe('BettingPoolFactory', function () {
         team2Token.address,
         now + 1000,
         3600,
-        77,
+        'Test Match',
       );
       const pools = await factory.getPools();
       expect(pools.length).to.equal(1);

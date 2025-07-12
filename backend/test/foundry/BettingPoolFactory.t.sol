@@ -35,7 +35,8 @@ contract BettingPoolFactoryTest is Test {
             team2Token,
             matchStart,
             3600,
-            1
+            1,
+            "Test Match"
         );
         assertTrue(factory.isPool(poolAddr));
         assertEq(factory.matchIdToPool(1), poolAddr);
@@ -49,7 +50,8 @@ contract BettingPoolFactoryTest is Test {
             team2Token,
             block.timestamp + 1000,
             3600,
-            2
+            2,
+            "Test Match"
         );
     }
 
@@ -60,15 +62,30 @@ contract BettingPoolFactoryTest is Test {
             team1Token,
             block.timestamp + 1000,
             3600,
-            3
+            3,
+            "Test Match"
         );
     }
 
     function testRevertCreatePoolIfMatchIdExists() public {
         uint256 matchStart = block.timestamp + 10000; // Use larger timestamp
-        factory.createPool(team1Token, team2Token, matchStart, 3600, 4);
+        factory.createPool(
+            team1Token,
+            team2Token,
+            matchStart,
+            3600,
+            4,
+            "Test Match"
+        );
         vm.expectRevert("Match ID already exists");
-        factory.createPool(team1Token, team2Token, matchStart + 1000, 3600, 4);
+        factory.createPool(
+            team1Token,
+            team2Token,
+            matchStart + 1000,
+            3600,
+            4,
+            "Test Match"
+        );
     }
 
     function testTransferOwnership() public {
@@ -90,7 +107,14 @@ contract BettingPoolFactoryTest is Test {
 
     function testVerifyPOAPAttendance() public {
         uint256 matchStart = block.timestamp + 10000;
-        factory.createPool(team1Token, team2Token, matchStart, 3600, 123);
+        factory.createPool(
+            team1Token,
+            team2Token,
+            matchStart,
+            3600,
+            123,
+            "Test Match"
+        );
 
         // Create the match in the POAP contract and award POAP to the user
         poapContract.createMatch(123, "Test Match");
@@ -105,7 +129,14 @@ contract BettingPoolFactoryTest is Test {
 
     function testRevertVerifyPOAPAttendanceIfNotPOAP() public {
         uint256 matchStart = block.timestamp + 10000;
-        factory.createPool(team1Token, team2Token, matchStart, 3600, 124);
+        factory.createPool(
+            team1Token,
+            team2Token,
+            matchStart,
+            3600,
+            124,
+            "Test Match"
+        );
 
         vm.prank(user);
         vm.expectRevert("Only POAP can call this");
@@ -127,7 +158,14 @@ contract BettingPoolFactoryTest is Test {
                 string(abi.encodePacked("Match ", vm.toString(i)))
             );
             uint256 matchStart = block.timestamp + 10000;
-            factory.createPool(team1Token, team2Token, matchStart, 3600, i);
+            factory.createPool(
+                team1Token,
+                team2Token,
+                matchStart,
+                3600,
+                i,
+                "Test Match"
+            );
             poapContract.awardPoap(user, i);
         }
         multiplier = factory.calculateMultiplier(user);
@@ -142,7 +180,14 @@ contract BettingPoolFactoryTest is Test {
                 string(abi.encodePacked("Match ", vm.toString(i)))
             );
             uint256 matchStart = block.timestamp + 10000;
-            factory.createPool(team1Token, team2Token, matchStart, 3600, i);
+            factory.createPool(
+                team1Token,
+                team2Token,
+                matchStart,
+                3600,
+                i,
+                "Test Match"
+            );
             poapContract.awardPoap(user, i);
         }
         uint256 multiplier = factory.calculateMultiplier(user);
@@ -161,7 +206,8 @@ contract BettingPoolFactoryTest is Test {
             team2Token,
             matchStart,
             3600,
-            5
+            5,
+            "Test Match"
         );
         address[] memory pools = factory.getPools();
         assertEq(pools.length, 1);

@@ -54,7 +54,7 @@ contract BettingPoolFactory is PoolManager, IBettingPoolFactory {
      * @param team2Token Token of the second team
      * @param matchStartTime Start time of the match
      * @param matchDuration Duration of the match in seconds
-     * @param matchId POAP match ID for attendance verification
+     * @param matchName Name of the match (for POAP)
      * @return poolAddress Address of the created pool
      */
     function createPool(
@@ -62,7 +62,7 @@ contract BettingPoolFactory is PoolManager, IBettingPoolFactory {
         address team2Token,
         uint256 matchStartTime,
         uint256 matchDuration,
-        uint256 matchId
+        string memory matchName
     ) external onlyOwner returns (address poolAddress) {
         return
             _createPool(
@@ -70,7 +70,7 @@ contract BettingPoolFactory is PoolManager, IBettingPoolFactory {
                 team2Token,
                 matchStartTime,
                 matchDuration,
-                matchId
+                matchName
             );
     }
 
