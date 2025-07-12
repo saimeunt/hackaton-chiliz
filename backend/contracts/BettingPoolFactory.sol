@@ -133,8 +133,8 @@ contract BettingPoolFactory is PoolManager, IBettingPoolFactory {
      * @return Multiplier value starting at 100%
      */
     function calculateMultiplier(address user) public view returns (uint256) {
-        uint256 matchCount = userMatchCount[user];
-        uint256 multiplier = 100 + Math.log10(matchCount + 1) / 5;
+        uint256 userMatches = userMatchCount[user];
+        uint256 multiplier = 100 + Math.log10(userMatches + 1) / 5;
         return multiplier;
     }
 

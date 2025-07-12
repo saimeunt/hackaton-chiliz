@@ -88,7 +88,7 @@ contract PoolManager {
         uint256 matchStartTime,
         uint256 matchDuration,
         string memory matchName
-    ) internal returns (address poolAddress) {
+    ) internal nonReentrant returns (address poolAddress) {
         require(team1Token != team2Token, "Teams must be different");
         require(
             _isValidMatchStartTime(matchStartTime),
@@ -99,6 +99,9 @@ contract PoolManager {
             matchIdToPool[matchCount] == address(0),
             "Match ID already exists"
         );
+
+        // Store current matchCount before external call
+        uint256 currentMatchCount = matchCount;
 
         // Create new pool
         BettingPool pool = new BettingPool(
@@ -114,9 +117,13 @@ contract PoolManager {
         poolAddress = address(pool);
         pools.push(pool);
         isPool[poolAddress] = true;
-        matchIdToPool[matchCount] = poolAddress;
+        matchIdToPool[currentMatchCount] = poolAddress;
 
-        IPOAP(poapContract).createMatch(matchCount, matchName);
+        // Update matchCount before external call to prevent reentrancy
+        matchCount = currentMatchCount + 1;
+
+        // External call after all state changes
+        IPOAP(poapContract).createMatch(currentMatchCount, matchName);
 
         emit PoolCreated(
             poolAddress,
@@ -125,8 +132,6 @@ contract PoolManager {
             matchStartTime,
             matchDuration
         );
-
-        matchCount++;
         return poolAddress;
     }
 

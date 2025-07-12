@@ -24,7 +24,7 @@ describe('BettingPoolFactory', function () {
     await (poapContract as any).setBettingPoolFactory(
       await factory.getAddress(),
     );
-    
+
     // Transfer ownership of POAP contract to the factory so it can call createMatch
     await poapContract.transferOwnership(await factory.getAddress());
   });
