@@ -27,8 +27,8 @@ const config: HardhatUserConfig = {
       chainId: 88888,
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
-    chilizTestnet: {
-      url: 'https://rpc.ankr.com/chiliz_testnet',
+    spicyTestnet: {
+      url: 'https://spicy-rpc.chiliz.com',
       chainId: 88882,
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     }
