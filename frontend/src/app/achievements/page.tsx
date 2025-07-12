@@ -78,7 +78,7 @@ export default function Achievements() {
       </div>
 
       {/* Carrousel des achievements */}
-      <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-6">
+      <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg">
         <AchievementsCarousel itemsPerView={3} />
       </div>
 

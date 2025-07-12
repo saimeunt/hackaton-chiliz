@@ -33,7 +33,7 @@ export function MobileNavigationMenu({
           <div className="flex flex-col h-full">
             <div className="p-6">
               <Link href="/" onClick={() => setOpen(false)}>
-                <Logo iconSize="sm" textSize="md" />
+                <Logo size="full" />
               </Link>
             </div>
 

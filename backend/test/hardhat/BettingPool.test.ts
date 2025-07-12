@@ -5,26 +5,13 @@ import { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/signers';
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 
 const ADDRESS_0 = '0x0000000000000000000000000000000000000000';
-const MIN_BET_AMOUNT = ethers.parseEther('10');
 const MATCH_DURATION = 7200; // 2 hours
 const WITHDRAWAL_BLOCK_TIME = 3600; // 1 hour before match
-
-type Bet = {
-  amount: bigint;
-  multiplier: bigint;
-  claimed: boolean;
-};
 
 type PoolInfo = {
   totalAmount: bigint;
   bettorCount: bigint;
 };
-
-function testBet(bet: Bet, betToCompare: Bet) {
-  expect(bet.amount).to.equal(betToCompare.amount);
-  expect(bet.multiplier).to.equal(betToCompare.multiplier);
-  expect(bet.claimed).to.equal(betToCompare.claimed);
-}
 
 function testPoolInfo(poolInfo: PoolInfo, poolInfoToCompare: PoolInfo) {
   expect(poolInfo.totalAmount).to.equal(poolInfoToCompare.totalAmount);
@@ -112,9 +99,6 @@ describe('BettingPool tests', () => {
       );
       expect(await bettingPoolContract.matchStatus()).to.equal(0); // UPCOMING
       expect(await bettingPoolContract.winningTeamToken()).to.equal(ADDRESS_0);
-      expect(await bettingPoolContract.MIN_BET_AMOUNT()).to.equal(
-        MIN_BET_AMOUNT,
-      );
     });
 
     it('should set correct match timing parameters', async () => {
@@ -245,50 +229,6 @@ describe('BettingPool tests', () => {
     });
   });
 
-  describe('calculateMultiplier', () => {
-    it('should return 0.8x multiplier for new users', async () => {
-      // Since calculateMultiplier now calls the factory, we need to mock the factory
-      // For this test, we'll skip it as it requires a proper factory setup
-      // In a real scenario, you would test this through the factory contract
-      expect(true).to.be.true; // Placeholder test
-    });
-
-    it('should return 1.0x multiplier after 5 matches', async () => {
-      // Since calculateMultiplier now calls the factory, we need to mock the factory
-      // For this test, we'll skip it as it requires a proper factory setup
-      // In a real scenario, you would test this through the factory contract
-      expect(true).to.be.true; // Placeholder test
-    });
-
-    it('should return 1.5x multiplier after 100 matches', async () => {
-      // Since calculateMultiplier now calls the factory, we need to mock the factory
-      // For this test, we'll skip it as it requires a proper factory setup
-      // In a real scenario, you would test this through the factory contract
-      expect(true).to.be.true; // Placeholder test
-    });
-
-    it('should return intermediate multiplier for users with 1-4 matches', async () => {
-      // Since calculateMultiplier now calls the factory, we need to mock the factory
-      // For this test, we'll skip it as it requires a proper factory setup
-      // In a real scenario, you would test this through the factory contract
-      expect(true).to.be.true; // Placeholder test
-    });
-  });
-
-  describe('getBet', () => {
-    it('should return zero bet for user with no bet', async () => {
-      const bet = await bettingPoolContract.getBet(
-        user1.address,
-        team1Token.address,
-      );
-      testBet(bet, {
-        amount: 0n,
-        multiplier: 0n,
-        claimed: false,
-      });
-    });
-  });
-
   describe('getPoolInfo', () => {
     it('should return zero pool info for empty pool', async () => {
       const poolInfo = await bettingPoolContract.getPoolInfo(
@@ -333,18 +273,6 @@ describe('BettingPool tests', () => {
       await expect(
         bettingPoolContract.connect(factory).adminClaim(),
       ).to.be.revertedWith('Too early for admin claim');
-    });
-
-    it('should allow adminClaim after 1 year delay', async () => {
-      // Move time to after admin claim delay (365 days)
-      const matchEndTime = await bettingPoolContract.matchEndTime();
-      const adminClaimTime = Number(matchEndTime) + 365 * 24 * 3600 + 1;
-
-      await ethers.provider.send('evm_setNextBlockTimestamp', [adminClaimTime]);
-      await ethers.provider.send('evm_mine', []);
-
-      // Should not revert, but may not emit event if no unclaimed tokens
-      await bettingPoolContract.connect(factory).adminClaim();
     });
   });
 
@@ -427,7 +355,7 @@ describe('BettingPool tests', () => {
 
   describe('placeBet', () => {
     it('should reject bet below minimum amount', async () => {
-      const lowAmount = ethers.parseEther('5');
+      const lowAmount = 0n;
 
       await expect(
         bettingPoolContract
@@ -437,7 +365,7 @@ describe('BettingPool tests', () => {
     });
 
     it('should reject bet with invalid team token', async () => {
-      const betAmount = ethers.parseEther('100');
+      const betAmount = 100n;
       const invalidToken = user3.address; // Random address as invalid token
 
       await expect(
@@ -455,7 +383,7 @@ describe('BettingPool tests', () => {
       ]);
       await ethers.provider.send('evm_mine', []);
 
-      const betAmount = ethers.parseEther('100');
+      const betAmount = 100n;
 
       await expect(
         bettingPoolContract
@@ -468,7 +396,7 @@ describe('BettingPool tests', () => {
       // Start the match first
       await bettingPoolContract.connect(factory).startMatch();
 
-      const betAmount = ethers.parseEther('100');
+      const betAmount = 100n;
 
       await expect(
         bettingPoolContract

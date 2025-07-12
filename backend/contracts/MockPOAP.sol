@@ -3,10 +3,12 @@ pragma solidity ^0.8.20;
 
 import {ERC1155} from "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {IBettingPoolFactory} from "./IBettingPoolFactory.sol";
 
 contract MockPOAP is ERC1155, Ownable {
     mapping(uint256 => string) public matchNames;
     mapping(address => mapping(uint256 => bool)) public hasAttended;
+    address public bettingPoolFactory;
 
     constructor() ERC1155("") Ownable(msg.sender) {}
 
@@ -30,10 +32,18 @@ contract MockPOAP is ERC1155, Ownable {
     function awardPoap(address user, uint256 matchId) external onlyOwner {
         require(bytes(matchNames[matchId]).length > 0, "Match does not exist");
 
-        // Allow multiple awards for the same match (for testing purposes)
+        // Only award POAP and call verifyPOAPAttendance if user hasn't attended yet
         if (!hasAttended[user][matchId]) {
             hasAttended[user][matchId] = true;
             _mint(user, matchId, 1, "");
+
+            // Only call verifyPOAPAttendance if bettingPoolFactory is set
+            if (bettingPoolFactory != address(0)) {
+                IBettingPoolFactory(bettingPoolFactory).verifyPOAPAttendance(
+                    user,
+                    matchId
+                );
+            }
         }
     }
 
@@ -59,6 +69,15 @@ contract MockPOAP is ERC1155, Ownable {
         uint256 matchId
     ) external view returns (string memory) {
         return matchNames[matchId];
+    }
+
+    /**
+     * @dev Set the betting pool factory address
+     * @param factory Address of the betting pool factory
+     */
+    function setBettingPoolFactory(address factory) external onlyOwner {
+        require(factory != address(0), "Factory cannot be zero address");
+        bettingPoolFactory = factory;
     }
 
     /**

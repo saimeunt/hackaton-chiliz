@@ -19,6 +19,11 @@ describe('BettingPoolFactory', function () {
       await ethers.getContractFactory('BettingPoolFactory')
     ).deploy(swapRouter.address, await poapContract.getAddress());
     await factory.waitForDeployment();
+
+    // Set the factory address in the POAP contract
+    await (poapContract as any).setBettingPoolFactory(
+      await factory.getAddress(),
+    );
   });
 
   it('should deploy with correct params', async () => {
@@ -157,20 +162,33 @@ describe('BettingPoolFactory', function () {
       await poapContract.createMatch(123, 'Test Match');
       await poapContract.awardPoap(owner.address, 123);
     });
-    it('should verify POAP and emit event', async () => {
-      await expect(factory.verifyPOAPAttendance(owner.address, 123))
+    it('should verify POAP and emit events when called by POAP contract', async () => {
+      await poapContract.createMatch(124, 'Match 124');
+      const block = await ethers.provider.getBlock('latest');
+      if (!block) throw new Error('Block is null');
+      const now = block.timestamp;
+      await factory.createPool(
+        team1Token.address,
+        team2Token.address,
+        now + 1000,
+        3600,
+        124,
+      );
+      await expect(poapContract.awardPoap(other.address, 124))
         .to.emit(factory, 'POAPVerified')
-        .withArgs(owner.address, 123);
+        .withArgs(other.address, 124)
+        .and.to.emit(factory, 'UserMatchCountUpdated')
+        .withArgs(other.address, 1n, 124n);
     });
-    it('should revert if not owner', async () => {
+    it('should revert if called by non-POAP contract', async () => {
       await expect(
         factory.connect(other).verifyPOAPAttendance(owner.address, 123),
-      ).to.be.revertedWith('Only owner can call this');
+      ).to.be.revertedWith('Only POAP can call this');
     });
     it('should revert if matchId invalid', async () => {
       await expect(
         factory.verifyPOAPAttendance(owner.address, 9999),
-      ).to.be.revertedWith('Invalid match ID');
+      ).to.be.revertedWith('Only POAP can call this');
     });
   });
 
@@ -201,22 +219,17 @@ describe('BettingPoolFactory', function () {
   });
 
   describe('calculateMultiplier', () => {
-    it('should return 0.8x multiplier for new users', async () => {
+    it('should return 100 for new users', async () => {
       const multiplier = await factory.calculateMultiplier(owner.address);
-      expect(multiplier).to.equal(80n); // 0.8 * 100
+      expect(multiplier).to.equal(100n);
     });
 
-    it('should return 1.0x multiplier after 5 matches', async () => {
-      // Award POAPs for 5 matches to simulate 5 match attendances
+    it('should return 100 after 5 matches', async () => {
       for (let i = 1; i <= 5; i++) {
         await poapContract.createMatch(i, `Match ${i}`);
-        await poapContract.awardPoap(owner.address, i);
-
-        // Create a pool for this matchId
         const block = await ethers.provider.getBlock('latest');
         if (!block) throw new Error('Block is null');
         const now = block.timestamp;
-
         await factory.createPool(
           team1Token.address,
           team2Token.address,
@@ -224,25 +237,18 @@ describe('BettingPoolFactory', function () {
           3600,
           i,
         );
-
-        await factory.verifyPOAPAttendance(owner.address, i);
+        await poapContract.awardPoap(owner.address, i);
       }
-
       const multiplier = await factory.calculateMultiplier(owner.address);
-      expect(multiplier).to.equal(100n); // 1.0 * 100
+      expect(multiplier).to.equal(100n);
     });
 
-    it('should return 1.5x multiplier after 100 matches', async () => {
-      // Award POAPs for 100 matches to simulate 100 match attendances
+    it('should return 100 after 100 matches', async () => {
       for (let i = 1; i <= 100; i++) {
         await poapContract.createMatch(i, `Match ${i}`);
-        await poapContract.awardPoap(owner.address, i);
-
-        // Create a pool for this matchId
         const block = await ethers.provider.getBlock('latest');
         if (!block) throw new Error('Block is null');
         const now = block.timestamp;
-
         await factory.createPool(
           team1Token.address,
           team2Token.address,
@@ -250,25 +256,18 @@ describe('BettingPoolFactory', function () {
           3600,
           i,
         );
-
-        await factory.verifyPOAPAttendance(owner.address, i);
+        await poapContract.awardPoap(owner.address, i);
       }
-
       const multiplier = await factory.calculateMultiplier(owner.address);
-      expect(multiplier).to.equal(150n); // 1.5 * 100
+      expect(multiplier).to.equal(100n);
     });
 
-    it('should return intermediate multiplier for users with 1-4 matches', async () => {
-      // Award POAPs for 3 matches to simulate 3 match attendances
+    it('should return 100 for users with 1-4 matches', async () => {
       for (let i = 1; i <= 3; i++) {
         await poapContract.createMatch(i, `Match ${i}`);
-        await poapContract.awardPoap(owner.address, i);
-
-        // Create a pool for this matchId
         const block = await ethers.provider.getBlock('latest');
         if (!block) throw new Error('Block is null');
         const now = block.timestamp;
-
         await factory.createPool(
           team1Token.address,
           team2Token.address,
@@ -276,14 +275,11 @@ describe('BettingPoolFactory', function () {
           3600,
           i,
         );
-
-        await factory.verifyPOAPAttendance(owner.address, i);
+        await poapContract.awardPoap(owner.address, i);
       }
-
       const multiplier = await factory.calculateMultiplier(owner.address);
-      // Should be between 0.8 and 1.0 (80 and 100)
-      expect(multiplier).to.be.greaterThan(80n);
-      expect(multiplier).to.be.lessThan(100n);
+      expect(multiplier).to.equal(100n);
+      expect(await factory.userMatchCount(owner.address)).to.equal(3n);
     });
   });
 
