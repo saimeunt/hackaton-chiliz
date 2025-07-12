@@ -59,7 +59,7 @@ describe('Voting tests', () => {
 
   describe('constructor', () => {
     it('should deploy the contract with the correct default values, chair person address, chair person weight and proposals', async () => {
-      expect(await ballotContract.CHAIRPERSON()).to.equal(owner);
+      expect(await ballotContract.chairperson()).to.equal(owner);
       testVoter(await ballotContract.voters(owner), {
         delegate: ADDRESS_0,
         vote: 0n,

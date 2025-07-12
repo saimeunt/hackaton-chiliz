@@ -160,24 +160,24 @@ contract BettingPool {
 
     /**
      * @dev End the match and set the winner
-     * @param winningTeamToken The token of the winning team
+     * @param _winningTeamToken The token of the winning team
      */
     function endMatch(
-        address winningTeamToken
+        address _winningTeamToken
     ) external onlyFactory onlyAfterMatch {
         require(
             matchStatus == MatchStatus.IN_PROGRESS,
             "Match not in progress"
         );
         require(
-            winningTeamToken == team1Token || winningTeamToken == team2Token,
+            _winningTeamToken == team1Token || _winningTeamToken == team2Token,
             "Invalid winning team"
         );
 
-        winningTeamToken = winningTeamToken;
+        winningTeamToken = _winningTeamToken;
         matchStatus = MatchStatus.FINISHED;
 
-        emit MatchEnded(winningTeamToken);
+        emit MatchEnded(_winningTeamToken);
     }
 
     /**
