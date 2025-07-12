@@ -3,6 +3,7 @@ pragma solidity ^0.8.20;
 
 import "forge-std/Test.sol";
 import {BettingPoolFactory} from "../../contracts/BettingPoolFactory.sol";
+import {PoolManager} from "../../contracts/PoolManager.sol";
 import {BettingPool} from "../../contracts/BettingPool.sol";
 import {MockPOAP} from "../../contracts/MockPOAP.sol";
 
@@ -96,7 +97,7 @@ contract BettingPoolFactoryTest is Test {
 
         // Verify POAP attendance
         vm.expectEmit(true, true, false, true);
-        emit BettingPoolFactory.POAPVerified(user, 123);
+        emit PoolManager.POAPVerified(user, 123);
         factory.verifyPOAPAttendance(user, 123);
     }
 
