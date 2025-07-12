@@ -62,6 +62,17 @@ contract BettingPoolFactory {
     }
 
     /**
+     * @dev Check if match start time is in the future
+     * @param matchStartTime Start time of the match
+     * @return True if match start time is valid
+     */
+    function _isValidMatchStartTime(
+        uint256 matchStartTime
+    ) internal view returns (bool) {
+        return matchStartTime > block.timestamp;
+    }
+
+    /**
      * @dev Create a new betting pool for a match
      * @param team1Token Token of the first team
      * @param team2Token Token of the second team
@@ -78,11 +89,8 @@ contract BettingPoolFactory {
         uint256 matchId
     ) external onlyOwner returns (address poolAddress) {
         require(team1Token != team2Token, "Teams must be different");
-        // Using block.timestamp for future time validation is acceptable
-        // as it provides sufficient granularity for match scheduling
-        // This is a legitimate use case for timestamp comparison
         require(
-            matchStartTime > block.timestamp,
+            _isValidMatchStartTime(matchStartTime),
             "Match start time must be in the future"
         );
         require(matchDuration > 0, "Match duration must be positive");

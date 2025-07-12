@@ -20,7 +20,7 @@ contract BettingPoolFactoryTest is Test {
         factory = new BettingPoolFactory(swapRouter, address(poapContract));
     }
 
-    function testOwnerSetCorrectly() public {
+    function testOwnerSetCorrectly() public view {
         assertEq(factory.owner(), owner);
         assertEq(factory.swapRouter(), swapRouter);
         assertEq(factory.poapContract(), address(poapContract));
@@ -88,13 +88,7 @@ contract BettingPoolFactoryTest is Test {
 
     function testVerifyPOAPAttendance() public {
         uint256 matchStart = block.timestamp + 10000;
-        address poolAddr = factory.createPool(
-            team1Token,
-            team2Token,
-            matchStart,
-            3600,
-            123
-        );
+        factory.createPool(team1Token, team2Token, matchStart, 3600, 123);
 
         // Create the match in the POAP contract and award POAP to the user
         poapContract.createMatch(123, "Test Match");
@@ -139,7 +133,7 @@ contract BettingPoolFactoryTest is Test {
             address t1,
             address t2,
             uint256 s,
-            uint256 e,
+            ,
             BettingPool.MatchStatus status,
             address winner
         ) = factory.getPoolInfo(poolAddr);

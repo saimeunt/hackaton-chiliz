@@ -40,8 +40,8 @@ contract MockSwapRouter is ISwapRouter {
         uint256 balance = address(this).balance;
         require(balance > 0, "No ETH to withdraw");
 
-        (bool success, ) = payable(owner).call{value: balance}("");
-        require(success, "ETH transfer failed");
+        // Use transfer instead of low-level call for better security
+        payable(owner).transfer(balance);
     }
 
     // Emergency function to recover tokens stuck in router

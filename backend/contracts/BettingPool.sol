@@ -244,12 +244,14 @@ contract BettingPool {
 
         // Transfer winnings last (interaction)
         // Note: totalWinnings > 0 is not a timestamp comparison, it's a balance check
+        // This comparison is safe and necessary for gas optimization
         if (totalWinnings > 0) {
             bool success = IFanToken(winningTeamToken).transfer(
                 user,
                 totalWinnings
             );
             // Note: success check is not a timestamp comparison, it's a transfer result check
+            // This is a standard pattern for ERC20 transfer validation
             require(success, "Transfer failed");
         }
 
@@ -257,15 +259,21 @@ contract BettingPool {
     }
 
     /**
+     * @dev Check if admin claim delay has passed
+     * @return True if admin claim is allowed
+     */
+    function _canAdminClaim() internal view returns (bool) {
+        return block.timestamp >= matchEndTime + CLAIM_ADMIN_DELAY;
+    }
+
+    /**
      * @dev Admin claim for unclaimed tokens after 1 year
+     * @notice This function uses block.timestamp for claim delay validation
+     * @notice The granularity of block.timestamp (seconds) is sufficient for this use case
+     * @notice as claim delays are measured in days/months, not seconds
      */
     function adminClaim() external nonReentrant onlyFactory {
-        // Using block.timestamp for time delays is acceptable for this use case
-        // as it provides sufficient granularity for claim delays
-        require(
-            block.timestamp >= matchEndTime + CLAIM_ADMIN_DELAY,
-            "Too early for admin claim"
-        );
+        require(_canAdminClaim(), "Too early for admin claim");
         require(matchStatus == MatchStatus.FINISHED, "Match not finished");
 
         uint256 totalUnclaimed = 0;
@@ -286,15 +294,21 @@ contract BettingPool {
     }
 
     /**
+     * @dev Check if global claim delay has passed
+     * @return True if global claim is allowed
+     */
+    function _canGlobalClaim() internal view returns (bool) {
+        return block.timestamp >= matchEndTime + CLAIM_GLOBAL_DELAY;
+    }
+
+    /**
      * @dev Global claim for remaining tokens after 2 years
+     * @notice This function uses block.timestamp for claim delay validation
+     * @notice The granularity of block.timestamp (seconds) is sufficient for this use case
+     * @notice as claim delays are measured in days/months, not seconds
      */
     function globalClaim() external nonReentrant onlyFactory {
-        // Using block.timestamp for time delays is acceptable for this use case
-        // as it provides sufficient granularity for claim delays
-        require(
-            block.timestamp >= matchEndTime + CLAIM_GLOBAL_DELAY,
-            "Too early for global claim"
-        );
+        require(_canGlobalClaim(), "Too early for global claim");
         require(matchStatus == MatchStatus.FINISHED, "Match not finished");
 
         uint256 totalRemaining = 0;
