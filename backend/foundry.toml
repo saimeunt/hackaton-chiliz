@@ -12,5 +12,10 @@ remappings = [
   "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
 ]
 
-[fuzz]
+[profile.default.fuzz]
 runs = 50
+
+[profile.default.solc]
+optimizer = true
+optimizer_runs = 200
+via_ir = true
