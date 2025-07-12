@@ -9,12 +9,6 @@ const MIN_BET_AMOUNT = ethers.parseEther('10');
 const MATCH_DURATION = 7200; // 2 hours
 const WITHDRAWAL_BLOCK_TIME = 3600; // 1 hour before match
 
-type Bet = {
-  amount: bigint;
-  multiplier: bigint;
-  claimed: boolean;
-};
-
 type PoolInfo = {
   totalAmount: bigint;
   bettorCount: bigint;
