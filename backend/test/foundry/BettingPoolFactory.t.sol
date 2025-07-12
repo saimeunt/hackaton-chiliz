@@ -4,24 +4,26 @@ pragma solidity 0.8.25;
 import "forge-std/Test.sol";
 import {BettingPoolFactory} from "../../contracts/BettingPoolFactory.sol";
 import {BettingPool} from "../../contracts/BettingPool.sol";
+import {MockPOAP} from "../../contracts/MockPOAP.sol";
 
 contract BettingPoolFactoryTest is Test {
     BettingPoolFactory factory;
+    MockPOAP poapContract;
     address owner = address(this);
     address swapRouter = address(0x123);
-    address poapContract = address(0x456);
     address team1Token = address(0x111);
     address team2Token = address(0x222);
     address user = address(0x999);
 
     function setUp() public {
-        factory = new BettingPoolFactory(swapRouter, poapContract);
+        poapContract = new MockPOAP();
+        factory = new BettingPoolFactory(swapRouter, address(poapContract));
     }
 
     function testOwnerSetCorrectly() public {
         assertEq(factory.owner(), owner);
         assertEq(factory.swapRouter(), swapRouter);
-        assertEq(factory.poapContract(), poapContract);
+        assertEq(factory.poapContract(), address(poapContract));
     }
 
     function testCreatePool() public {
@@ -84,7 +86,41 @@ contract BettingPoolFactoryTest is Test {
         factory.transferOwnership(owner);
     }
 
-    // For startMatch, endMatch, verifyPOAPAttendance, claimWinnings, adminClaim, globalClaim tests,
+    function testVerifyPOAPAttendance() public {
+        uint256 matchStart = block.timestamp + 10000;
+        address poolAddr = factory.createPool(
+            team1Token,
+            team2Token,
+            matchStart,
+            3600,
+            123
+        );
+
+        // Create the match in the POAP contract and award POAP to the user
+        poapContract.createMatch(123, "Test Match");
+        poapContract.awardPOAP(user, 123);
+
+        // Verify POAP attendance
+        vm.expectEmit(true, true, false, true);
+        emit BettingPoolFactory.POAPVerified(user, 123);
+        factory.verifyPOAPAttendance(user, 123);
+    }
+
+    function testRevertVerifyPOAPAttendanceIfNotOwner() public {
+        uint256 matchStart = block.timestamp + 10000;
+        factory.createPool(team1Token, team2Token, matchStart, 3600, 124);
+
+        vm.prank(user);
+        vm.expectRevert("Only owner can call this");
+        factory.verifyPOAPAttendance(user, 124);
+    }
+
+    function testRevertVerifyPOAPAttendanceInvalidMatchId() public {
+        vm.expectRevert("Invalid match ID");
+        factory.verifyPOAPAttendance(user, 9999);
+    }
+
+    // For startMatch, endMatch, claimWinnings, adminClaim, globalClaim tests,
     // we would need to deploy a real BettingPool and mock the calls, or use a mock contract.
     // These tests need to be completed according to BettingPool logic.
 

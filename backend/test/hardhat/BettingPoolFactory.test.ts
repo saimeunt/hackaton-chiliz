@@ -1,22 +1,27 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { BettingPoolFactory, BettingPool } from '@/typechain-types';
+import { BettingPoolFactory, BettingPool, MockPOAP } from '@/typechain-types';
 
 describe('BettingPoolFactory', function () {
   let factory: BettingPoolFactory;
   let owner: any, other: any;
-  let swapRouter: any, poapContract: any, team1Token: any, team2Token: any;
+  let swapRouter: any, poapContract: MockPOAP, team1Token: any, team2Token: any;
 
   beforeEach(async () => {
-    [owner, other, swapRouter, poapContract, team1Token, team2Token] = await ethers.getSigners();
-    factory = await (await ethers.getContractFactory('BettingPoolFactory')).deploy(swapRouter.address, poapContract.address);
+    [owner, other, swapRouter, , team1Token, team2Token] = await ethers.getSigners();
+    
+    // Deploy a real MockPOAP contract instead of using a signer
+    poapContract = await (await ethers.getContractFactory('MockPOAP')).deploy();
+    await poapContract.waitForDeployment();
+    
+    factory = await (await ethers.getContractFactory('BettingPoolFactory')).deploy(swapRouter.address, await poapContract.getAddress());
     await factory.waitForDeployment();
   });
 
   it('should deploy with correct params', async () => {
     expect(await factory.owner()).to.equal(owner.address);
     expect(await factory.swapRouter()).to.equal(swapRouter.address);
-    expect(await factory.poapContract()).to.equal(poapContract.address);
+    expect(await factory.poapContract()).to.equal(await poapContract.getAddress());
   });
 
   describe('createPool', () => {
@@ -79,10 +84,14 @@ describe('BettingPoolFactory', function () {
       const now = block.timestamp;
 
       await factory.createPool(team1Token.address, team2Token.address, now + 1000, 3600, 123);
-        poolAddr = await factory.matchIdToPool(123);
+      poolAddr = await factory.matchIdToPool(123);
+      
+      // Create the match in the POAP contract and award POAP to the owner
+      await poapContract.createMatch(123, "Test Match");
+      await poapContract.awardPOAP(owner.address, 123);
     });
-    it.only('should verify POAP and emit event', async () => {
-      await expect(factory.verifyPOAPAttendance(owner.address, 123)).to.emit(factory, 'POAPVerified');
+    it('should verify POAP and emit event', async () => {
+      await expect(factory.verifyPOAPAttendance(owner.address, 123)).to.emit(factory, 'POAPVerified').withArgs(owner.address, 123);
     });
     it('should revert if not owner', async () => {
       await expect(factory.connect(other).verifyPOAPAttendance(owner.address, 123)).to.be.revertedWith('Only owner can call this');

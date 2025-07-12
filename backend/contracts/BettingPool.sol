@@ -299,13 +299,8 @@ contract BettingPool {
         uint256 matchId
     ) external onlyFactory {
         // Verify POAP ownership
-        try IPOAP(poapContract).balanceOf(user, matchId) returns (
-            uint256 balance
-        ) {
-            require(balance > 0, "No POAP for this match");
-        } catch {
-            revert("POAP verification failed");
-        }
+        uint256 balance = IPOAP(poapContract).balanceOf(user, matchId);
+        require(balance > 0, "No POAP for this match");
         userMatchCount[user]++;
     }
 
