@@ -4,6 +4,8 @@
 ### Done by Simon Arvaux, William Simon--Vezo, Franck Rieu-Patey
 ![logo](https://github.com/Varadiell/hackaton-chiliz/blob/main/assets/logoVecto2.png?raw=true "Logo")
 
+Test us : https://clash-of-fanz.vercel.app/ 
+
 Betting project, but with a twist !
 Make it real with DeFi and Attendance proof
 
