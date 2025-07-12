@@ -10,7 +10,7 @@ async function main() {
     // Read contract addresses
     const addressesPath = join(__dirname, '../deployment-addresses.json');
     const addresses = JSON.parse(readFileSync(addressesPath, 'utf8'));
-    
+
     console.log('\n📋 Contract Addresses:');
     for (const [name, address] of Object.entries(addresses)) {
       console.log(`${name}: ${address}`);
@@ -21,7 +21,10 @@ async function main() {
 
     // 1. Verify MockSwapRouter
     console.log('\n1. Verifying MockSwapRouter...');
-    const mockSwapRouter = await ethers.getContractAt('MockSwapRouter', addresses.MockSwapRouter);
+    const mockSwapRouter = await ethers.getContractAt(
+      'MockSwapRouter',
+      addresses.MockSwapRouter,
+    );
     const swapRouterOwner = await mockSwapRouter.owner();
     console.log(`   Owner: ${swapRouterOwner}`);
     console.log(`   Expected owner: ${deployer.address}`);
@@ -41,32 +44,40 @@ async function main() {
       '0x70997970C51812dc3A010C7d01b50e0d17dc79C8',
       '0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC',
       '0x90F79bf6EB2c4f870365E785982E1f101E93b906',
-      '0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65'
+      '0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65',
     ];
 
     for (let i = 0; i < teamTokens.length; i++) {
       console.log(`\n${i + 3}. Verifying ${teamTokens[i]}...`);
-      const token = await ethers.getContractAt('MockFanToken', addresses[teamTokens[i]]);
+      const token = await ethers.getContractAt(
+        'MockFanToken',
+        addresses[teamTokens[i]],
+      );
       const tokenOwner = await token.owner();
       const tokenName = await token.name();
       const tokenSymbol = await token.symbol();
       const deployerBalance = await token.balanceOf(deployer.address);
-      
+
       console.log(`   Name: ${tokenName}`);
       console.log(`   Symbol: ${tokenSymbol}`);
       console.log(`   Owner: ${tokenOwner}`);
       console.log(`   Expected owner: ${expectedOwners[i]}`);
-      console.log(`   Deployer balance: ${ethers.formatEther(deployerBalance)} tokens`);
+      console.log(
+        `   Deployer balance: ${ethers.formatEther(deployerBalance)} tokens`,
+      );
       console.log(`   ✅ ${teamTokens[i]} verified`);
     }
 
     // 4. Verify BettingPoolFactory
     console.log('\n7. Verifying BettingPoolFactory...');
-    const bettingPoolFactory = await ethers.getContractAt('BettingPoolFactory', addresses.BettingPoolFactory);
+    const bettingPoolFactory = await ethers.getContractAt(
+      'BettingPoolFactory',
+      addresses.BettingPoolFactory,
+    );
     const factoryOwner = await bettingPoolFactory.owner();
     const factorySwapRouter = await bettingPoolFactory.swapRouter();
     const factoryPoapContract = await bettingPoolFactory.poapContract();
-    
+
     console.log(`   Owner: ${factoryOwner}`);
     console.log(`   Expected owner: ${deployer.address}`);
     console.log(`   SwapRouter: ${factorySwapRouter}`);
@@ -80,7 +91,7 @@ async function main() {
     const pools = await bettingPoolFactory.getPools();
     console.log(`   Number of pools created: ${pools.length}`);
     console.log(`   Expected: 20 pools`);
-    
+
     if (pools.length === 20) {
       console.log(`   ✅ All pools created successfully`);
     } else {
@@ -105,7 +116,6 @@ async function main() {
     console.log(`- ${pools.length} betting pools created`);
     console.log(`- All contracts properly configured`);
     console.log(`- Initial token balances distributed`);
-
   } catch (error) {
     console.error('❌ Verification failed:', error);
     process.exit(1);
@@ -117,4 +127,4 @@ main()
   .catch((error) => {
     console.error(error);
     process.exit(1);
-  }); 
+  });

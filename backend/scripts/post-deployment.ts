@@ -14,22 +14,34 @@ async function main() {
   // Read contract addresses from deployment artifacts
   const addressesPath = join(__dirname, '../deployment-addresses.json');
   let addresses: { [key: string]: string } = {};
-  
+
   try {
     addresses = JSON.parse(readFileSync(addressesPath, 'utf8'));
     console.log('Loaded contract addresses from deployment artifacts');
   } catch (error) {
-    console.error('Failed to load deployment addresses, using environment variables as fallback');
+    console.error(
+      'Failed to load deployment addresses, using environment variables as fallback',
+    );
     addresses = {
-      BettingPoolFactory: process.env.BETTING_POOL_FACTORY_ADDRESS || '0x0000000000000000000000000000000000000000',
-      MockPOAP: process.env.MOCK_POAP_ADDRESS || '0x0000000000000000000000000000000000000000'
+      BettingPoolFactory:
+        process.env.BETTING_POOL_FACTORY_ADDRESS ||
+        '0x0000000000000000000000000000000000000000',
+      MockPOAP:
+        process.env.MOCK_POAP_ADDRESS ||
+        '0x0000000000000000000000000000000000000000',
     };
   }
-  
-  const bettingPoolFactory = await ethers.getContractAt('BettingPoolFactory', addresses.BettingPoolFactory);
+
+  const bettingPoolFactory = await ethers.getContractAt(
+    'BettingPoolFactory',
+    addresses.BettingPoolFactory,
+  );
   const mockPOAP = await ethers.getContractAt('MockPOAP', addresses.MockPOAP);
-  
-  console.log('BettingPoolFactory deployed at:', await bettingPoolFactory.getAddress());
+
+  console.log(
+    'BettingPoolFactory deployed at:',
+    await bettingPoolFactory.getAddress(),
+  );
   console.log('MockPOAP deployed at:', await mockPOAP.getAddress());
 
   // Get all pools created during deployment
@@ -66,12 +78,18 @@ async function main() {
         try {
           const team1Token = await pool.team1Token();
           const team2Token = await pool.team2Token();
-          
+
           // Randomly select winner (50/50 chance)
-          const winningTeamToken = getRandomNumber(0, 1) === 0 ? team1Token : team2Token;
-          
-          console.log(`Ending match for pool ${i + 1} with winner: ${winningTeamToken}`);
-          const tx = await bettingPoolFactory.endMatch(poolAddress, winningTeamToken);
+          const winningTeamToken =
+            getRandomNumber(0, 1) === 0 ? team1Token : team2Token;
+
+          console.log(
+            `Ending match for pool ${i + 1} with winner: ${winningTeamToken}`,
+          );
+          const tx = await bettingPoolFactory.endMatch(
+            poolAddress,
+            winningTeamToken,
+          );
           await tx.wait();
           console.log(`Match ended for pool ${i + 1}`);
         } catch (error) {
@@ -87,7 +105,7 @@ async function main() {
     '0x70997970C51812dc3A010C7d01b50e0d17dc79C8',
     '0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC',
     '0x90F79bf6EB2c4f870365E785982E1f101E93b906',
-    '0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65'
+    '0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65',
   ];
 
   // Award POAPs for matches 1-20 (40% chance each)
@@ -114,4 +132,4 @@ main()
   .catch((error) => {
     console.error(error);
     process.exit(1);
-  }); 
+  });
