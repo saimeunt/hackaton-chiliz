@@ -22,7 +22,7 @@ contract BettingPoolTest is Test {
 
     uint256 public matchStartTime;
     uint256 public matchDuration = 7200; // 2 hours
-    uint256 public matchId = 1;
+    uint256 public matchId = 0;
 
     BettingPool public pool;
 
@@ -45,10 +45,14 @@ contract BettingPoolTest is Test {
         // Set the betting pool factory in POAP contract
         poap.setBettingPoolFactory(address(factory));
 
+        // Transfer ownership of POAP contract to factory so it can create matches
+        poap.transferOwnership(address(factory));
+
         // Set match start time to 2 hours from now
         matchStartTime = block.timestamp + 7200;
 
-        // Create POAP for the match (using the test contract as owner)
+        // Create POAP for the match (using the factory as owner)
+        vm.prank(address(factory));
         poap.createMatch(matchId, "Team A vs Team B - Championship Final");
 
         // Create betting pool (using the test contract as owner)
@@ -146,6 +150,7 @@ contract BettingPoolTest is Test {
 
     function test_POAPMultiplier() public {
         // Award POAP to alice for attending matches
+        vm.prank(address(factory));
         poap.awardPoap(alice, matchId);
 
         // Place bet and check multiplier
@@ -161,7 +166,8 @@ contract BettingPoolTest is Test {
     function test_MultiplePOAPAttendance() public {
         // Award multiple POAPs to alice for the same match to test multiplier calculation
         for (uint256 i = 1; i <= 10; i++) {
-            // Award POAP for the same match (matchId = 1)
+            // Award POAP for the same match (matchId = 0)
+            vm.prank(address(factory));
             poap.awardPoap(alice, matchId);
         }
 
@@ -228,7 +234,9 @@ contract BettingPoolTest is Test {
         pool.placeBet(address(team1Token), betAmount);
 
         // 2. Award POAP to alice and charlie
+        vm.prank(address(factory));
         poap.awardPoap(alice, matchId);
+        vm.prank(address(factory));
         poap.awardPoap(charlie, matchId);
 
         // 4. End match with team1 as winner
