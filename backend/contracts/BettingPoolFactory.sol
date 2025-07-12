@@ -19,6 +19,10 @@ contract BettingPoolFactory {
         address indexed winningTeamToken
     );
     event POAPVerified(address indexed user, uint256 indexed matchId);
+    event OwnershipTransferred(
+        address indexed previousOwner,
+        address indexed newOwner
+    );
 
     // State variables
     address public immutable swapRouter;
@@ -28,7 +32,6 @@ contract BettingPoolFactory {
     BettingPool[] public pools;
     mapping(address => bool) public isPool;
     mapping(uint256 => address) public matchIdToPool; // POAP match ID to pool address
-    mapping(address => uint256[]) public userPools; // User's pools
 
     // Modifiers
     modifier onlyOwner() {
@@ -37,6 +40,12 @@ contract BettingPoolFactory {
     }
 
     constructor(address _swapRouter, address _poapContract) {
+        require(_swapRouter != address(0), "SwapRouter cannot be zero address");
+        require(
+            _poapContract != address(0),
+            "POAP contract cannot be zero address"
+        );
+
         swapRouter = _swapRouter;
         poapContract = _poapContract;
         owner = msg.sender;
@@ -168,7 +177,9 @@ contract BettingPoolFactory {
      */
     function transferOwnership(address newOwner) external onlyOwner {
         require(newOwner != address(0), "Invalid new owner");
+        address previousOwner = owner;
         owner = newOwner;
+        emit OwnershipTransferred(previousOwner, newOwner);
     }
 
     /**
@@ -180,7 +191,8 @@ contract BettingPoolFactory {
         address token,
         uint256 amount
     ) external onlyOwner {
-        IFanToken(token).transfer(owner, amount);
+        bool success = IFanToken(token).transfer(owner, amount);
+        require(success, "Transfer failed");
     }
 
     // View functions
@@ -199,12 +211,6 @@ contract BettingPoolFactory {
 
     function getPoolByMatchId(uint256 matchId) external view returns (address) {
         return matchIdToPool[matchId];
-    }
-
-    function getUserPools(
-        address user
-    ) external view returns (uint256[] memory) {
-        return userPools[user];
     }
 
     function getPoolInfo(

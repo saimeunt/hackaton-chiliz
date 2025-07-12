@@ -102,6 +102,21 @@ contract BettingPool {
         uint256 _matchStartTime,
         uint256 _matchDuration
     ) {
+        require(_factory != address(0), "Factory cannot be zero address");
+        require(_swapRouter != address(0), "SwapRouter cannot be zero address");
+        require(
+            _poapContract != address(0),
+            "POAP contract cannot be zero address"
+        );
+        require(
+            _team1Token != address(0),
+            "Team1 token cannot be zero address"
+        );
+        require(
+            _team2Token != address(0),
+            "Team2 token cannot be zero address"
+        );
+
         factory = _factory;
         swapRouter = _swapRouter;
         poapContract = _poapContract;
@@ -134,7 +149,12 @@ contract BettingPool {
         require(matchStatus == MatchStatus.UPCOMING, "Match already started");
 
         // Transfer tokens from user to contract
-        IFanToken(teamToken).transferFrom(msg.sender, address(this), amount);
+        bool success = IFanToken(teamToken).transferFrom(
+            msg.sender,
+            address(this),
+            amount
+        );
+        require(success, "Transfer failed");
 
         // Calculate multiplier based on POAP attendance
         uint256 multiplier = calculateMultiplier(msg.sender);
@@ -210,7 +230,11 @@ contract BettingPool {
         }
 
         if (totalWinnings > 0) {
-            IFanToken(winningTeamToken).transfer(user, totalWinnings);
+            bool success = IFanToken(winningTeamToken).transfer(
+                user,
+                totalWinnings
+            );
+            require(success, "Transfer failed");
             emit Claimed(user, totalWinnings);
         }
     }
@@ -232,7 +256,11 @@ contract BettingPool {
         totalUnclaimed += _calculateUnclaimedAmount(team2Pool);
 
         if (totalUnclaimed > 0) {
-            IFanToken(winningTeamToken).transfer(factory, totalUnclaimed);
+            bool success = IFanToken(winningTeamToken).transfer(
+                factory,
+                totalUnclaimed
+            );
+            require(success, "Transfer failed");
             emit AdminClaimed(totalUnclaimed);
         }
     }
@@ -256,16 +284,18 @@ contract BettingPool {
         if (totalRemaining > 0) {
             // Transfer to factory
             if (IFanToken(team1Token).balanceOf(address(this)) > 0) {
-                IFanToken(team1Token).transfer(
+                bool success1 = IFanToken(team1Token).transfer(
                     factory,
                     IFanToken(team1Token).balanceOf(address(this))
                 );
+                require(success1, "Transfer failed");
             }
             if (IFanToken(team2Token).balanceOf(address(this)) > 0) {
-                IFanToken(team2Token).transfer(
+                bool success2 = IFanToken(team2Token).transfer(
                     factory,
                     IFanToken(team2Token).balanceOf(address(this))
                 );
+                require(success2, "Transfer failed");
             }
             emit GlobalClaimed(totalRemaining);
         }
@@ -329,8 +359,9 @@ contract BettingPool {
 
         // Calculate proportional winnings
         uint256 totalPoolAmount = team1Pool.totalAmount + team2Pool.totalAmount;
-        uint256 userShare = (bet.amount * bet.multiplier) / 100; // Apply multiplier
-        uint256 winnings = (userShare * totalPoolAmount) / pool.totalAmount;
+        // Avoid division before multiplication by using higher precision
+        uint256 winnings = (bet.amount * bet.multiplier * totalPoolAmount) /
+            (100 * pool.totalAmount);
 
         return winnings;
     }
@@ -343,7 +374,8 @@ contract BettingPool {
         if (bet.amount == 0 || bet.claimed) return 0;
 
         // Approve swap router
-        IFanToken(pool.token).approve(swapRouter, bet.amount);
+        bool success = IFanToken(pool.token).approve(swapRouter, bet.amount);
+        require(success, "Approve failed");
 
         // Perform swap
         ISwapRouter.ExactInputSingleParams memory params = ISwapRouter
@@ -364,8 +396,9 @@ contract BettingPool {
 
         // Calculate winnings based on swapped amount
         uint256 totalPoolAmount = team1Pool.totalAmount + team2Pool.totalAmount;
-        uint256 userShare = (swappedAmount * bet.multiplier) / 100; // Apply multiplier
-        uint256 winnings = (userShare * totalPoolAmount) / pool.totalAmount;
+        // Avoid division before multiplication by using higher precision
+        uint256 winnings = (swappedAmount * bet.multiplier * totalPoolAmount) /
+            (100 * pool.totalAmount);
 
         bet.claimed = true;
         return winnings;
