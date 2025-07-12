@@ -138,14 +138,11 @@ contract BettingPoolFactory is PoolManager, IBettingPoolFactory {
     /**
      * @dev Calculate multiplier based on POAP attendance
      * @param user Address of the user
-     * @return Multiplier value (0.8 to 1.5)
+     * @return Multiplier value starting at 100%
      */
     function calculateMultiplier(address user) public view returns (uint256) {
         uint256 matchCount = userMatchCount[user];
-
-        // Logarithmic curve from 0.8 to 1.0 over 5 matches
-        // Formula: 0.8 + (0.2 * log10(matchCount + 1))
-        uint256 multiplier = 80 + ((20 * Math.log10(matchCount + 1)));
+        uint256 multiplier = 100 + Math.log10(matchCount + 1) / 5;
         return multiplier;
     }
 
