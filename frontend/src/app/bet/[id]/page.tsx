@@ -126,8 +126,6 @@ export default function BetDetailPage() {
     }
   };
 
-  // Remplacer l'adresse factory par l'adresse du pool pour les autres usages
-  // Par exemple dans handlePlaceBet
   const handlePlaceBet = async () => {
     if (
       !selectedTeam ||

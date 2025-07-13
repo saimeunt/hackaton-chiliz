@@ -10,23 +10,39 @@ import { bettingPoolFactoryContract } from '@/contracts/betting-pool-factory.con
 import { Address } from 'viem';
 import { chilizTeams } from '@/data/chiliz-teams';
 import { format } from 'date-fns';
+import { useBettingPoolInfo } from '@/hooks/useBettingPoolInfo';
 
 const PoolBetCard = ({ pool }: { pool: Address }) => {
-  const { data: poolInfo, isLoading } = useReadContract({
-    ...bettingPoolFactoryContract,
-    functionName: 'getPoolInfo',
-    args: [pool],
-  });
-  if (!poolInfo || isLoading) {
+  const {
+    team1Token,
+    team2Token,
+    matchStartTime,
+    matchStatus,
+    team1Pool,
+    team2Pool,
+  } = useBettingPoolInfo(pool);
+  if (
+    !team1Token ||
+    !team2Token ||
+    !matchStartTime ||
+    matchStatus === undefined ||
+    !team1Pool ||
+    !team2Pool
+  ) {
     return null;
   }
   const homeTeam = chilizTeams.find(
-    ({ fanTokenAddress }) => fanTokenAddress === poolInfo[0],
+    ({ fanTokenAddress }) => fanTokenAddress === team1Token,
   )!;
   const awayTeam = chilizTeams.find(
-    ({ fanTokenAddress }) => fanTokenAddress === poolInfo[1],
+    ({ fanTokenAddress }) => fanTokenAddress === team2Token,
   )!;
   const statuses = ['live', 'upcoming', 'finished'];
+  const team1TotalAmount = Number(team1Pool.totalAmount);
+  const team2TotalAmount = Number(team2Pool.totalAmount);
+  const totalAmount = team1TotalAmount + team2TotalAmount;
+  const homePercentage = (team1TotalAmount / totalAmount) * 100;
+  const awayPercentage = (team2TotalAmount / totalAmount) * 100;
   return (
     <BetCard
       match={{
@@ -42,12 +58,16 @@ const PoolBetCard = ({ pool }: { pool: Address }) => {
           color: awayTeam.color,
         },
         competition: 'Champions League',
-        time: format(new Date(Number(poolInfo[2].toString())), 'HH:mm'),
-        status: statuses[poolInfo[4]] as 'live' | 'upcoming' | 'finished',
+        time: format(new Date(Number(matchStartTime.toString())), 'HH:mm'),
+        status: statuses[matchStatus] as 'live' | 'upcoming' | 'finished',
         bettingStats: {
-          totalBettors: 0,
-          homePercentage: 50,
-          awayPercentage: 50,
+          totalBettors: Number(team1Pool.bettorCount + team2Pool.bettorCount),
+          homePercentage: Number.isNaN(homePercentage)
+            ? 50
+            : Number(homePercentage.toFixed(0)),
+          awayPercentage: Number.isNaN(awayPercentage)
+            ? 50
+            : Number(awayPercentage.toFixed(0)),
         },
       }}
     />
