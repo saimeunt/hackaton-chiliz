@@ -57,7 +57,7 @@ const PoolBetCard = ({ pool }: { pool: Address }) => {
 export default function LiveBets() {
   const { matches, loading, error, refetch } = useLiveBets();
 
-  const { data: pools, isLoading: isLoadingPools } = useReadContract({
+  const { data: pools } = useReadContract({
     ...bettingPoolFactoryContract,
     functionName: 'getPools',
   });
