@@ -16,7 +16,7 @@ import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useParams, useRouter } from 'next/navigation';
 import { useMatchById } from '@/hooks/useLiveBets';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAccount, useReadContract } from 'wagmi';
 import { Address, erc20Abi } from 'viem';
 import { chilizTeams } from '@/data/chiliz-teams';
@@ -31,14 +31,60 @@ export default function BetDetailPage() {
   const poolAddress = params.id as string;
   const { match, loading, error } = useMatchById(poolAddress);
   const [canGoBack, setCanGoBack] = useState(false);
+  const [isRefreshingBalances, setIsRefreshingBalances] = useState(false);
 
   const [selectedTeam, setSelectedTeam] = useState<'home' | 'away' | null>(
     null,
   );
   const [betAmount, setBetAmount] = useState('');
 
-  // Initialize hooks for betting functionality
-  const { placeBet, isPlacingBet, isApproving } = usePlaceBet();
+  // Token balance contracts with refetch capability
+  const { 
+    data: psgBalance, 
+    refetch: refetchPsgBalance 
+  } = useReadContract({
+    address: chilizTeams.find(({ id }) => id === 'psg')!
+      .fanTokenAddress as Address,
+    abi: erc20Abi,
+    functionName: 'balanceOf',
+    args: [address!],
+    query: { enabled: isConnected },
+  });
+
+  const { 
+    data: acmBalance, 
+    refetch: refetchAcmBalance 
+  } = useReadContract({
+    address: chilizTeams.find(({ id }) => id === 'ac-milan')!
+      .fanTokenAddress as Address,
+    abi: erc20Abi,
+    functionName: 'balanceOf',
+    args: [address!],
+    query: { enabled: isConnected },
+  });
+
+  // Callback to refresh all token balances
+  const refreshTokenBalances = useCallback(async () => {
+    console.log('Refreshing token balances after successful bet...');
+    setIsRefreshingBalances(true);
+    try {
+      await Promise.all([
+        refetchPsgBalance(),
+        refetchAcmBalance(),
+      ]);
+      console.log('Token balances refreshed successfully');
+    } catch (error) {
+      console.error('Error refreshing token balances:', error);
+      toast.error('Failed to update token balances');
+    } finally {
+      setIsRefreshingBalances(false);
+    }
+  }, [refetchPsgBalance, refetchAcmBalance]);
+
+  // Initialize hooks for betting functionality with success callback
+  const { placeBet, isPlacingBet, isApproving } = usePlaceBet({
+    onSuccess: refreshTokenBalances,
+  });
 
   // Utiliser l'adresse du pool pour le hook
   const poolInfo = useBettingPoolInfo(poolAddress as Address);
@@ -55,24 +101,6 @@ export default function BetDetailPage() {
       router.push('/live-bets');
     }
   };
-
-  const { data: psgBalance } = useReadContract({
-    address: chilizTeams.find(({ id }) => id === 'psg')!
-      .fanTokenAddress as Address,
-    abi: erc20Abi,
-    functionName: 'balanceOf',
-    args: [address!],
-    query: { enabled: isConnected },
-  });
-
-  const { data: acmBalance } = useReadContract({
-    address: chilizTeams.find(({ id }) => id === 'ac-milan')!
-      .fanTokenAddress as Address,
-    abi: erc20Abi,
-    functionName: 'balanceOf',
-    args: [address!],
-    query: { enabled: isConnected },
-  });
 
   // Simulated fan token balances
   const fanTokens = {
@@ -379,7 +407,14 @@ export default function BetDetailPage() {
                     </div>
                     <div className="text-sm text-gray-600 dark:text-gray-400 mt-1 flex items-center justify-center gap-1">
                       <Coins className="h-3 w-3" />
-                      {homeTokenBalance} tokens
+                      {isRefreshingBalances ? (
+                        <span className="flex items-center gap-1">
+                          <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-purple-600"></div>
+                          Updating...
+                        </span>
+                      ) : (
+                        `${homeTokenBalance} tokens`
+                      )}
                     </div>
                   </div>
                 </button>
@@ -399,7 +434,14 @@ export default function BetDetailPage() {
                     </div>
                     <div className="text-sm text-gray-600 dark:text-gray-400 mt-1 flex items-center justify-center gap-1">
                       <Coins className="h-3 w-3" />
-                      {awayTokenBalance} tokens
+                      {isRefreshingBalances ? (
+                        <span className="flex items-center gap-1">
+                          <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-purple-600"></div>
+                          Updating...
+                        </span>
+                      ) : (
+                        `${awayTokenBalance} tokens`
+                      )}
                     </div>
                   </div>
                 </button>
@@ -429,13 +471,16 @@ export default function BetDetailPage() {
               {selectedTeam && (
                 <div className="text-sm text-gray-600 dark:text-gray-400">
                   Available:{' '}
-                  {selectedTeam === 'home'
-                    ? homeTokenBalance
-                    : awayTokenBalance}{' '}
-                  {selectedTeam === 'home'
-                    ? match.homeTeam.name
-                    : match.awayTeam.name}{' '}
-                  tokens
+                  {isRefreshingBalances ? (
+                    <span className="flex items-center gap-1">
+                      <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-purple-600"></div>
+                      Updating...
+                    </span>
+                  ) : (
+                    `${selectedTeam === 'home' ? homeTokenBalance : awayTokenBalance} ${
+                      selectedTeam === 'home' ? match.homeTeam.name : match.awayTeam.name
+                    } tokens`
+                  )}
                 </div>
               )}
             </div>
@@ -541,7 +586,14 @@ export default function BetDetailPage() {
                   Your {match.homeTeam.name} Tokens
                 </div>
                 <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                  {homeTokenBalance}
+                  {isRefreshingBalances ? (
+                    <span className="flex items-center gap-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600"></div>
+                      Updating...
+                    </span>
+                  ) : (
+                    homeTokenBalance
+                  )}
                 </div>
               </div>
               <div className="bg-white dark:bg-purple-800/20 p-3 rounded-lg">
@@ -549,7 +601,14 @@ export default function BetDetailPage() {
                   Your {match.awayTeam.name} Tokens
                 </div>
                 <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                  {awayTokenBalance}
+                  {isRefreshingBalances ? (
+                    <span className="flex items-center gap-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600"></div>
+                      Updating...
+                    </span>
+                  ) : (
+                    awayTokenBalance
+                  )}
                 </div>
               </div>
             </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   useAccount,
   useWriteContract,
@@ -23,7 +23,12 @@ export interface PlaceBetParams {
   amount: string;
 }
 
-export function usePlaceBet() {
+export interface UsePlaceBetOptions {
+  onSuccess?: () => void;
+  onError?: (error: Error) => void;
+}
+
+export function usePlaceBet(options?: UsePlaceBetOptions) {
   const { address, isConnected } = useAccount();
   const [isPlacingBet, setIsPlacingBet] = useState(false);
   const [pendingApproval, setPendingApproval] = useState(false);
@@ -58,6 +63,28 @@ export function usePlaceBet() {
     functionName: 'getMatchStatus',
     query: { enabled: isConnected },
   });
+
+  // Memoized function to place bet with consistent amount conversion
+  const executePlaceBet = useCallback(
+    (params: PlaceBetParams) => {
+      if (!address) {
+        toast.error('Invalid user address. Please reconnect your wallet.');
+        return;
+      }
+
+      console.log('Placing bet with amount:', params.amount);
+      console.log('User address for bet:', address);
+
+      writePlaceBetContract({
+        address: params.poolAddress,
+        abi: bettingPoolContract.abi,
+        functionName: 'placeBet',
+        args: [params.teamToken, BigInt(params.amount)],
+        account: address,
+      });
+    },
+    [address, writePlaceBetContract],
+  );
 
   // Place bet function
   const placeBet = async ({
@@ -118,8 +145,10 @@ export function usePlaceBet() {
       console.log('Current allowance:', currentAllowance?.toString());
       console.log('User address for transaction:', address);
 
+      const amountInWei = parseEther(amount);
+
       // If allowance is insufficient, approve first
-      if (!currentAllowance || currentAllowance < BigInt(amount)) {
+      if (!currentAllowance || currentAllowance < amountInWei) {
         console.log('Insufficient allowance, approving tokens...');
         setPendingApproval(true);
         setPendingBetParams({ poolAddress, teamToken, amount });
@@ -133,13 +162,7 @@ export function usePlaceBet() {
       } else {
         console.log('Sufficient allowance, placing bet directly...');
         // Directly place bet if allowance is sufficient
-        writePlaceBetContract({
-          address: poolAddress,
-          abi: bettingPoolContract.abi,
-          functionName: 'placeBet',
-          args: [teamToken, BigInt(amount)],
-          account: address, // Explicitly set the account
-        });
+        executePlaceBet({ poolAddress, teamToken, amount });
       }
     } catch (error) {
       console.error('Error placing bet:', error);
@@ -147,44 +170,28 @@ export function usePlaceBet() {
       setIsPlacingBet(false);
       setPendingApproval(false);
       setPendingBetParams(null);
+      options?.onError?.(error as Error);
     }
   };
 
   // Handle approval completion and trigger bet placement
   useEffect(() => {
     if (pendingApproval && approveTxStatus === 'success' && pendingBetParams) {
-      setPendingApproval(false);
+      console.log('Approval successful, waiting for allowance update...');
 
-      // Validate user address before placing bet
-      if (
-        !address ||
-        address === '0x0000000000000000000000000000000000000000'
-      ) {
-        toast.error('Invalid user address. Please reconnect your wallet.');
-        setPendingBetParams(null);
-        return;
-      }
+      // Wait a bit for the allowance to be updated on the blockchain
+      const timer = setTimeout(() => {
+        if (pendingBetParams) {
+          console.log('Executing delayed bet placement...');
+          executePlaceBet(pendingBetParams);
+          setPendingApproval(false);
+          setPendingBetParams(null);
+        }
+      }, 2000); // Wait 2 seconds for blockchain state to update
 
-      console.log('Approval successful, placing bet with address:', address);
-
-      // Now place the bet after successful approval
-      const amountInWei = parseEther(pendingBetParams.amount);
-      writePlaceBetContract({
-        address: pendingBetParams.poolAddress,
-        abi: bettingPoolContract.abi,
-        functionName: 'placeBet',
-        args: [pendingBetParams.teamToken, amountInWei],
-        account: address, // Explicitly set the account
-      });
-      setPendingBetParams(null);
+      return () => clearTimeout(timer);
     }
-  }, [
-    pendingApproval,
-    approveTxStatus,
-    pendingBetParams,
-    address,
-    writePlaceBetContract,
-  ]);
+  }, [pendingApproval, approveTxStatus, pendingBetParams, executePlaceBet]);
 
   // Handle transaction status changes
   useEffect(() => {
@@ -193,13 +200,17 @@ export function usePlaceBet() {
       setIsPlacingBet(false);
       setPendingApproval(false);
       setPendingBetParams(null);
+
+      // Call success callback to trigger data refresh
+      options?.onSuccess?.();
     } else if (placeBetTxStatus === 'error') {
       toast.error('Transaction failed. Please try again.');
       setIsPlacingBet(false);
       setPendingApproval(false);
       setPendingBetParams(null);
+      options?.onError?.(new Error('Transaction failed'));
     }
-  }, [placeBetTxStatus]);
+  }, [placeBetTxStatus, options]);
 
   // Handle write contract errors
   useEffect(() => {
@@ -211,8 +222,9 @@ export function usePlaceBet() {
       setIsPlacingBet(false);
       setPendingApproval(false);
       setPendingBetParams(null);
+      options?.onError?.(placeBetError);
     }
-  }, [placeBetError]);
+  }, [placeBetError, options]);
 
   // Handle approval errors
   useEffect(() => {
@@ -222,8 +234,9 @@ export function usePlaceBet() {
       setIsPlacingBet(false);
       setPendingApproval(false);
       setPendingBetParams(null);
+      options?.onError?.(approveError);
     }
-  }, [approveError]);
+  }, [approveError, options]);
 
   return {
     placeBet,
