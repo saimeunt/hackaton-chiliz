@@ -1,7 +1,7 @@
 # Clash Of Fanzzz
 # hackaton-chiliz submission
 
-### Done by Simon Arvaux, William Simon--Vezo, Franck Rieu-Patey
+### Done by Simon Arvaux, William Simon--Vezo, Franck Rieu-Patey & Cyril Castagnet
 ![logo](https://github.com/Varadiell/hackaton-chiliz/blob/main/assets/logoVecto2.png?raw=true "Logo")
 
 Test us : https://clash-of-fanz.vercel.app/ 
