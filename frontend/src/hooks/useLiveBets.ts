@@ -165,10 +165,22 @@ function getTeamData(tokenAddress: string) {
 }
 
 // Helper function to convert pool data to BetMatch format
-function convertPoolToBetMatch(poolAddress: Address, poolInfo: any): BetMatch {
+function convertPoolToBetMatch(
+  poolAddress: Address,
+  poolInfo: {
+    team1Token: `0x${string}`;
+    team2Token: `0x${string}`;
+    matchStartTime: bigint;
+    matchEndTime: bigint;
+    // matchStatus: number;
+    // winningTeamToken: `0x${string}` | undefined;
+    // team1Pool: PoolInfo;
+    // team2Pool: PoolInfo;
+  },
+): BetMatch {
   const now = Date.now();
   const startTime = Number(poolInfo.matchStartTime) * 1000;
-  const endTime = startTime + Number(poolInfo.matchDuration) * 1000;
+  const endTime = Number(poolInfo.matchEndTime) * 1000;
 
   let status: 'live' | 'upcoming' | 'finished';
   if (now < startTime) {
@@ -246,13 +258,6 @@ export function useLiveBets(): UseLiveBetsReturn {
     },
   });
 
-  // Get pool count
-  const { data: poolCount } = useReadContract({
-    address: CONTRACT_ADDRESSES.BETTING_POOL_FACTORY as Address,
-    abi: bettingPoolFactoryContract.abi,
-    functionName: 'getPoolCount',
-  });
-
   // Get info for the first pool (as an example)
   const { poolInfo: firstPoolInfo, isLoading: firstPoolLoading } = usePoolInfo(
     pools && pools.length > 0 ? pools[0] : undefined,
@@ -281,7 +286,7 @@ export function useLiveBets(): UseLiveBetsReturn {
           team1Token: firstPoolInfo[0],
           team2Token: firstPoolInfo[1],
           matchStartTime: firstPoolInfo[2],
-          matchDuration: firstPoolInfo[3] - firstPoolInfo[2], // Calculate duration
+          matchEndTime: firstPoolInfo[3],
         });
         contractMatches.push(match);
       }
@@ -299,6 +304,7 @@ export function useLiveBets(): UseLiveBetsReturn {
 
   useEffect(() => {
     fetchMatches();
+    // eslint-disable-next-line
   }, [pools, poolsLoading, poolsError, firstPoolInfo, firstPoolLoading]);
 
   return {
@@ -348,7 +354,7 @@ export function useMatchById(id: string): UseMatchByIdReturn {
             team1Token: poolInfo[0],
             team2Token: poolInfo[1],
             matchStartTime: poolInfo[2],
-            matchDuration: poolInfo[3] - poolInfo[2], // Calculate duration
+            matchEndTime: poolInfo[3],
           });
 
           setMatch(match);
