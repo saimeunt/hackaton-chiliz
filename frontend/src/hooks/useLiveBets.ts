@@ -165,6 +165,7 @@ function getTeamData(tokenAddress: string) {
 }
 
 // Helper function to convert pool data to BetMatch format
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function convertPoolToBetMatch(poolAddress: Address, poolInfo: any): BetMatch {
   const now = Date.now();
   const startTime = Number(poolInfo.matchStartTime) * 1000;
@@ -247,11 +248,11 @@ export function useLiveBets(): UseLiveBetsReturn {
   });
 
   // Get pool count
-  const { data: poolCount } = useReadContract({
-    address: CONTRACT_ADDRESSES.BETTING_POOL_FACTORY as Address,
-    abi: bettingPoolFactoryContract.abi,
-    functionName: 'getPoolCount',
-  });
+  // const { data: poolCount } = useReadContract({
+  //   address: CONTRACT_ADDRESSES.BETTING_POOL_FACTORY as Address,
+  //   abi: bettingPoolFactoryContract.abi,
+  //   functionName: 'getPoolCount',
+  // });
 
   // Get info for the first pool (as an example)
   const { poolInfo: firstPoolInfo, isLoading: firstPoolLoading } = usePoolInfo(
@@ -299,7 +300,14 @@ export function useLiveBets(): UseLiveBetsReturn {
 
   useEffect(() => {
     fetchMatches();
-  }, [pools, poolsLoading, poolsError, firstPoolInfo, firstPoolLoading]);
+  }, [
+    pools,
+    poolsLoading,
+    poolsError,
+    firstPoolInfo,
+    firstPoolLoading,
+    fetchMatches,
+  ]);
 
   return {
     matches,

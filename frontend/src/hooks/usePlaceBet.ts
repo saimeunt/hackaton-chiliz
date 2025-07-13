@@ -178,7 +178,13 @@ export function usePlaceBet() {
       });
       setPendingBetParams(null);
     }
-  }, [pendingApproval, approveTxStatus, pendingBetParams, address]);
+  }, [
+    pendingApproval,
+    approveTxStatus,
+    pendingBetParams,
+    address,
+    writePlaceBetContract,
+  ]);
 
   // Handle transaction status changes
   useEffect(() => {
