@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
 import { useAdmin } from '@/hooks/useAdmin';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -42,7 +42,7 @@ import { useAdminMatches } from '@/hooks/useAdminMatches';
 import { BackButton } from '@/components/shared/back-button';
 
 export default function CreateMatchPage() {
-  const router = useRouter();
+  // const router = useRouter();
   const { isAdmin, isLoading } = useAdmin();
   const { createMatch, isCreating } = useAdminMatches();
 
