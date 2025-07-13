@@ -56,7 +56,5 @@ export const DataContext = createContext<DataType>({
 });
 
 export function DataProvider({ children }: { children: React.ReactNode }) {
-  return (
-    <>{children}</>
-  );
+  return <>{children}</>;
 }

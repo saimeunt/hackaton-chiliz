@@ -47,7 +47,17 @@ export function useTransactionStatus({
       });
       onError?.(error || new Error(errorMsg));
     }
-  }, [hash, status, error, isLoading, onSuccess, onError, successMessage, errorMessage, pendingMessage]);
+  }, [
+    hash,
+    status,
+    error,
+    isLoading,
+    onSuccess,
+    onError,
+    successMessage,
+    errorMessage,
+    pendingMessage,
+  ]);
 
   return {
     status,
@@ -57,4 +67,4 @@ export function useTransactionStatus({
     isSuccess: status === 'success',
     isError: status === 'error' || !!error,
   };
-} 
+}

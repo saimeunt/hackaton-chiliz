@@ -1,11 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import {
-  useAccount,
-  useWriteContract,
-  useReadContract,
-} from 'wagmi';
+import { useAccount, useWriteContract, useReadContract } from 'wagmi';
 import { toast } from 'sonner';
 import { type ChilizTeam } from '@/data/chiliz-teams';
 import { bettingPoolFactoryContract } from '@/contracts/betting-pool-factory.contract';
@@ -99,7 +95,7 @@ export function useAdminMatches() {
 
     try {
       const matchDuration = Math.floor(
-        (matchData.endTime.getTime() - matchData.startTime.getTime()) / 1000
+        (matchData.endTime.getTime() - matchData.startTime.getTime()) / 1000,
       );
       const matchStartTime = Math.floor(matchData.startTime.getTime() / 1000);
       const matchName = `${matchData.teamA.name} vs ${matchData.teamB.name}`;
@@ -128,7 +124,7 @@ export function useAdminMatches() {
         status: 'pending',
       };
 
-      setMatches(prev => [...prev, newMatch]);
+      setMatches((prev) => [...prev, newMatch]);
       toast.success('Match created successfully!');
     } catch (error) {
       console.error('Error creating match:', error);
@@ -143,13 +139,19 @@ export function useAdminMatches() {
     poolAddress: string,
     winner: 'teamA' | 'teamB',
     teamA: ChilizTeam,
-    teamB: ChilizTeam
+    teamB: ChilizTeam,
   ) => {
     if (!isConnected || !address) {
       toast.error('Please connect your wallet');
       return;
     }
-    console.log('>>>', isAdmin, address, isConnected, bettingPoolFactoryContract);
+    console.log(
+      '>>>',
+      isAdmin,
+      address,
+      isConnected,
+      bettingPoolFactoryContract,
+    );
     if (!isAdmin) {
       toast.error('You must be an administrator to finalize matches');
       return;
@@ -158,9 +160,10 @@ export function useAdminMatches() {
     setIsEnding(true);
 
     try {
-      const winningTeamToken = winner === 'teamA' 
-        ? teamA.fanTokenAddress as `0x${string}`
-        : teamB.fanTokenAddress as `0x${string}`;
+      const winningTeamToken =
+        winner === 'teamA'
+          ? (teamA.fanTokenAddress as `0x${string}`)
+          : (teamB.fanTokenAddress as `0x${string}`);
 
       writeEndMatchContract({
         ...bettingPoolFactoryContract,
@@ -169,12 +172,12 @@ export function useAdminMatches() {
       });
 
       // Update match status in local state
-      setMatches(prev => 
-        prev.map(match => 
-          match.poolAddress === poolAddress 
+      setMatches((prev) =>
+        prev.map((match) =>
+          match.poolAddress === poolAddress
             ? { ...match, status: 'finished', winner }
-            : match
-        )
+            : match,
+        ),
       );
 
       toast.success('Match finalized successfully!');
@@ -284,4 +287,4 @@ export function useAdminMatches() {
     endMatch,
     loadMatches,
   };
-} 
+}
