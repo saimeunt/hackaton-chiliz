@@ -259,19 +259,6 @@ export function useAdminMatches() {
     }
   }, [isConnected]);
 
-  // Handle transaction status changes
-  useEffect(() => {
-    if (createTxStatus.isSuccess) {
-      // Transaction handled by useTransactionStatus hook
-    }
-  }, [createTxStatus.isSuccess]);
-
-  useEffect(() => {
-    if (endMatchTxStatus.isSuccess) {
-      // Transaction handled by useTransactionStatus hook
-    }
-  }, [endMatchTxStatus.isSuccess]);
-
   return {
     // State
     matches,
