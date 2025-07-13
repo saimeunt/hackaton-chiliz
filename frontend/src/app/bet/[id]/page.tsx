@@ -73,7 +73,6 @@ export default function BetDetailPage() {
         refetchAcmBalance(),
       ]);
       console.log('Token balances refreshed successfully');
-      toast.success('Token balances updated! 💰');
     } catch (error) {
       console.error('Error refreshing token balances:', error);
       toast.error('Failed to update token balances');
