@@ -17,8 +17,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useParams, useRouter } from 'next/navigation';
 import { useMatchById } from '@/hooks/useLiveBets';
 import { useState, useEffect } from 'react';
+import { useAccount, useReadContract } from 'wagmi';
+import { Address, erc20Abi } from 'viem';
+import { chilizTeams } from '@/data/chiliz-teams';
 
 export default function BetDetailPage() {
+  const { address, isConnected } = useAccount();
   const params = useParams();
   const router = useRouter();
   const betId = params.id as string;
@@ -43,16 +47,34 @@ export default function BetDetailPage() {
     }
   };
 
+  const { data: psgBalance, isLoading: isLoadingPsgBalance } = useReadContract({
+    address: chilizTeams.find(({ id }) => id === 'psg')!
+      .fanTokenAddress as Address,
+    abi: erc20Abi,
+    functionName: 'balanceOf',
+    args: [address!],
+    query: { enabled: isConnected },
+  });
+
+  const { data: acmBalance, isLoading: isLoadingAcmBalance } = useReadContract({
+    address: chilizTeams.find(({ id }) => id === 'ac-milan')!
+      .fanTokenAddress as Address,
+    abi: erc20Abi,
+    functionName: 'balanceOf',
+    args: [address!],
+    query: { enabled: isConnected },
+  });
+
   // Simulated fan token balances
   const fanTokens = {
-    PSG: 1250,
+    PSG: psgBalance,
     Barcelona: 0,
     'Real Madrid': 750,
     Liverpool: 0,
     'Bayern Munich': 0,
     'Manchester City': 890,
     Arsenal: 0,
-    'AC Milan': 0,
+    'AC Milan': acmBalance,
     Vitality: 2100,
     MIBR: 0,
     OG: 0,

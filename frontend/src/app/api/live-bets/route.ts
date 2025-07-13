@@ -31,9 +31,9 @@ const mockMatches: BetMatch[] = [
       color: 'bg-blue-500',
     },
     awayTeam: {
-      name: 'Barcelona',
-      flag: '🇪🇸',
-      color: 'bg-red-500',
+      name: 'AC Milan',
+      flag: '🇮🇹',
+      color: 'bg-emerald-500',
     },
     competition: 'Champions League',
     time: '20:00',
@@ -96,7 +96,7 @@ const mockMatches: BetMatch[] = [
     awayTeam: {
       name: 'AC Milan',
       flag: '🇮🇹',
-      color: 'bg-indigo-500',
+      color: 'bg-emerald-500',
     },
     competition: 'Champions League',
     time: '20:45',
