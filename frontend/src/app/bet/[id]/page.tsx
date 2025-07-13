@@ -47,7 +47,7 @@ export default function BetDetailPage() {
     }
   };
 
-  const { data: psgBalance, isLoading: isLoadingPsgBalance } = useReadContract({
+  const { data: psgBalance } = useReadContract({
     address: chilizTeams.find(({ id }) => id === 'psg')!
       .fanTokenAddress as Address,
     abi: erc20Abi,
@@ -56,7 +56,7 @@ export default function BetDetailPage() {
     query: { enabled: isConnected },
   });
 
-  const { data: acmBalance, isLoading: isLoadingAcmBalance } = useReadContract({
+  const { data: acmBalance } = useReadContract({
     address: chilizTeams.find(({ id }) => id === 'ac-milan')!
       .fanTokenAddress as Address,
     abi: erc20Abi,

@@ -12,7 +12,7 @@ const messages = {
     'What a battle! The fans are split right down the middle! ⚡',
     "This is anyone's game! The community can't decide! 🎯",
     'Split decision! The tension is real! 💥',
-    'Dead heat! Every vote counts now! 🚀',
+    'Dead heat! Every bet counts now! 🚀',
   ],
 
   // 11-20% difference - slight domination

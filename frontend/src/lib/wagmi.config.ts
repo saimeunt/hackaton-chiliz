@@ -12,15 +12,15 @@ const {
 
 export const config = createConfig(
   getDefaultConfig({
-    appDescription: 'The Ballot Project',
+    appDescription: 'Clash of fanZ - Sports Fan Betting Platform',
     // appIcon: "",
-    appName: 'The Ballot Project',
+    appName: 'Clash of fanZ',
     // appUrl: "",
     chains: [hardhat, polygonZkEvmCardona, polygonZkEvm],
     connectors: [
       metaMask({
         dappMetadata: {
-          name: 'The Ballot Project',
+          name: 'Clash of fanZ',
         },
       }),
       coinbaseWallet(),
