@@ -15,7 +15,7 @@ export function useAdmin() {
   });
 
   return {
-    isAdmin: address === owner,
+    isAdmin: !!address && !!owner && address === owner, 
     isConnected,
     address,
     owner,
