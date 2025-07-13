@@ -12,6 +12,10 @@ import { Address, parseEther } from 'viem';
 import { bettingPoolContract } from '@/contracts/betting-pool.contract';
 import { CONTRACT_ADDRESSES } from '@/contracts/addresses';
 import { useTokenApproval } from './useTokenApproval';
+import {
+  validateContracts,
+  validateUserConnection,
+} from '@/utils/contractValidator';
 
 export interface PlaceBetParams {
   poolAddress: Address;
@@ -62,9 +66,34 @@ export function usePlaceBet() {
     amount,
   }: PlaceBetParams) => {
     console.log('placeBet called with:', { poolAddress, teamToken, amount });
+    console.log('User address:', address);
+    console.log('Is connected:', isConnected);
 
     if (!isConnected || !address) {
       toast.error('Please connect your wallet');
+      return;
+    }
+
+    // Validate user address
+    if (address === '0x0000000000000000000000000000000000000000') {
+      toast.error('Invalid user address. Please reconnect your wallet.');
+      return;
+    }
+
+    // Validate user connection
+    const userValidation = await validateUserConnection(address);
+    if (!userValidation.isValid) {
+      toast.error(`User validation failed: ${userValidation.error}`);
+      return;
+    }
+
+    // Validate contracts
+    const contractValidation = await validateContracts(poolAddress, teamToken);
+    if (!contractValidation.isValid) {
+      console.error('Contract validation errors:', contractValidation.errors);
+      toast.error(
+        'Contract validation failed. Please check your network connection.',
+      );
       return;
     }
 
@@ -85,12 +114,12 @@ export function usePlaceBet() {
     try {
       // Set addresses for allowance checking
       checkAllowance(teamToken, poolAddress);
-      const amountInWei = parseEther(amount);
-      console.log('Amount in Wei:', amountInWei.toString());
+      console.log('Amount:', amount);
       console.log('Current allowance:', currentAllowance?.toString());
+      console.log('User address for transaction:', address);
 
       // If allowance is insufficient, approve first
-      if (!currentAllowance || currentAllowance < amountInWei) {
+      if (!currentAllowance || currentAllowance < BigInt(amount)) {
         console.log('Insufficient allowance, approving tokens...');
         setPendingApproval(true);
         setPendingBetParams({ poolAddress, teamToken, amount });
@@ -108,7 +137,8 @@ export function usePlaceBet() {
           address: poolAddress,
           abi: bettingPoolContract.abi,
           functionName: 'placeBet',
-          args: [teamToken, amountInWei],
+          args: [teamToken, BigInt(amount)],
+          account: address, // Explicitly set the account
         });
       }
     } catch (error) {
@@ -125,6 +155,18 @@ export function usePlaceBet() {
     if (pendingApproval && approveTxStatus === 'success' && pendingBetParams) {
       setPendingApproval(false);
 
+      // Validate user address before placing bet
+      if (
+        !address ||
+        address === '0x0000000000000000000000000000000000000000'
+      ) {
+        toast.error('Invalid user address. Please reconnect your wallet.');
+        setPendingBetParams(null);
+        return;
+      }
+
+      console.log('Approval successful, placing bet with address:', address);
+
       // Now place the bet after successful approval
       const amountInWei = parseEther(pendingBetParams.amount);
       writePlaceBetContract({
@@ -132,10 +174,11 @@ export function usePlaceBet() {
         abi: bettingPoolContract.abi,
         functionName: 'placeBet',
         args: [pendingBetParams.teamToken, amountInWei],
+        account: address, // Explicitly set the account
       });
       setPendingBetParams(null);
     }
-  }, [pendingApproval, approveTxStatus, pendingBetParams]);
+  }, [pendingApproval, approveTxStatus, pendingBetParams, address]);
 
   // Handle transaction status changes
   useEffect(() => {

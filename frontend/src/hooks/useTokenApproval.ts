@@ -66,8 +66,22 @@ export function useTokenApproval() {
     spenderAddress,
     amount,
   }: ApprovalParams) => {
+    console.log('approveTokens called with:', {
+      tokenAddress,
+      spenderAddress,
+      amount,
+    });
+    console.log('User address:', address);
+    console.log('Is connected:', isConnected);
+
     if (!isConnected || !address) {
       toast.error('Please connect your wallet');
+      return;
+    }
+
+    // Validate user address
+    if (address === '0x0000000000000000000000000000000000000000') {
+      toast.error('Invalid user address. Please reconnect your wallet.');
       return;
     }
 
@@ -86,12 +100,15 @@ export function useTokenApproval() {
 
     try {
       const amountInWei = parseEther(amount);
+      console.log('Approval amount in Wei:', amountInWei.toString());
+      console.log('User address for approval:', address);
 
       writeApproveContract({
         address: tokenAddress,
         abi: erc20Abi,
         functionName: 'approve',
         args: [spenderAddress, amountInWei],
+        account: address, // Explicitly set the account
       });
     } catch (error) {
       console.error('Error approving tokens:', error);
