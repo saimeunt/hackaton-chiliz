@@ -194,6 +194,7 @@ export function useAdminMatches() {
       // 3. Combine with local match data
 
       // For now, we'll use mock data
+      // TODO ERROR ESLINT ->
       const mockMatches: MatchInfo[] = [
         {
           id: '1',
@@ -209,6 +210,8 @@ export function useAdminMatches() {
             primaryColor: '#001E65',
             secondaryColor: '#FF0000',
             country: 'France',
+            flag: '🇫🇷',
+            color: '#001E65',
           },
           teamB: {
             id: 'barcelona',
@@ -222,6 +225,8 @@ export function useAdminMatches() {
             primaryColor: '#004B87',
             secondaryColor: '#A50044',
             country: 'Spain',
+            flag: '🇪🇸',
+            color: '#004B87',
           },
           startTime: new Date('2024-12-25T20:00:00'),
           endTime: new Date('2024-12-25T22:00:00'),

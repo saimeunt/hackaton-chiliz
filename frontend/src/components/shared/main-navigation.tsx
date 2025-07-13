@@ -7,6 +7,7 @@ import {
   UserCircle,
   Plus,
   List,
+  Medal,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { usePathname } from 'next/navigation';
@@ -21,7 +22,7 @@ export function MainNavigation({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { isAdmin } = useAdmin();
 
-  const pages: PageType[] = [
+  const regularPages: PageType[] = [
     {
       count: null,
       icon: TrendingUp,
@@ -46,35 +47,49 @@ export function MainNavigation({ children }: { children: React.ReactNode }) {
       label: 'Profile',
       url: '/profile',
     },
-    // Admin pages - only show if user is admin
-    ...(isAdmin
-      ? [
-          {
-            count: null,
-            icon: Plus,
-            label: 'Create Match',
-            url: '/admin/create-match',
-          },
-          {
-            count: null,
-            icon: List,
-            label: 'Manage Matches',
-            url: '/admin/matches',
-          },
-        ]
-      : []),
+    {
+      count: null,
+      icon: Medal,
+      label: 'Leaderboard',
+      url: '/leaderboard',
+    },
   ];
+
+  const adminPages: PageType[] = isAdmin
+    ? [
+        {
+          count: null,
+          icon: Plus,
+          label: 'Create Match',
+          url: '/admin/create-match',
+        },
+        {
+          count: null,
+          icon: List,
+          label: 'Manage Matches',
+          url: '/admin/matches',
+        },
+      ]
+    : [];
 
   return (
     <div className="min-h-screen font-dm-sans">
       {/* Desktop Sidebar */}
-      <DesktopSideMenu pages={pages} pathname={pathname} />
+      <DesktopSideMenu
+        regularPages={regularPages}
+        adminPages={adminPages}
+        pathname={pathname}
+      />
 
       {/* Main content - offset to leave space for fixed menu */}
       <div className="md:ml-[220px] lg:ml-[280px] flex flex-col min-h-screen">
         <header className="flex h-14 items-center gap-4 border-b bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 px-4 lg:h-[60px] lg:px-6">
           {/* Mobile Navigation */}
-          <MobileNavigationMenu pages={pages} pathname={pathname} />
+          <MobileNavigationMenu
+            regularPages={regularPages}
+            adminPages={adminPages}
+            pathname={pathname}
+          />
 
           <div className="w-full flex-1"></div>
           <ThemeToggle />
