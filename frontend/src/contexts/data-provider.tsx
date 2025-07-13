@@ -1,6 +1,5 @@
 'use client';
 
-import { useData } from '@/hooks/useData';
 import * as React from 'react';
 import { createContext } from 'react';
 import { Log } from 'viem';
@@ -57,9 +56,5 @@ export const DataContext = createContext<DataType>({
 });
 
 export function DataProvider({ children }: { children: React.ReactNode }) {
-  const data = useData();
-  console.log(data);
-  return (
-    <DataContext.Provider value={{ ...data }}>{children}</DataContext.Provider>
-  );
+  return <>{children}</>;
 }

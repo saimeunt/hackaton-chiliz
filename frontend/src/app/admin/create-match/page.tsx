@@ -38,13 +38,13 @@ import {
   type ChilizTeam,
 } from '@/data/chiliz-teams';
 import { toast } from 'sonner';
-import { useBettingPool } from '@/hooks/useBettingPool';
+import { useAdminMatches } from '@/hooks/useAdminMatches';
 import { BackButton } from '@/components/shared/back-button';
 
 export default function CreateMatchPage() {
   const router = useRouter();
   const { isAdmin, isLoading } = useAdmin();
-  const { createBettingPool, isCreating: isCreatingPool } = useBettingPool();
+  const { createMatch, isCreating } = useAdminMatches();
 
   const [selectedSport, setSelectedSport] = useState<string>('');
   const [teamA, setTeamA] = useState<ChilizTeam | null>(null);
@@ -53,7 +53,6 @@ export default function CreateMatchPage() {
   const [matchTime, setMatchTime] = useState<string>('');
   const [league, setLeague] = useState<string>('');
   const [description, setDescription] = useState<string>('');
-  const [isCreating, setIsCreating] = useState(false);
 
   const availableSports = getAvailableSports();
   const availableTeams = selectedSport ? getTeamsBySport(selectedSport) : [];
@@ -76,8 +75,6 @@ export default function CreateMatchPage() {
       return;
     }
 
-    setIsCreating(true);
-
     try {
       // Create match start and end times
       const startDateTime = new Date(
@@ -87,32 +84,20 @@ export default function CreateMatchPage() {
         startDateTime.getTime() + 2 * 60 * 60 * 1000,
       ); // 2 hours after start
 
-      // Create betting pool on blockchain
-      await createBettingPool(teamA, teamB, startDateTime, endDateTime);
+      // Create match using the admin hook
+      await createMatch({
+        teamA,
+        teamB,
+        startTime: startDateTime,
+        endTime: endDateTime,
+        league,
+        description,
+      });
 
-      // Here you would typically also call your backend API to store match data
-      // const response = await fetch('/api/admin/matches', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({
-      //     teamA: teamA.id,
-      //     teamB: teamB.id,
-      //     sport: selectedSport,
-      //     league,
-      //     date: format(matchDate, 'yyyy-MM-dd'),
-      //     time: matchTime,
-      //     description,
-      //     startDateTime: startDateTime.toISOString(),
-      //     endDateTime: endDateTime.toISOString()
-      //   })
-      // })
-
-      toast.success('Match and betting pool created successfully!');
-      router.push('/admin/matches');
+      toast.success('Match created successfully!');
+      // router.push('/admin/matches');
     } catch {
       toast.error('Error creating match');
-    } finally {
-      setIsCreating(false);
     }
   };
 
@@ -370,10 +355,10 @@ export default function CreateMatchPage() {
             <div className="flex gap-3">
               <Button
                 type="submit"
-                disabled={isCreating || isCreatingPool}
+                disabled={isCreating}
                 className="flex-1 cursor-pointer disabled:cursor-not-allowed"
               >
-                {isCreating || isCreatingPool ? (
+                {isCreating ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                     Creating...
@@ -389,7 +374,7 @@ export default function CreateMatchPage() {
                 type="button"
                 variant="outline"
                 onClick={resetForm}
-                disabled={isCreating || isCreatingPool}
+                disabled={isCreating}
                 className="cursor-pointer disabled:cursor-not-allowed"
               >
                 Reset
