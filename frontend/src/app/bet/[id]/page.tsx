@@ -22,14 +22,13 @@ import { Address, erc20Abi } from 'viem';
 import { chilizTeams } from '@/data/chiliz-teams';
 import { usePlaceBet } from '@/hooks/usePlaceBet';
 import { useBettingPoolInfo } from '@/hooks/useBettingPoolInfo';
-import { bettingPoolFactoryContract } from '@/contracts/betting-pool-factory.contract';
 
 export default function BetDetailPage() {
   const { address, isConnected } = useAccount();
   const params = useParams();
   const router = useRouter();
-  const betId = params.id as string;
-  const { match, loading, error } = useMatchById(betId);
+  const poolAddress = params.id as string;
+  const { match, loading, error } = useMatchById(poolAddress);
   const [canGoBack, setCanGoBack] = useState(false);
 
   const [selectedTeam, setSelectedTeam] = useState<'home' | 'away' | null>(
@@ -39,12 +38,6 @@ export default function BetDetailPage() {
 
   // Initialize hooks for betting functionality
   const { placeBet, isPlacingBet, isApproving } = usePlaceBet();
-  // Récupérer l'adresse du pool à partir de l'id du match
-  const { data: poolAddress } = useReadContract({
-    ...bettingPoolFactoryContract,
-    functionName: 'getPoolByMatchId',
-    args: [BigInt(betId)],
-  });
 
   // Utiliser l'adresse du pool pour le hook
   const poolInfo = useBettingPoolInfo(poolAddress as Address);
