@@ -15,7 +15,7 @@ interface BackButtonProps {
 
 export function BackButton({
   fallbackUrl = '/',
-  label = 'Retour',
+  label = 'Back',
   size = 'sm',
   variant = 'outline',
   className = '',
@@ -41,7 +41,7 @@ export function BackButton({
       variant={variant}
       size={size}
       onClick={handleBackClick}
-      className={className}
+      className={`cursor-pointer ${className}`}
     >
       <ArrowLeft className="w-4 h-4 mr-2" />
       {label}
