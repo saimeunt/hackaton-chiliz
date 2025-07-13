@@ -76,6 +76,12 @@ export function useTokenApproval() {
       return;
     }
 
+    // Validate addresses
+    if (!tokenAddress || !spenderAddress) {
+      toast.error('Invalid token or spender address');
+      return;
+    }
+
     setIsApproving(true);
 
     try {

@@ -29,7 +29,7 @@ export interface PoolManagerInfo {
 
 export function useBettingPoolInfo(poolAddress?: Address) {
   // Get pool info from PoolManager (via BettingPoolFactory)
-  const { data: poolInfo } = useReadContract({
+  const { data: poolInfo, error: poolInfoError } = useReadContract({
     address: CONTRACT_ADDRESSES.BETTING_POOL_FACTORY as Address,
     abi: bettingPoolFactoryContract.abi,
     functionName: 'getPoolInfo',
@@ -38,7 +38,7 @@ export function useBettingPoolInfo(poolAddress?: Address) {
   });
 
   // Get team1 pool info from BettingPool contract
-  const { data: team1PoolInfo } = useReadContract({
+  const { data: team1PoolInfo, error: team1PoolError } = useReadContract({
     address: poolAddress,
     abi: bettingPoolContract.abi,
     functionName: 'getPoolInfo',
@@ -47,7 +47,7 @@ export function useBettingPoolInfo(poolAddress?: Address) {
   });
 
   // Get team2 pool info from BettingPool contract
-  const { data: team2PoolInfo } = useReadContract({
+  const { data: team2PoolInfo, error: team2PoolError } = useReadContract({
     address: poolAddress,
     abi: bettingPoolContract.abi,
     functionName: 'getPoolInfo',
@@ -94,5 +94,9 @@ export function useBettingPoolInfo(poolAddress?: Address) {
     // Team pool info
     team1Pool,
     team2Pool,
+
+    // Error states
+    hasError: !!(poolInfoError || team1PoolError || team2PoolError),
+    error: poolInfoError || team1PoolError || team2PoolError,
   };
 }

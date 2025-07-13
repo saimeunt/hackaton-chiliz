@@ -22,6 +22,7 @@ import { Address, erc20Abi } from 'viem';
 import { chilizTeams } from '@/data/chiliz-teams';
 import { usePlaceBet } from '@/hooks/usePlaceBet';
 import { useBettingPoolInfo } from '@/hooks/useBettingPoolInfo';
+import { toast } from 'sonner';
 
 export default function BetDetailPage() {
   const { address, isConnected } = useAccount();
@@ -129,11 +130,43 @@ export default function BetDetailPage() {
       !poolAddress
     ) {
       console.error('Missing required data for placing bet');
+      toast.error(
+        'Missing required data for placing bet. Please refresh the page.',
+      );
+      return;
+    }
+
+    // Check if pool has errors
+    if (poolInfo.hasError) {
+      toast.error('Unable to load pool information. Please try again later.');
+      return;
+    }
+
+    // Validate bet amount
+    const betAmountNum = parseFloat(betAmount);
+    if (isNaN(betAmountNum) || betAmountNum <= 0) {
+      toast.error('Please enter a valid bet amount');
+      return;
+    }
+
+    // Check if match is still open for betting
+    if (poolInfo.matchStatus !== undefined && poolInfo.matchStatus !== 0) {
+      toast.error('Betting is closed for this match');
       return;
     }
 
     const teamToken =
       selectedTeam === 'home' ? poolInfo.team1Token : poolInfo.team2Token;
+
+    // Check token balance
+    const tokenBalance =
+      selectedTeam === 'home' ? homeTokenBalance : awayTokenBalance;
+    if (tokenBalance < betAmountNum) {
+      toast.error(
+        `Insufficient ${selectedTeam === 'home' ? match.homeTeam.name : match.awayTeam.name} tokens. You have ${tokenBalance} tokens.`,
+      );
+      return;
+    }
 
     try {
       await placeBet({
@@ -147,6 +180,7 @@ export default function BetDetailPage() {
       setSelectedTeam(null);
     } catch (error) {
       console.error('Error placing bet:', error);
+      toast.error('Failed to place bet. Please try again.');
     }
   };
 
