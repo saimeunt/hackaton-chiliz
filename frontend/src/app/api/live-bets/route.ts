@@ -23,7 +23,7 @@ export interface BetMatch {
 }
 
 const mockMatches: BetMatch[] = [
-  {
+  /*{
     id: '1',
     homeTeam: {
       name: 'PSG',
@@ -43,7 +43,7 @@ const mockMatches: BetMatch[] = [
       homePercentage: 57,
       awayPercentage: 43,
     },
-  },
+  },*/
   {
     id: '2',
     homeTeam: {
