@@ -4,10 +4,10 @@
 export const CONTRACT_ADDRESSES = {
   // Address of the deployed BettingPoolFactory contract
   BETTING_POOL_FACTORY:
-    '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9' as `0x${string}`,
+    '0x9767B4764925eE756F25981a2b791f53A0269751' as `0x${string}`,
 
   // Address of the deployed POAP contract
-  POAP: '0xabcdef1234567890abcdef1234567890abcdef12' as `0x${string}`,
+  POAP: '0x8c54225CA76Cbfcb56cA547098264D339b9444B4' as `0x${string}`,
 
   // Address of the Uniswap V2 router (for swaps)
   UNISWAP_V2_ROUTER:

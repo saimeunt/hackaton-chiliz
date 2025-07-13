@@ -16,7 +16,8 @@
     "test:hardhat": "pnpm hardhat test",
     "test:hardhat:anvil": "pnpm hardhat test ./test/hardhat/BettingPool2.test.ts --network anvil",
     "deploy:anvil": "rm -rf ignition/deployments && pnpm hardhat ignition deploy ignition/modules/BettingPoolModule.ts --network anvil --parameters ignition/parameters/anvil.json",
-    "seed:anvil": "pnpm hardhat ignition deploy ignition/modules/BettingPoolSeedModule.ts --network anvil --parameters ignition/parameters/anvil.json"
+    "seed:anvil": "pnpm hardhat ignition deploy ignition/modules/BettingPoolSeedModule.ts --network anvil --parameters ignition/parameters/anvil.json",
+    "deploy:chiliz": "rm -rf ignition/deployments && pnpm hardhat ignition deploy ignition/modules/BettingPoolModule.ts --network chiliz --parameters ignition/parameters/chiliz.json"
   },
   "dependencies": {
     "hardhat": "^2.25.0",

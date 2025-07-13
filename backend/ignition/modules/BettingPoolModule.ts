@@ -75,31 +75,31 @@ const BettingPoolModule = buildModule('BettingPoolModule', (module) => {
   );
 
   // Mint some initial tokens to users for testing
-  const initialMintAmount = BigInt(1000 * 10 ** 18); // 1000 tokens
+  // const initialMintAmount = BigInt(1000 * 10 ** 18); // 1000 tokens
 
-  module.call(psgToken, 'transfer', [ADDR_0, 1000], {
-    from: PSG_WHALE,
-    after: [psgToken],
-    id: 'transfer_psg_deployer',
-  });
+  // module.call(psgToken, 'transfer', [ADDR_0, 1000], {
+  //   from: PSG_WHALE,
+  //   after: [psgToken],
+  //   id: 'transfer_psg_deployer',
+  // });
 
-  module.call(wPSGToken, 'transfer', [ADDR_0, initialMintAmount], {
-    from: WPSG_WHALE,
-    after: [wPSGToken],
-    id: 'transfer_wpsg_deployer',
-  });
+  // module.call(wPSGToken, 'transfer', [ADDR_0, initialMintAmount], {
+  //   from: WPSG_WHALE,
+  //   after: [wPSGToken],
+  //   id: 'transfer_wpsg_deployer',
+  // });
 
-  module.call(acmToken, 'transfer', [ADDR_0, 1000], {
-    from: ACM_WHALE,
-    after: [acmToken],
-    id: 'transfer_acm_deployer',
-  });
+  // module.call(acmToken, 'transfer', [ADDR_0, 1000], {
+  //   from: ACM_WHALE,
+  //   after: [acmToken],
+  //   id: 'transfer_acm_deployer',
+  // });
 
-  module.call(wACMToken, 'transfer', [ADDR_0, initialMintAmount], {
-    from: WACM_WHALE,
-    after: [wACMToken],
-    id: 'transfer_wacm_deployer',
-  });
+  // module.call(wACMToken, 'transfer', [ADDR_0, initialMintAmount], {
+  //   from: WACM_WHALE,
+  //   after: [wACMToken],
+  //   id: 'transfer_wacm_deployer',
+  // });
 
   // Mint tokens to deployer
   // module.call(team1Token, 'mint', [ADDR_0, initialMintAmount], {
