@@ -200,7 +200,7 @@ export function usePlaceBet(options?: UsePlaceBetOptions) {
       setIsPlacingBet(false);
       setPendingApproval(false);
       setPendingBetParams(null);
-      
+
       // Call success callback to trigger data refresh
       options?.onSuccess?.();
     } else if (placeBetTxStatus === 'error') {

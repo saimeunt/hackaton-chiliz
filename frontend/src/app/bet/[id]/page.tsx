@@ -39,10 +39,7 @@ export default function BetDetailPage() {
   const [betAmount, setBetAmount] = useState('');
 
   // Token balance contracts with refetch capability
-  const { 
-    data: psgBalance, 
-    refetch: refetchPsgBalance 
-  } = useReadContract({
+  const { data: psgBalance, refetch: refetchPsgBalance } = useReadContract({
     address: chilizTeams.find(({ id }) => id === 'psg')!
       .fanTokenAddress as Address,
     abi: erc20Abi,
@@ -51,10 +48,7 @@ export default function BetDetailPage() {
     query: { enabled: isConnected },
   });
 
-  const { 
-    data: acmBalance, 
-    refetch: refetchAcmBalance 
-  } = useReadContract({
+  const { data: acmBalance, refetch: refetchAcmBalance } = useReadContract({
     address: chilizTeams.find(({ id }) => id === 'ac-milan')!
       .fanTokenAddress as Address,
     abi: erc20Abi,
@@ -68,10 +62,7 @@ export default function BetDetailPage() {
     console.log('Refreshing token balances after successful bet...');
     setIsRefreshingBalances(true);
     try {
-      await Promise.all([
-        refetchPsgBalance(),
-        refetchAcmBalance(),
-      ]);
+      await Promise.all([refetchPsgBalance(), refetchAcmBalance()]);
       console.log('Token balances refreshed successfully');
     } catch (error) {
       console.error('Error refreshing token balances:', error);
@@ -478,7 +469,9 @@ export default function BetDetailPage() {
                     </span>
                   ) : (
                     `${selectedTeam === 'home' ? homeTokenBalance : awayTokenBalance} ${
-                      selectedTeam === 'home' ? match.homeTeam.name : match.awayTeam.name
+                      selectedTeam === 'home'
+                        ? match.homeTeam.name
+                        : match.awayTeam.name
                     } tokens`
                   )}
                 </div>
