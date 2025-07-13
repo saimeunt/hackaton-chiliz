@@ -1,23 +1,21 @@
 'use client';
 
 import { useAccount, useReadContract } from 'wagmi';
-import { ballotContract } from '@/contracts/ballot.contract';
+import { bettingPoolFactoryContract } from '@/contracts/betting-pool-factory.contract';
 
 export function useAdmin() {
   const { address, isConnected } = useAccount();
 
   const { data: owner, isLoading: isLoadingOwner } = useReadContract({
-    ...ballotContract,
-    functionName: 'chairperson',
+    ...bettingPoolFactoryContract,
+    functionName: 'owner',
     query: {
       enabled: isConnected && !!address,
     },
   });
 
   return {
-    // TODO REMOVE THIS !!!
-    // isAdmin: !!isAdmin,
-    isAdmin: true,
+    isAdmin: address === owner,
     isConnected,
     address,
     owner,
