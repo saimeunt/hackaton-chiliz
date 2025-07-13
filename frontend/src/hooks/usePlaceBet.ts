@@ -23,7 +23,12 @@ export interface PlaceBetParams {
   amount: string;
 }
 
-export function usePlaceBet() {
+export interface UsePlaceBetOptions {
+  onSuccess?: () => void;
+  onError?: (error: Error) => void;
+}
+
+export function usePlaceBet(options?: UsePlaceBetOptions) {
   const { address, isConnected } = useAccount();
   const [isPlacingBet, setIsPlacingBet] = useState(false);
   const [pendingApproval, setPendingApproval] = useState(false);
@@ -165,6 +170,7 @@ export function usePlaceBet() {
       setIsPlacingBet(false);
       setPendingApproval(false);
       setPendingBetParams(null);
+      options?.onError?.(error as Error);
     }
   };
 
@@ -194,13 +200,17 @@ export function usePlaceBet() {
       setIsPlacingBet(false);
       setPendingApproval(false);
       setPendingBetParams(null);
+      
+      // Call success callback to trigger data refresh
+      options?.onSuccess?.();
     } else if (placeBetTxStatus === 'error') {
       toast.error('Transaction failed. Please try again.');
       setIsPlacingBet(false);
       setPendingApproval(false);
       setPendingBetParams(null);
+      options?.onError?.(new Error('Transaction failed'));
     }
-  }, [placeBetTxStatus]);
+  }, [placeBetTxStatus, options]);
 
   // Handle write contract errors
   useEffect(() => {
@@ -212,8 +222,9 @@ export function usePlaceBet() {
       setIsPlacingBet(false);
       setPendingApproval(false);
       setPendingBetParams(null);
+      options?.onError?.(placeBetError);
     }
-  }, [placeBetError]);
+  }, [placeBetError, options]);
 
   // Handle approval errors
   useEffect(() => {
@@ -223,8 +234,9 @@ export function usePlaceBet() {
       setIsPlacingBet(false);
       setPendingApproval(false);
       setPendingBetParams(null);
+      options?.onError?.(approveError);
     }
-  }, [approveError]);
+  }, [approveError, options]);
 
   return {
     placeBet,
