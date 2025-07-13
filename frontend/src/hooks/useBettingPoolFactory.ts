@@ -15,7 +15,11 @@ export interface PoolCreatedEvent {
 
 export function useBettingPoolFactory() {
   // Get all pools from factory
-  const { data: allPools, isLoading, error } = useReadContract({
+  const {
+    data: allPools,
+    isLoading,
+    error,
+  } = useReadContract({
     address: CONTRACT_ADDRESSES.BETTING_POOL_FACTORY as Address,
     abi: bettingPoolFactoryContract.abi,
     functionName: 'getPools',
@@ -29,4 +33,4 @@ export function useBettingPoolFactory() {
     isLoading,
     error,
   };
-} 
+}

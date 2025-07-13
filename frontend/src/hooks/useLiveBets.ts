@@ -5,7 +5,6 @@ import { useReadContract } from 'wagmi';
 import { Address } from 'viem';
 import { BetMatch } from '@/app/api/live-bets/route';
 import { bettingPoolFactoryContract } from '@/contracts/betting-pool-factory.contract';
-import { bettingPoolContract } from '@/contracts/betting-pool.contract';
 import { CONTRACT_ADDRESSES } from '@/contracts/addresses';
 import { chilizTeams, ChilizTeam } from '@/data/chiliz-teams';
 
@@ -137,15 +136,18 @@ function isNumeric(str: string) {
 
 // Helper function to find team by token address
 function findTeamByTokenAddress(tokenAddress: string): ChilizTeam | null {
-  return chilizTeams.find(team => 
-    team.fanTokenAddress.toLowerCase() === tokenAddress.toLowerCase()
-  ) || null;
+  return (
+    chilizTeams.find(
+      (team) =>
+        team.fanTokenAddress.toLowerCase() === tokenAddress.toLowerCase(),
+    ) || null
+  );
 }
 
 // Helper function to get team data with fallback
 function getTeamData(tokenAddress: string) {
   const team = findTeamByTokenAddress(tokenAddress);
-  
+
   if (team) {
     return {
       name: team.name,
@@ -153,7 +155,7 @@ function getTeamData(tokenAddress: string) {
       color: team.color || 'bg-gray-500',
     };
   }
-  
+
   // Fallback for unknown teams
   return {
     name: `Team (${tokenAddress.slice(0, 6)}...)`,
@@ -167,7 +169,7 @@ function convertPoolToBetMatch(poolAddress: Address, poolInfo: any): BetMatch {
   const now = Date.now();
   const startTime = Number(poolInfo.matchStartTime) * 1000;
   const endTime = startTime + Number(poolInfo.matchDuration) * 1000;
-  
+
   let status: 'live' | 'upcoming' | 'finished';
   if (now < startTime) {
     status = 'upcoming';
@@ -179,9 +181,9 @@ function convertPoolToBetMatch(poolAddress: Address, poolInfo: any): BetMatch {
 
   // Format time
   const matchDate = new Date(startTime);
-  const time = matchDate.toLocaleTimeString('fr-FR', { 
-    hour: '2-digit', 
-    minute: '2-digit' 
+  const time = matchDate.toLocaleTimeString('fr-FR', {
+    hour: '2-digit',
+    minute: '2-digit',
   });
 
   // Get team data from Chiliz teams
@@ -210,7 +212,11 @@ function convertPoolToBetMatch(poolAddress: Address, poolInfo: any): BetMatch {
 
 // Hook to get pool info for a specific pool
 function usePoolInfo(poolAddress?: Address) {
-  const { data: poolInfo, isLoading, error } = useReadContract({
+  const {
+    data: poolInfo,
+    isLoading,
+    error,
+  } = useReadContract({
     address: CONTRACT_ADDRESSES.BETTING_POOL_FACTORY as Address,
     abi: bettingPoolFactoryContract.abi,
     functionName: 'getPoolInfo',
@@ -227,7 +233,11 @@ export function useLiveBets(): UseLiveBetsReturn {
   const [error, setError] = useState<string | null>(null);
 
   // Get all pools from factory
-  const { data: pools, isLoading: poolsLoading, error: poolsError } = useReadContract({
+  const {
+    data: pools,
+    isLoading: poolsLoading,
+    error: poolsError,
+  } = useReadContract({
     address: CONTRACT_ADDRESSES.BETTING_POOL_FACTORY as Address,
     abi: bettingPoolFactoryContract.abi,
     functionName: 'getPools',
@@ -245,7 +255,7 @@ export function useLiveBets(): UseLiveBetsReturn {
 
   // Get info for the first pool (as an example)
   const { poolInfo: firstPoolInfo, isLoading: firstPoolLoading } = usePoolInfo(
-    pools && pools.length > 0 ? pools[0] : undefined
+    pools && pools.length > 0 ? pools[0] : undefined,
   );
 
   const fetchMatches = async () => {
@@ -263,7 +273,7 @@ export function useLiveBets(): UseLiveBetsReturn {
 
       // Convert pool data to BetMatch format
       const contractMatches: BetMatch[] = [];
-      
+
       // For now, we'll use the first pool as an example
       // In a production environment, you'd want to fetch info for all pools
       if (pools && pools.length > 0 && firstPoolInfo) {
@@ -306,7 +316,7 @@ export function useMatchById(id: string): UseMatchByIdReturn {
 
   // Get pool info if ID is an address
   const { poolInfo, isLoading: poolInfoLoading } = usePoolInfo(
-    isNumeric(id) ? undefined : (id as Address)
+    isNumeric(id) ? undefined : (id as Address),
   );
 
   useEffect(() => {
