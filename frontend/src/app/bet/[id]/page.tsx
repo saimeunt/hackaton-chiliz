@@ -20,6 +20,9 @@ import { useState, useEffect } from 'react';
 import { useAccount, useReadContract } from 'wagmi';
 import { Address, erc20Abi } from 'viem';
 import { chilizTeams } from '@/data/chiliz-teams';
+import { usePlaceBet } from '@/hooks/usePlaceBet';
+import { useBettingPoolInfo } from '@/hooks/useBettingPoolInfo';
+import { bettingPoolFactoryContract } from '@/contracts/betting-pool-factory.contract';
 
 export default function BetDetailPage() {
   const { address, isConnected } = useAccount();
@@ -33,6 +36,18 @@ export default function BetDetailPage() {
     null,
   );
   const [betAmount, setBetAmount] = useState('');
+
+  // Initialize hooks for betting functionality
+  const { placeBet, isPlacingBet, isApproving } = usePlaceBet();
+  // Récupérer l'adresse du pool à partir de l'id du match
+  const { data: poolAddress } = useReadContract({
+    ...bettingPoolFactoryContract,
+    functionName: 'getPoolByMatchId',
+    args: [BigInt(betId)],
+  });
+
+  // Utiliser l'adresse du pool pour le hook
+  const poolInfo = useBettingPoolInfo(poolAddress as Address);
 
   useEffect(() => {
     // Check if there's a previous page in the history
@@ -111,18 +126,37 @@ export default function BetDetailPage() {
     }
   };
 
-  const handlePlaceBet = () => {
-    if (!selectedTeam || !betAmount || !match) return;
+  // Remplacer l'adresse factory par l'adresse du pool pour les autres usages
+  // Par exemple dans handlePlaceBet
+  const handlePlaceBet = async () => {
+    if (
+      !selectedTeam ||
+      !betAmount ||
+      !match ||
+      !poolInfo.team1Token ||
+      !poolInfo.team2Token ||
+      !poolAddress
+    ) {
+      console.error('Missing required data for placing bet');
+      return;
+    }
 
-    const teamName =
-      selectedTeam === 'home' ? match.homeTeam.name : match.awayTeam.name;
+    const teamToken =
+      selectedTeam === 'home' ? poolInfo.team1Token : poolInfo.team2Token;
 
-    // Validation passed, place bet
-    alert(`Bet sent to ${teamName} amount ${betAmount}`);
+    try {
+      await placeBet({
+        poolAddress: poolAddress as Address,
+        teamToken,
+        amount: betAmount,
+      });
 
-    // Reset form
-    setBetAmount('');
-    setSelectedTeam(null);
+      // Reset form on success
+      setBetAmount('');
+      setSelectedTeam(null);
+    } catch (error) {
+      console.error('Error placing bet:', error);
+    }
   };
 
   if (loading) {
@@ -254,6 +288,40 @@ export default function BetDetailPage() {
                   {match.bettingStats.awayPercentage}%
                 </span>
               </div>
+              {poolInfo.team1Pool && poolInfo.team2Pool && (
+                <>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">
+                      {match.homeTeam.name} Pool:
+                    </span>
+                    <span className="font-medium">
+                      {Number(poolInfo.team1Pool.totalAmount) / 1e18} tokens
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">
+                      {match.awayTeam.name} Pool:
+                    </span>
+                    <span className="font-medium">
+                      {Number(poolInfo.team2Pool.totalAmount) / 1e18} tokens
+                    </span>
+                  </div>
+                </>
+              )}
+              {poolInfo.matchStatus !== undefined && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Match Status:
+                  </span>
+                  <span className="font-medium">
+                    {poolInfo.matchStatus === 0
+                      ? 'Active'
+                      : poolInfo.matchStatus === 1
+                        ? 'Ended'
+                        : 'Pending'}
+                  </span>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -372,6 +440,30 @@ export default function BetDetailPage() {
                       Insufficient balance
                     </div>
                   )}
+                {poolInfo.matchStatus === 1 && (
+                  <div className="text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
+                    <AlertCircle className="h-4 w-4" />
+                    This match has ended. No more bets can be placed.
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Transaction Status */}
+            {(isApproving || isPlacingBet) && (
+              <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                  <span className="text-sm font-medium">
+                    {isApproving
+                      ? 'Approving tokens for betting...'
+                      : 'Placing your bet on the blockchain...'}
+                  </span>
+                </div>
+                <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                  Please wait while the transaction is being processed. Do not
+                  close this page.
+                </p>
               </div>
             )}
 
@@ -388,11 +480,20 @@ export default function BetDetailPage() {
                     : awayTokenBalance) ||
                 (selectedTeam === 'home'
                   ? homeTokenBalance
-                  : awayTokenBalance) === 0
+                  : awayTokenBalance) === 0 ||
+                isPlacingBet ||
+                isApproving ||
+                poolInfo.matchStatus === 1
               }
               className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white font-medium"
             >
-              <span className="text-white">🚀 Place Bet</span>
+              <span className="text-white">
+                {isApproving
+                  ? '🔐 Approving Tokens...'
+                  : isPlacingBet
+                    ? '⏳ Placing Bet...'
+                    : '🚀 Place Bet'}
+              </span>
             </Button>
           </CardContent>
         </Card>
