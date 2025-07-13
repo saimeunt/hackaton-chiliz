@@ -56,25 +56,31 @@ export function useBettingPoolInfo(poolAddress?: Address) {
   });
 
   // Parse pool info from PoolManager
-  const parsedPoolInfo: PoolManagerInfo | undefined = poolInfo ? {
-    team1Token: poolInfo[0],
-    team2Token: poolInfo[1],
-    matchStartTime: poolInfo[2],
-    matchEndTime: poolInfo[3],
-    status: poolInfo[4],
-    winningTeamToken: poolInfo[5],
-  } : undefined;
+  const parsedPoolInfo: PoolManagerInfo | undefined = poolInfo
+    ? {
+        team1Token: poolInfo[0],
+        team2Token: poolInfo[1],
+        matchStartTime: poolInfo[2],
+        matchEndTime: poolInfo[3],
+        status: poolInfo[4],
+        winningTeamToken: poolInfo[5],
+      }
+    : undefined;
 
   // Parse team pool info
-  const team1Pool: PoolInfo | undefined = team1PoolInfo ? {
-    totalAmount: team1PoolInfo[0],
-    bettorCount: team1PoolInfo[1],
-  } : undefined;
+  const team1Pool: PoolInfo | undefined = team1PoolInfo
+    ? {
+        totalAmount: team1PoolInfo[0],
+        bettorCount: team1PoolInfo[1],
+      }
+    : undefined;
 
-  const team2Pool: PoolInfo | undefined = team2PoolInfo ? {
-    totalAmount: team2PoolInfo[0],
-    bettorCount: team2PoolInfo[1],
-  } : undefined;
+  const team2Pool: PoolInfo | undefined = team2PoolInfo
+    ? {
+        totalAmount: team2PoolInfo[0],
+        bettorCount: team2PoolInfo[1],
+      }
+    : undefined;
 
   return {
     // Pool manager info
@@ -84,7 +90,7 @@ export function useBettingPoolInfo(poolAddress?: Address) {
     matchEndTime: parsedPoolInfo?.matchEndTime,
     matchStatus: parsedPoolInfo?.status,
     winningTeamToken: parsedPoolInfo?.winningTeamToken,
-    
+
     // Team pool info
     team1Pool,
     team2Pool,

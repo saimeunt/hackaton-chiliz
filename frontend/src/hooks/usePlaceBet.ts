@@ -35,7 +35,8 @@ export function usePlaceBet() {
   });
 
   // Token approval hook
-  const { approveTokens, isApproving, checkAllowance, currentAllowance } = useTokenApproval();
+  const { approveTokens, isApproving, checkAllowance, currentAllowance } =
+    useTokenApproval();
 
   // Read contract to get match status
   const { data: matchStatus } = useReadContract({

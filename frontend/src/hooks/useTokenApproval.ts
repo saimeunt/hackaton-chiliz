@@ -19,8 +19,10 @@ export interface ApprovalParams {
 export function useTokenApproval() {
   const { address, isConnected } = useAccount();
   const [isApproving, setIsApproving] = useState(false);
-  const [currentTokenAddress, setCurrentTokenAddress] = useState<Address | null>(null);
-  const [currentSpenderAddress, setCurrentSpenderAddress] = useState<Address | null>(null);
+  const [currentTokenAddress, setCurrentTokenAddress] =
+    useState<Address | null>(null);
+  const [currentSpenderAddress, setCurrentSpenderAddress] =
+    useState<Address | null>(null);
 
   const {
     data: approveHash,
@@ -38,8 +40,17 @@ export function useTokenApproval() {
     address: currentTokenAddress!,
     abi: erc20Abi,
     functionName: 'allowance',
-    args: currentTokenAddress && currentSpenderAddress ? [address!, currentSpenderAddress] : undefined,
-    query: { enabled: isConnected && !!address && !!currentTokenAddress && !!currentSpenderAddress },
+    args:
+      currentTokenAddress && currentSpenderAddress
+        ? [address!, currentSpenderAddress]
+        : undefined,
+    query: {
+      enabled:
+        isConnected &&
+        !!address &&
+        !!currentTokenAddress &&
+        !!currentSpenderAddress,
+    },
   });
 
   // Function to set the addresses for allowance checking
