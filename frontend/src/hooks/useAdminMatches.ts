@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAccount, useWriteContract, useReadContract } from 'wagmi';
 import { toast } from 'sonner';
 import { type ChilizTeam } from '@/data/chiliz-teams';
 import { bettingPoolFactoryContract } from '@/contracts/betting-pool-factory.contract';
-import { useTransactionStatus } from './useTransactionStatus';
+// import { useTransactionStatus } from './useTransactionStatus';
 
 export interface MatchInfo {
   id: string;
@@ -40,17 +40,9 @@ export function useAdminMatches() {
   const [isLoadingMatches, setIsLoadingMatches] = useState(false);
 
   // Contract interactions
-  const {
-    data: createHash,
-    writeContract: writeCreateContract,
-    status: createStatus,
-  } = useWriteContract();
+  const { writeContract: writeCreateContract } = useWriteContract();
 
-  const {
-    data: endMatchHash,
-    writeContract: writeEndMatchContract,
-    status: endMatchStatus,
-  } = useWriteContract();
+  const { writeContract: writeEndMatchContract } = useWriteContract();
 
   // Read contract for owner check
   const { data: factoryOwner, isLoading: isLoadingOwner } = useReadContract({
@@ -62,19 +54,19 @@ export function useAdminMatches() {
   });
 
   // Transaction status tracking
-  const createTxStatus = useTransactionStatus({
-    hash: createHash,
-    successMessage: 'Match created successfully!',
-    errorMessage: 'Error creating match',
-    pendingMessage: 'Creating match...',
-  });
+  // const createTxStatus = useTransactionStatus({
+  //   hash: createHash,
+  //   successMessage: 'Match created successfully!',
+  //   errorMessage: 'Error creating match',
+  //   pendingMessage: 'Creating match...',
+  // });
 
-  const endMatchTxStatus = useTransactionStatus({
-    hash: endMatchHash,
-    successMessage: 'Match finalized successfully!',
-    errorMessage: 'Error finalizing match',
-    pendingMessage: 'Finalizing match...',
-  });
+  // const endMatchTxStatus = useTransactionStatus({
+  //   hash: endMatchHash,
+  //   successMessage: 'Match finalized successfully!',
+  //   errorMessage: 'Error finalizing match',
+  //   pendingMessage: 'Finalizing match...',
+  // });
 
   // Check if current user is admin (owner of factory)
   const isAdmin = factoryOwner === address;
@@ -190,7 +182,7 @@ export function useAdminMatches() {
   };
 
   // Load matches from blockchain
-  const loadMatches = async () => {
+  const loadMatches = useCallback(async () => {
     if (!isConnected) return;
 
     setIsLoadingMatches(true);
@@ -250,14 +242,14 @@ export function useAdminMatches() {
     } finally {
       setIsLoadingMatches(false);
     }
-  };
+  }, [isConnected]);
 
   // Load matches on mount and when connection status changes
   useEffect(() => {
     if (isConnected) {
       loadMatches();
     }
-  }, [isConnected]);
+  }, [isConnected, loadMatches]);
 
   return {
     // State

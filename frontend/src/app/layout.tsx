@@ -7,7 +7,6 @@ import { Toaster } from '@/components/ui/toaster';
 import { ThemeProvider } from '@/contexts/theme-provider';
 import { MainNavigation } from '@/components/shared/main-navigation';
 import { Web3Provider } from '@/contexts/web3-provider';
-import { DataProvider } from '@/contexts/data-provider';
 import { Footer } from '@/components/shared/footer';
 
 const fontSans = FontSans({
@@ -53,26 +52,24 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Web3Provider>
-            <DataProvider>
-              <MainNavigation>
-                <div className="flex-1">{children}</div>
-                {/* Footer for mobile only - hidden on desktop since it's in the sidebar */}
-                <footer className="mt-auto border-t border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-900 py-4 md:hidden">
-                  <Footer />
-                </footer>
-              </MainNavigation>
-              <Sonner
-                toastOptions={{
-                  classNames: {
-                    info: 'dark:bg-gray-800 dark:text-white bg-gray-200',
-                    error: 'dark:bg-red-700 dark:text-white bg-red-500',
-                    success: 'dark:bg-green-700 dark:text-white bg-green-400',
-                  },
-                  duration: 4000,
-                }}
-              />
-              <Toaster />
-            </DataProvider>
+            <MainNavigation>
+              <div className="flex-1">{children}</div>
+              {/* Footer for mobile only - hidden on desktop since it's in the sidebar */}
+              <footer className="mt-auto border-t border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-900 py-4 md:hidden">
+                <Footer />
+              </footer>
+            </MainNavigation>
+            <Sonner
+              toastOptions={{
+                classNames: {
+                  info: 'dark:bg-gray-800 dark:text-white bg-gray-200',
+                  error: 'dark:bg-red-700 dark:text-white bg-red-500',
+                  success: 'dark:bg-green-700 dark:text-white bg-green-400',
+                },
+                duration: 4000,
+              }}
+            />
+            <Toaster />
           </Web3Provider>
         </ThemeProvider>
       </body>
