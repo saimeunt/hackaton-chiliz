@@ -10,6 +10,8 @@ export interface ChilizTeam {
   primaryColor: string;
   secondaryColor: string;
   country: string;
+  flag: string;
+  color: string;
 }
 
 export const chilizTeams: ChilizTeam[] = [
@@ -26,6 +28,8 @@ export const chilizTeams: ChilizTeam[] = [
     primaryColor: '#001E65',
     secondaryColor: '#FF0000',
     country: 'France',
+    flag: '🇫🇷',
+    color: 'bg-blue-500',
   },
   {
     id: 'barcelona',
@@ -39,6 +43,8 @@ export const chilizTeams: ChilizTeam[] = [
     primaryColor: '#004B87',
     secondaryColor: '#A50044',
     country: 'Spain',
+    flag: '🇪🇸',
+    color: 'bg-purple-500',
   },
   {
     id: 'juventus',
@@ -52,6 +58,8 @@ export const chilizTeams: ChilizTeam[] = [
     primaryColor: '#000000',
     secondaryColor: '#FFFFFF',
     country: 'Italy',
+    flag: '',
+    color: '',
   },
   {
     id: 'atletico',
@@ -65,11 +73,13 @@ export const chilizTeams: ChilizTeam[] = [
     primaryColor: '#CE2E2E',
     secondaryColor: '#1E3A8A',
     country: 'Spain',
+    flag: '',
+    color: '',
   },
   {
     id: 'ac-milan',
     name: 'AC Milan',
-    shortName: 'Milan',
+    shortName: 'AC Milan',
     fanTokenSymbol: 'ACM',
     fanTokenAddress: '0xF9C0F80a6c67b1B39bdDF00ecD57f2533ef5b688',
     sport: 'football',
@@ -78,6 +88,8 @@ export const chilizTeams: ChilizTeam[] = [
     primaryColor: '#FB090B',
     secondaryColor: '#000000',
     country: 'Italy',
+    flag: '🇮🇹',
+    color: 'bg-emerald-500',
   },
   {
     id: 'arsenal',
@@ -91,6 +103,8 @@ export const chilizTeams: ChilizTeam[] = [
     primaryColor: '#EF0107',
     secondaryColor: '#023474',
     country: 'England',
+    flag: '',
+    color: '',
   },
   {
     id: 'manchester-city',
@@ -104,6 +118,8 @@ export const chilizTeams: ChilizTeam[] = [
     primaryColor: '#6CABDD',
     secondaryColor: '#1C2C5B',
     country: 'England',
+    flag: '',
+    color: '',
   },
   {
     id: 'napoli',
@@ -117,6 +133,8 @@ export const chilizTeams: ChilizTeam[] = [
     primaryColor: '#0066CC',
     secondaryColor: '#FFFFFF',
     country: 'Italy',
+    flag: '',
+    color: '',
   },
   {
     id: 'lazio',
@@ -130,6 +148,8 @@ export const chilizTeams: ChilizTeam[] = [
     primaryColor: '#87CEEB',
     secondaryColor: '#FFFFFF',
     country: 'Italy',
+    flag: '',
+    color: '',
   },
   {
     id: 'galatasaray',
@@ -143,6 +163,8 @@ export const chilizTeams: ChilizTeam[] = [
     primaryColor: '#FFD700',
     secondaryColor: '#FF0000',
     country: 'Turkey',
+    flag: '',
+    color: '',
   },
 
   // Basketball Teams
@@ -158,6 +180,8 @@ export const chilizTeams: ChilizTeam[] = [
     primaryColor: '#552583',
     secondaryColor: '#FDB927',
     country: 'USA',
+    flag: '',
+    color: '',
   },
   {
     id: 'boston-celtics',
@@ -171,6 +195,8 @@ export const chilizTeams: ChilizTeam[] = [
     primaryColor: '#007A33',
     secondaryColor: '#BA9653',
     country: 'USA',
+    flag: '',
+    color: '',
   },
 
   // Esports Teams
@@ -186,6 +212,8 @@ export const chilizTeams: ChilizTeam[] = [
     primaryColor: '#FF6B35',
     secondaryColor: '#000000',
     country: 'Europe',
+    flag: '',
+    color: '',
   },
   {
     id: 'navi',
@@ -199,6 +227,8 @@ export const chilizTeams: ChilizTeam[] = [
     primaryColor: '#FFFF00',
     secondaryColor: '#000000',
     country: 'Ukraine',
+    flag: '',
+    color: '',
   },
 
   // Formula 1 Teams
@@ -214,6 +244,8 @@ export const chilizTeams: ChilizTeam[] = [
     primaryColor: '#00594C',
     secondaryColor: '#CEDC00',
     country: 'United Kingdom',
+    flag: '',
+    color: '',
   },
   {
     id: 'alpine',
@@ -227,6 +259,8 @@ export const chilizTeams: ChilizTeam[] = [
     primaryColor: '#0090FF',
     secondaryColor: '#FF1878',
     country: 'France',
+    flag: '',
+    color: '',
   },
 
   // MMA / UFC
@@ -242,6 +276,8 @@ export const chilizTeams: ChilizTeam[] = [
     primaryColor: '#D20A0A',
     secondaryColor: '#000000',
     country: 'USA',
+    flag: '',
+    color: '',
   },
 ];
 

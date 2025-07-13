@@ -49,7 +49,7 @@ export function BetCard({ match }: BetCardProps) {
       <CardHeader className="pb-4 relative z-10">
         {/* Date and time */}
         <div className="text-sm text-gray-500 dark:text-gray-400 font-medium mb-3 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
-          {competition} • {isLive ? 'Live now' : `Today at ${time}`}
+          {competition} • {`Today at ${time}`}
         </div>
 
         {/* Teams face to face with color points */}

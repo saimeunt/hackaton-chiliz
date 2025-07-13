@@ -5,9 +5,62 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BetCard } from '@/components/shared/bet-card';
 import { useLiveBets } from '@/hooks/useLiveBets';
+import { useReadContract } from 'wagmi';
+import { bettingPoolFactoryContract } from '@/contracts/betting-pool-factory.contract';
+import { Address } from 'viem';
+import { chilizTeams } from '@/data/chiliz-teams';
+import { format } from 'date-fns';
+
+const PoolBetCard = ({ pool }: { pool: Address }) => {
+  const { data: poolInfo, isLoading } = useReadContract({
+    ...bettingPoolFactoryContract,
+    functionName: 'getPoolInfo',
+    args: [pool],
+  });
+  if (!poolInfo || isLoading) {
+    return null;
+  }
+  const homeTeam = chilizTeams.find(
+    ({ fanTokenAddress }) => fanTokenAddress === poolInfo[0],
+  )!;
+  const awayTeam = chilizTeams.find(
+    ({ fanTokenAddress }) => fanTokenAddress === poolInfo[1],
+  )!;
+  const statuses = ['live', 'upcoming', 'finished'];
+  return (
+    <BetCard
+      match={{
+        id: pool,
+        homeTeam: {
+          name: homeTeam.shortName,
+          flag: homeTeam.flag,
+          color: homeTeam.color,
+        },
+        awayTeam: {
+          name: awayTeam.shortName,
+          flag: awayTeam.flag,
+          color: awayTeam.color,
+        },
+        competition: 'Champions League',
+        time: format(new Date(Number(poolInfo[2].toString())), 'HH:mm'),
+        status: statuses[poolInfo[4]] as 'live' | 'upcoming' | 'finished',
+        bettingStats: {
+          totalBettors: 0,
+          homePercentage: 50,
+          awayPercentage: 50,
+        },
+      }}
+    />
+  );
+};
 
 export default function LiveBets() {
   const { matches, loading, error, refetch } = useLiveBets();
+
+  const { data: pools, isLoading: isLoadingPools } = useReadContract({
+    ...bettingPoolFactoryContract,
+    functionName: 'getPools',
+  });
 
   if (error) {
     return (
@@ -99,7 +152,14 @@ export default function LiveBets() {
             </p>
           </div>
         ) : (
-          matches.map((match) => <BetCard key={match.id} match={match} />)
+          <>
+            {pools?.map((pool) => (
+              <PoolBetCard key={pool} pool={pool} />
+            ))}
+            {matches.map((match) => (
+              <BetCard key={match.id} match={match} />
+            ))}
+          </>
         )}
       </div>
     </div>
