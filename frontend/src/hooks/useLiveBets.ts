@@ -165,11 +165,22 @@ function getTeamData(tokenAddress: string) {
 }
 
 // Helper function to convert pool data to BetMatch format
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function convertPoolToBetMatch(poolAddress: Address, poolInfo: any): BetMatch {
+function convertPoolToBetMatch(
+  poolAddress: Address,
+  poolInfo: {
+    team1Token: `0x${string}`;
+    team2Token: `0x${string}`;
+    matchStartTime: bigint;
+    matchEndTime: bigint;
+    // matchStatus: number;
+    // winningTeamToken: `0x${string}` | undefined;
+    // team1Pool: PoolInfo;
+    // team2Pool: PoolInfo;
+  },
+): BetMatch {
   const now = Date.now();
   const startTime = Number(poolInfo.matchStartTime) * 1000;
-  const endTime = startTime + Number(poolInfo.matchDuration) * 1000;
+  const endTime = Number(poolInfo.matchEndTime) * 1000;
 
   let status: 'live' | 'upcoming' | 'finished';
   if (now < startTime) {
@@ -229,67 +240,60 @@ function usePoolInfo(poolAddress?: Address) {
 }
 
 export function useLiveBets(): UseLiveBetsReturn {
-  const [matches, setMatches] = useState<BetMatch[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [matches, setMatches] = useState<BetMatch[]>(mockMatches);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Get all pools from factory
-  const {
-    data: pools,
-    isLoading: poolsLoading,
-    error: poolsError,
-  } = useReadContract({
-    address: CONTRACT_ADDRESSES.BETTING_POOL_FACTORY as Address,
-    abi: bettingPoolFactoryContract.abi,
-    functionName: 'getPools',
-    query: {
-      refetchInterval: 10000, // Refetch every 10 seconds
-    },
-  });
-
-  // Get pool count
-  // const { data: poolCount } = useReadContract({
+  // const {
+  //   data: pools,
+  //   isLoading: poolsLoading,
+  //   error: poolsError,
+  // } = useReadContract({
   //   address: CONTRACT_ADDRESSES.BETTING_POOL_FACTORY as Address,
   //   abi: bettingPoolFactoryContract.abi,
-  //   functionName: 'getPoolCount',
+  //   functionName: 'getPools',
+  //   query: {
+  //     refetchInterval: 10000, // Refetch every 10 seconds
+  //   },
   // });
 
   // Get info for the first pool (as an example)
-  const { poolInfo: firstPoolInfo, isLoading: firstPoolLoading } = usePoolInfo(
-    pools && pools.length > 0 ? pools[0] : undefined,
-  );
+  // const { poolInfo: firstPoolInfo, isLoading: firstPoolLoading } = usePoolInfo(
+  //   pools && pools.length > 0 ? pools[0] : undefined,
+  // );
 
   const fetchMatches = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      if (poolsError) {
-        throw new Error('Failed to fetch pools from contract');
-      }
+      // if (poolsError) {
+      //   throw new Error('Failed to fetch pools from contract');
+      // }
 
-      if (poolsLoading) {
-        return;
-      }
+      // if (poolsLoading) {
+      //   return;
+      // }
 
       // Convert pool data to BetMatch format
-      const contractMatches: BetMatch[] = [];
+      // const contractMatches: BetMatch[] = [];
 
       // For now, we'll use the first pool as an example
       // In a production environment, you'd want to fetch info for all pools
-      if (pools && pools.length > 0 && firstPoolInfo) {
-        const match = convertPoolToBetMatch(pools[0], {
-          team1Token: firstPoolInfo[0],
-          team2Token: firstPoolInfo[1],
-          matchStartTime: firstPoolInfo[2],
-          matchDuration: firstPoolInfo[3] - firstPoolInfo[2], // Calculate duration
-        });
-        contractMatches.push(match);
-      }
+      // if (pools && pools.length > 0 && firstPoolInfo) {
+      //   const match = convertPoolToBetMatch(pools[0], {
+      //     team1Token: firstPoolInfo[0],
+      //     team2Token: firstPoolInfo[1],
+      //     matchStartTime: firstPoolInfo[2],
+      //     matchEndTime: firstPoolInfo[3],
+      //   });
+      //   contractMatches.push(match);
+      // }
 
       // Combine contract matches with mock matches
-      const allMatches = [...contractMatches, ...mockMatches];
-      setMatches(allMatches);
+      //const allMatches = [...contractMatches, ...mockMatches];
+      setMatches(mockMatches);
     } catch (err) {
       console.error('Error fetching live bets:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch matches');
@@ -298,21 +302,15 @@ export function useLiveBets(): UseLiveBetsReturn {
     }
   };
 
-  useEffect(() => {
-    fetchMatches();
-  }, [
-    pools,
-    poolsLoading,
-    poolsError,
-    firstPoolInfo,
-    firstPoolLoading,
-    fetchMatches,
-  ]);
+  // useEffect(() => {
+  //   fetchMatches();
+  //   // eslint-disable-next-line
+  // }, [pools, poolsLoading, poolsError, firstPoolInfo, firstPoolLoading]);
 
   return {
     matches,
-    loading: loading || poolsLoading || firstPoolLoading,
-    error: error || (poolsError ? 'Failed to fetch pools' : null),
+    loading: loading, // || poolsLoading || firstPoolLoading,
+    error: error, // || (poolsError ? 'Failed to fetch pools' : null),
     refetch: fetchMatches,
   };
 }
@@ -356,7 +354,7 @@ export function useMatchById(id: string): UseMatchByIdReturn {
             team1Token: poolInfo[0],
             team2Token: poolInfo[1],
             matchStartTime: poolInfo[2],
-            matchDuration: poolInfo[3] - poolInfo[2], // Calculate duration
+            matchEndTime: poolInfo[3],
           });
 
           setMatch(match);
